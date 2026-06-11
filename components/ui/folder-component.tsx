@@ -57,7 +57,7 @@ const FolderComponent = ({ color = "black" }: FolderComponentProps) => {
             style={{ perspective: 800 }}
         >
             <div
-                className='relative cursor-pointer'
+                className='relative cursor-pointer '
                 style={{ width: 321, height: 270, perspective: 800 }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => { setIsHovered(false); setIsOpen(false) }}
@@ -128,7 +128,7 @@ const FolderComponent = ({ color = "black" }: FolderComponentProps) => {
                     width: 321,
                     height: 241,
                 }}
-                animate={{ rotateX: isOpen ? -53 : isHovered ? -43 : -15 }}
+                animate={{ rotateX: isOpen ? -55 : isHovered ? -45 : -15 }}
                 transition={{ type: "spring", stiffness: 120, damping: 14 }}
             >
                 <div
