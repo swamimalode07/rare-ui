@@ -82,9 +82,8 @@ const SidebarList = () => {
             <motion.button
               type="button"
               onClick={() => setActiveIndex(i)}
-              whileHover={{ x: 16}}
-
-              transition={{ duration: 0.2 }}
+              whileHover={{ x: 8}}
+              transition={{ duration: 0 }}
               className={cn(
                 "flex w-full items-center rounded-lg p-1 text-left text-sm transition-all duration-200",
                 isActive
