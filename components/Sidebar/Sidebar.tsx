@@ -33,7 +33,6 @@ const Sidebar = ({
 }) => {
   return (
     <div className="absolute left-0 top-0 z-40 h-full">
-      {/* Pinned — never moves; only the icon swaps as the panel slides away. */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
