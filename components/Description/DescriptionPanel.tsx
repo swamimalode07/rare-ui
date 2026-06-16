@@ -1,35 +1,17 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import { motion } from "motion/react"
+import { CodeXml, Maximize, Minimize } from "lucide-react"
 import { activeComponent, installCommand } from "@/lib/components"
 import CopyButton from "./CopyButton"
-import { CodeXml, Maximize, Minimize } from "lucide-react"
+import CodeDrawer from "./CodeDrawer"
 
 // Panel is 1rem (16px) from the screen's right edge and 560px (w-140) wide, so
 // +600px parks it fully past the right edge when closed — the mirror of the
 // sidebar's left slide.
 const PANEL_SHIFT = 600
-
-const InfoIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="9" stroke="#7A7A7A" strokeWidth="2" />
-    <path d="M12 11v5" stroke="#7A7A7A" strokeWidth="2" strokeLinecap="round" />
-    <circle cx="12" cy="7.75" r="1.15" fill="#7A7A7A" />
-  </svg>
-)
-
-const CollapseIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M9 6l6 6-6 6" stroke="#7A7A7A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-
-const CodeIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M8 8l-4 4 4 4M16 8l4 4-4 4" stroke="#7A7A7A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
 
 type DescriptionPanelProps = {
   open: boolean
@@ -41,30 +23,44 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
   const item = activeComponent(pathname)
   const command = item ? installCommand(item) : null
 
+  // The code drawer slides up over the panel; closing the panel closes it too.
+  const [codeOpen, setCodeOpen] = useState(false)
+  useEffect(() => {
+    if (!open) setCodeOpen(false)
+  }, [open])
+
+  const toggleCode = () => {
+    if (codeOpen) {
+      setCodeOpen(false)
+    } else {
+      setOpen(true)
+      setCodeOpen(true)
+    }
+  }
+
   return (
     <div className="absolute right-0 top-0 z-40 h-full">
       {/* Pinned cluster — mirrors the sidebar toggle on the opposite edge.
           Get-code sits to the right of the description toggle. */}
-      <div className="absolute top-4 right-4 z-50 flex items-center gap-2 bg-neutral-900 p-2 rounded-2xl shadow-sm shadow-black">
+      <div className="absolute top-4 right-4 z-50 flex items-center gap-2 rounded-2xl bg-neutral-900 p-2 shadow-sm shadow-black">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Close description" : "Open description"}
           className="cursor-pointer rounded-full bg-neutral-800 p-1"
         >
-          {open ? <Maximize className="w-5 h-5"/> : <Minimize className="w-5 h-5"/>}
+          {open ? <Maximize className="h-5 w-5" /> : <Minimize className="h-5 w-5" />}
         </button>
 
-        {item?.source && (
-          <a
-            href={item.source}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Get code"
+        {item?.registry && (
+          <button
+            type="button"
+            onClick={toggleCode}
+            aria-label={codeOpen ? "Hide code" : "Get code"}
             className="cursor-pointer rounded-full bg-neutral-800 p-1"
           >
-            <CodeXml className="w-5 h-5"/>
-          </a>
+            <CodeXml className="h-5 w-5" />
+          </button>
         )}
       </div>
 
@@ -72,7 +68,7 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
         initial={false}
         animate={{ x: open ? 0 : PANEL_SHIFT }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="flex h-full w-140 flex-col gap-4 rounded-2xl bg-black p-4 pl-6"
+        className="relative flex h-full w-140 flex-col gap-4 overflow-hidden rounded-2xl bg-black p-4 pl-6"
       >
         <div className="mt-18">
           <h2 className="text-lg font-semibold">{item?.name ?? "Component"}</h2>
@@ -94,6 +90,8 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
             </div>
           </div>
         )}
+
+        <CodeDrawer open={codeOpen} onClose={() => setCodeOpen(false)} item={item} />
       </motion.div>
     </div>
   )
