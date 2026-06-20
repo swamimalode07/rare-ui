@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { motion, useAnimate } from "motion/react"
+import { arc } from "motion"
 import { cn } from "@/lib/utils"
 
 export type BounceSidebarProps = {
@@ -36,6 +37,26 @@ export function BounceSidebar({
   }, [])
 
   useEffect(() => {
+    let cancelled = false
+    const snap = () => {
+      const el = itemRefs.current[activeIndex]
+      if (cancelled || !el || !dot.current) return
+      const dpr = window.devicePixelRatio || 1
+      const size = Math.round(6 * dpr) / dpr
+      const toY = Math.round((el.offsetTop + el.offsetHeight / 2 - size / 2) * dpr) / dpr
+      animate(dot.current, { x: 0, y: toY }, { duration: 0 })
+      prevY.current = toY
+    }
+    const raf = requestAnimationFrame(snap)
+    document.fonts?.ready.then(snap)
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(raf)
+    }
+
+  }, [])
+
+  useEffect(() => {
     const el = itemRefs.current[activeIndex]
     if (!el || !dot.current) return
 
@@ -55,17 +76,13 @@ export function BounceSidebar({
     prevY.current = toY
     if (delta === 0) return
 
-    const radius = Math.min(Math.abs(delta) / 2, 8)
-    const steps = 20
-    const x: number[] = []
-    const y: number[] = []
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps
-      y.push(fromY + (delta * (1 - Math.cos(Math.PI * t))) / 2)
-      x.push(-radius * Math.sin(Math.PI * t))
-    }
+    const distance = Math.abs(delta)
+    const path = arc({
+      strength: Math.min(0.8, 14 / distance),
+      direction: delta > 0 ? "ccw" : "cw",
+    })
 
-    animate(dot.current, { x, y }, { duration: 0.25, ease: "easeOut" })
+    animate(dot.current, { x: 0, y: toY }, { duration: 0.25, ease: "easeOut", path })
   }, [activeIndex, animate, dot, dotSize])
 
   const select = (index: number) => {
