@@ -1,0 +1,182 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
+import { motion } from "motion/react"
+import { CodeXml, Maximize, Minimize } from "lucide-react"
+import { activeComponent, installCommand, PANEL_INFO } from "@/lib/components"
+import CopyButton from "./CopyButton"
+import CodeDrawer from "./CodeDrawer"
+import DependencyPill from "./DependencyPill"
+
+const PANEL_SHIFT = 600
+
+type DescriptionPanelProps = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-xs font-medium uppercase tracking-normal text-foreground/40">{children}</p>
+  )
+}
+
+export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
+  const pathname = usePathname()
+  const item = activeComponent(pathname)
+  const command = item ? installCommand(item) : null
+
+  const [codeOpen, setCodeOpen] = useState(false)
+  useEffect(() => {
+    if (!open) setCodeOpen(false)
+  }, [open])
+
+  const toggleCode = () => {
+    if (codeOpen) {
+      setCodeOpen(false)
+    } else {
+      setOpen(true)
+      setCodeOpen(true)
+    }
+  }
+
+  return (
+    <div className="pointer-events-none absolute right-0 top-0 z-40 h-full">
+      <div className="pointer-events-auto absolute top-4 right-4 z-50 flex items-center gap-2 rounded-2xl bg-neutral-900 p-2 shadow-sm shadow-black">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? "Close description" : "Open description"}
+          className="cursor-pointer rounded-full bg-neutral-800 p-1"
+        >
+          {open ? <Maximize className="h-5 w-5" /> : <Minimize className="h-5 w-5" />}
+        </button>
+
+        {item?.registry && (
+          <button
+            type="button"
+            onClick={toggleCode}
+            aria-label={codeOpen ? "Hide code" : "Get code"}
+            className="cursor-pointer rounded-full bg-neutral-800 p-1"
+          >
+            <CodeXml className="h-5 w-5" />
+          </button>
+        )}
+      </div>
+
+      <motion.div
+        initial={false}
+        animate={{ x: open ? 0 : PANEL_SHIFT }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="pointer-events-auto relative flex h-full w-140 flex-col overflow-hidden rounded-2xl bg-black"
+      >
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-black to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-black to-transparent" />
+
+        <div className="no-scrollbar flex flex-1 flex-col gap-12 overflow-y-auto p-8 pt-60 text-left">
+          <div className="flex flex-col gap-4">
+            <SectionLabel>{item?.name ?? "Component"}</SectionLabel>
+            <p className="text-2xl font-semibold leading-relaxed font-sans text-foreground/90">
+              {item?.description ?? "This component is not available yet."}
+            </p>
+          </div>
+
+          {item?.dependencies && item.dependencies.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <SectionLabel>Dependencies</SectionLabel>
+              <div className="flex flex-wrap gap-2">
+                {item.dependencies.map((dep) => (
+                  <DependencyPill
+                    key={dep.name}
+                    name={dep.name}
+                    icon={
+                      dep.icon ? (
+                        <img src={dep.icon} alt="" className="h-4 w-4" />
+                      ) : undefined
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {item?.interaction && (
+            <div className="flex flex-col gap-3">
+              <SectionLabel>Interaction Type</SectionLabel>
+              <p className="text-sm leading-relaxed text-foreground/70">{item.interaction}</p>
+            </div>
+          )}
+
+          {command && (
+            <div className="flex flex-col gap-3">
+              <SectionLabel>Installation</SectionLabel>
+              <span className="w-fit rounded-md bg-neutral-900 px-2.5 py-1 text-[11px] font-medium text-foreground/60">
+                Rare UI · trusted shadcn registry
+              </span>
+              <div className="flex items-center gap-2 rounded-lg bg-[#121212] p-2 pl-3">
+                <code className="flex-1 overflow-x-auto whitespace-nowrap text-xs text-foreground/80">
+                  {command}
+                </code>
+                <CopyButton value={command} />
+              </div>
+            </div>
+          )}
+
+          {item?.usage && (
+            <div className="flex flex-col gap-3">
+              <SectionLabel>How to use</SectionLabel>
+              <div className="relative rounded-lg bg-[#121212] p-4">
+                <div className="absolute right-2 top-2">
+                  <CopyButton value={item.usage} />
+                </div>
+                <pre className="overflow-x-auto text-xs leading-relaxed text-foreground/80">
+                  <code>{item.usage}</code>
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {item?.registry && (
+            <div className="flex flex-col gap-3">
+              <SectionLabel>Source Code</SectionLabel>
+              <p className="text-sm leading-relaxed text-foreground/70">{PANEL_INFO.sourceHint}</p>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3">
+            <SectionLabel>Keep in mind</SectionLabel>
+            <p className="text-sm leading-relaxed text-foreground/70">{PANEL_INFO.keepInMind}</p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <SectionLabel>Contact</SectionLabel>
+            <p className="text-sm leading-relaxed text-foreground/70">
+              {PANEL_INFO.contactNote}{" "}
+              <a
+                href={`mailto:${PANEL_INFO.contactEmail}`}
+                className="text-foreground underline underline-offset-4"
+              >
+                {PANEL_INFO.contactEmail}
+              </a>
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <SectionLabel>License & Usage</SectionLabel>
+            <ul className="flex flex-col gap-2 text-sm leading-relaxed text-foreground/70">
+              {PANEL_INFO.license.map((line) => (
+                <li key={line} className="flex gap-2">
+                  <span className="text-foreground/40">•</span>
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <CodeDrawer open={codeOpen} onClose={() => setCodeOpen(false)} item={item} />
+      </motion.div>
+    </div>
+  )
+}

@@ -87,6 +87,19 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 * {
   border-color: var(--border);
+}
+
+::selection {
+  background-color: rgb(252 76 1 / 10%);
+  color: #FC4C01;
 }
