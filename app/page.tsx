@@ -1,6 +1,5 @@
 import FolderComponent from "@/components/ui/folder-component";
 
-
 const REGISTRY = "swamimalode07/rare-ui";
 
 export default function Home() {
@@ -38,5 +37,5 @@ export default function Home() {
         .
       </footer>
     </div>
-  );  
+  );
 }

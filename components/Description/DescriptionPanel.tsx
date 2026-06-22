@@ -1,45 +1,47 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { usePathname } from "next/navigation"
-import { motion } from "motion/react"
-import { CodeXml, Maximize, Minimize } from "lucide-react"
-import { activeComponent, installCommand, PANEL_INFO } from "@/lib/components"
-import CopyButton from "./CopyButton"
-import CodeDrawer from "./CodeDrawer"
-import DependencyPill from "./DependencyPill"
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
+import { CodeXml, Maximize, Minimize } from "lucide-react";
+import { activeComponent, installCommand, PANEL_INFO } from "@/lib/components";
+import CopyButton from "./CopyButton";
+import CodeDrawer from "./CodeDrawer";
+import DependencyPill from "./DependencyPill";
 
-const PANEL_SHIFT = 600
+const PANEL_SHIFT = 600;
 
 type DescriptionPanelProps = {
-  open: boolean
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-medium uppercase tracking-normal text-foreground/40">{children}</p>
-  )
+    <p className="text-xs font-medium uppercase tracking-normal text-foreground/40">
+      {children}
+    </p>
+  );
 }
 
 export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
-  const pathname = usePathname()
-  const item = activeComponent(pathname)
-  const command = item ? installCommand(item) : null
+  const pathname = usePathname();
+  const item = activeComponent(pathname);
+  const command = item ? installCommand(item) : null;
 
-  const [codeOpen, setCodeOpen] = useState(false)
+  const [codeOpen, setCodeOpen] = useState(false);
   useEffect(() => {
-    if (!open) setCodeOpen(false)
-  }, [open])
+    if (!open) setCodeOpen(false);
+  }, [open]);
 
   const toggleCode = () => {
     if (codeOpen) {
-      setCodeOpen(false)
+      setCodeOpen(false);
     } else {
-      setOpen(true)
-      setCodeOpen(true)
+      setOpen(true);
+      setCodeOpen(true);
     }
-  }
+  };
 
   return (
     <div className="pointer-events-none absolute right-0 top-0 z-40 h-full">
@@ -50,7 +52,11 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
           aria-label={open ? "Close description" : "Open description"}
           className="cursor-pointer rounded-full bg-neutral-800 p-1"
         >
-          {open ? <Maximize className="h-5 w-5" /> : <Minimize className="h-5 w-5" />}
+          {open ? (
+            <Maximize className="h-5 w-5" />
+          ) : (
+            <Minimize className="h-5 w-5" />
+          )}
         </button>
 
         {item?.registry && (
@@ -104,7 +110,9 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
           {item?.interaction && (
             <div className="flex flex-col gap-3">
               <SectionLabel>Interaction Type</SectionLabel>
-              <p className="text-sm leading-relaxed text-foreground/70">{item.interaction}</p>
+              <p className="text-sm leading-relaxed text-foreground/70">
+                {item.interaction}
+              </p>
             </div>
           )}
 
@@ -140,13 +148,17 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
           {item?.registry && (
             <div className="flex flex-col gap-3">
               <SectionLabel>Source Code</SectionLabel>
-              <p className="text-sm leading-relaxed text-foreground/70">{PANEL_INFO.sourceHint}</p>
+              <p className="text-sm leading-relaxed text-foreground/70">
+                {PANEL_INFO.sourceHint}
+              </p>
             </div>
           )}
 
           <div className="flex flex-col gap-3">
             <SectionLabel>Keep in mind</SectionLabel>
-            <p className="text-sm leading-relaxed text-foreground/70">{PANEL_INFO.keepInMind}</p>
+            <p className="text-sm leading-relaxed text-foreground/70">
+              {PANEL_INFO.keepInMind}
+            </p>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -175,8 +187,12 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
           </div>
         </div>
 
-        <CodeDrawer open={codeOpen} onClose={() => setCodeOpen(false)} item={item} />
+        <CodeDrawer
+          open={codeOpen}
+          onClose={() => setCodeOpen(false)}
+          item={item}
+        />
       </motion.div>
     </div>
-  )
+  );
 }

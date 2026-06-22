@@ -3,12 +3,8 @@
   "name": "bounce-sidebar",
   "title": "Bounce Sidebar",
   "description": "A vertical nav whose active marker springs and bounces between items, with a configurable dot color.",
-  "dependencies": [
-    "motion"
-  ],
-  "registryDependencies": [
-    "utils"
-  ],
+  "dependencies": ["motion"],
+  "registryDependencies": ["utils"],
   "files": [
     {
       "path": "components/ui/bounce-sidebar.tsx",

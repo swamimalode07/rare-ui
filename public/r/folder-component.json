@@ -3,9 +3,7 @@
   "name": "folder-component",
   "title": "Folder Component",
   "description": "An animated folder whose cards fan out on hover and lift open on click, with a 3D-tilted flap. Supports color and size (sm/md/lg) props.",
-  "dependencies": [
-    "motion"
-  ],
+  "dependencies": ["motion"],
   "files": [
     {
       "path": "components/ui/folder-component.tsx",

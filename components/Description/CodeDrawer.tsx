@@ -1,35 +1,35 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { motion, useDragControls } from "motion/react"
-import type { ComponentItem } from "@/lib/components"
-import CopyButton from "./CopyButton"
+import { useEffect, useState } from "react";
+import { motion, useDragControls } from "motion/react";
+import type { ComponentItem } from "@/lib/components";
+import CopyButton from "./CopyButton";
 
 type CodeDrawerProps = {
-  open: boolean
-  onClose: () => void
-  item?: ComponentItem
-}
+  open: boolean;
+  onClose: () => void;
+  item?: ComponentItem;
+};
 
 export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
-  const dragControls = useDragControls()
-  const [code, setCode] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const dragControls = useDragControls();
+  const [code, setCode] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!open || !item?.registry) return
-    let cancelled = false
-    setLoading(true)
-    setCode(null)
+    if (!open || !item?.registry) return;
+    let cancelled = false;
+    setLoading(true);
+    setCode(null);
     fetch(`/api/source?name=${encodeURIComponent(item.registry)}`)
       .then((res) => (res.ok ? res.text() : Promise.reject(new Error())))
       .then((text) => !cancelled && setCode(text))
       .catch(() => !cancelled && setCode("// Unable to load source."))
-      .finally(() => !cancelled && setLoading(false))
+      .finally(() => !cancelled && setLoading(false));
     return () => {
-      cancelled = true
-    }
-  }, [open, item?.registry])
+      cancelled = true;
+    };
+  }, [open, item?.registry]);
 
   return (
     <motion.div
@@ -39,7 +39,7 @@ export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
       dragConstraints={{ top: 0, bottom: 0 }}
       dragElastic={{ top: 0, bottom: 0.4 }}
       onDragEnd={(_, info) => {
-        if (info.offset.y > 120) onClose()
+        if (info.offset.y > 120) onClose();
       }}
       initial={false}
       animate={{ y: open ? "0%" : "110%" }}
@@ -61,5 +61,5 @@ export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
         <code>{loading ? "Loading…" : code}</code>
       </pre>
     </motion.div>
-  )
+  );
 }

@@ -1,24 +1,25 @@
 export type Dependency = {
-  name: string
-  icon?: string
-}
+  name: string;
+  icon?: string;
+};
 
 export type ComponentItem = {
-  name: string
-  href: string
-  description?: string
-  registry?: string
-  source?: string
-  dependencies?: Dependency[]
-  interaction?: string
-  usage?: string
-}
+  name: string;
+  href: string;
+  description?: string;
+  registry?: string;
+  source?: string;
+  dependencies?: Dependency[];
+  interaction?: string;
+  usage?: string;
+};
 
-export const REGISTRY_HOMEPAGE = "https://github.com/swamimalode07/rare-ui"
-export const REGISTRY_REPO = "swamimalode07/rare-ui"
+export const REGISTRY_HOMEPAGE = "https://github.com/swamimalode07/rare-ui";
+export const REGISTRY_REPO = "swamimalode07/rare-ui";
 
 export const PANEL_INFO = {
-  sourceHint: "Click the code icon in the top-right corner to view the source code.",
+  sourceHint:
+    "Click the code icon in the top-right corner to view the source code.",
   keepInMind:
     "Most components here are recreations of great work from around the web. I don't claim to be the original creator — this is my attempt to reverse-engineer, replicate, and often add a few extra features. I've tried to credit everyone; if I missed someone, let me know.",
   contactEmail: "swamimalodeofficial@gmail.com",
@@ -28,7 +29,7 @@ export const PANEL_INFO = {
     "Attribution to Rare UI is appreciated when using a component.",
     "Please don't resell the components as your own kit.",
   ],
-} as const
+} as const;
 
 export const components: ComponentItem[] = [
   {
@@ -39,7 +40,8 @@ export const components: ComponentItem[] = [
       "An animated folder whose cards fan out on hover and lift open on click, with a 3D-tilted flap. Supports color and size (sm/md/lg) props.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/folder-component.tsx`,
     dependencies: [{ name: "motion" }],
-    interaction: "Hover to fan the cards out, then click to lift the folder open.",
+    interaction:
+      "Hover to fan the cards out, then click to lift the folder open.",
     usage: `import { Folder } from "@/components/ui/folder-component",
 
 export function Demo() {
@@ -77,13 +79,13 @@ export function Demo() {
   { name: "Popover component", href: "/components/popovercomponent" },
   { name: "Menu component", href: "/components/menucomponent" },
   { name: "Dialog component", href: "/components/dialogcomponent" },
-]
+];
 
 export function installCommand(item: ComponentItem): string | null {
-  if (!item.registry) return null
-  return `npx shadcn@latest add ${REGISTRY_REPO}/${item.registry}`
+  if (!item.registry) return null;
+  return `npx shadcn@latest add ${REGISTRY_REPO}/${item.registry}`;
 }
 
 export function activeComponent(pathname: string): ComponentItem | undefined {
-  return components.find((c) => c.href === pathname)
+  return components.find((c) => c.href === pathname);
 }

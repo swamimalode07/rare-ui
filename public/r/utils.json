@@ -3,10 +3,7 @@
   "name": "utils",
   "title": "Utils",
   "description": "The cn helper for merging Tailwind classes.",
-  "dependencies": [
-    "clsx",
-    "tailwind-merge"
-  ],
+  "dependencies": ["clsx", "tailwind-merge"],
   "files": [
     {
       "path": "lib/utils.ts",

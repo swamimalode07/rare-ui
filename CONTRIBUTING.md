@@ -37,10 +37,16 @@ Conventions:
 ```tsx
 import { cn } from "@/lib/utils";
 
-function GlowBadge({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
+function GlowBadge({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs", className)}
+      className={cn(
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs",
+        className,
+      )}
       {...props}
     />
   );
@@ -71,14 +77,14 @@ Add an entry to the `items` array in `registry.json` at the repo root. This is w
 
 Field reference:
 
-| Field | What it does |
-| --- | --- |
-| `name` | The install name: `npx shadcn add swamimalode07/rare-ui/glow-badge` |
-| `title` / `description` | Shown in `shadcn search` and `shadcn view` |
-| `dependencies` | npm packages your component imports (e.g. `"framer-motion"`). The CLI installs them in the consumer's project automatically. |
-| `registryDependencies` | Other registry items your component imports, as full addresses. Almost always includes `swamimalode07/rare-ui/utils` (for `cn`). If your component renders our `Button`, add `swamimalode07/rare-ui/button`. |
-| `files` | The files that ship with the item. Multi-file components (component + hook) just add more entries. |
-| `css` | Extra CSS to inject into the consumer's stylesheet — used for keyframes. See the `shimmer-button` item in `registry.json` for an example. |
+| Field                   | What it does                                                                                                                                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                  | The install name: `npx shadcn add swamimalode07/rare-ui/glow-badge`                                                                                                                                          |
+| `title` / `description` | Shown in `shadcn search` and `shadcn view`                                                                                                                                                                   |
+| `dependencies`          | npm packages your component imports (e.g. `"framer-motion"`). The CLI installs them in the consumer's project automatically.                                                                                 |
+| `registryDependencies`  | Other registry items your component imports, as full addresses. Almost always includes `swamimalode07/rare-ui/utils` (for `cn`). If your component renders our `Button`, add `swamimalode07/rare-ui/button`. |
+| `files`                 | The files that ship with the item. Multi-file components (component + hook) just add more entries.                                                                                                           |
+| `css`                   | Extra CSS to inject into the consumer's stylesheet — used for keyframes. See the `shimmer-button` item in `registry.json` for an example.                                                                    |
 
 **Important:** if your component needs custom keyframes or CSS that isn't a Tailwind utility, you must do both:
 
