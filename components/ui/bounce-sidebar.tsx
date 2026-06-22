@@ -109,8 +109,6 @@ export function BounceSidebar({
           <motion.button
             type="button"
             onClick={() => select(index)}
-            whileHover={{ x: 8 }}
-            transition={{ type: "spring", stiffness: 500, damping: 32, mass: 0.5 }}
             className={cn(
               "flex w-full cursor-pointer items-center rounded-lg p-1 text-left text-sm transition-colors duration-200",
               index === activeIndex ? "text-foreground" : "text-foreground/55",
