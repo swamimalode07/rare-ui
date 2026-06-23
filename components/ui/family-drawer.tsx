@@ -53,21 +53,21 @@ export default function FamilyDrawer() {
     return (
         <>
             <button
-                className="focus-visible:shadow-focus-ring-button fixed top-1/2 left-1/2 h-[44px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gray-200 bg-white px-4 py-2 font-medium text-black transition-colors hover:bg-[#F9F9F8] md:font-medium"
+                className="focus-visible:shadow-focus-ring-button absolute top-1/2 left-1/2 h-[44px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gray-200 bg-white px-4 py-2 font-medium text-black transition-colors hover:bg-[#F9F9F8] md:font-medium"
                 onClick={() => setIsOpen(true)}
-                style={{ fontFamily: "Open Runde" }}
+                style={{ fontFamily: "var(--font-open-runde)" }}
             >
                 Try it out
             </button>
             <Drawer.Root open={isOpen} onOpenChange={setIsOpen}>
                 <Drawer.Portal>
                     <Drawer.Overlay
-                        className="fixed inset-0 z-10 bg-black/30"
+                        className="fixed inset-0 z-[60] bg-black/30"
                         onClick={() => setIsOpen(false)}
                     />
                     <Drawer.Content
                         asChild
-                        className="fixed inset-x-4 bottom-4 z-10 mx-auto max-w-[361px] overflow-hidden rounded-[36px] bg-[#FEFFFE] outline-hidden md:mx-auto md:w-full"
+                        className="fixed inset-x-4 bottom-4 z-[60] mx-auto max-w-[361px] overflow-hidden rounded-[36px] bg-[#FEFFFE] outline-hidden md:mx-auto md:w-full"
                     >
                         <motion.div animate={{ height: bounds.height }}>
                             <Drawer.Close asChild>
@@ -90,7 +90,7 @@ export default function FamilyDrawer() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     ref={elementRef}
                                     className="px-6 pt-2.5 pb-8 antialiased"
-                                    style={{ fontFamily: "Open Runde" }}
+                                    style={{ fontFamily: "var(--font-open-runde)" }}
                                 >
                                     {content}
                                 </motion.div>
