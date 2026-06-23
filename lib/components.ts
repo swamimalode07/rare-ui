@@ -68,17 +68,6 @@ export function Demo() {
   return <BounceSidebar items={items} dotColor="#22c55e" />
 }`,
   },
-  { name: "Button component", href: "/components/buttoncomponent" },
-  { name: "Input component", href: "/components/inputcomponent" },
-  { name: "Select component", href: "/components/selectcomponent" },
-  { name: "Checkbox component", href: "/components/checkboxcomponent" },
-  { name: "Radio component", href: "/components/radiocomponent" },
-  { name: "Switch component", href: "/components/switchcomponent" },
-  { name: "Textarea component", href: "/components/textareacomponent" },
-  { name: "Tooltip component", href: "/components/tooltipcomponent" },
-  { name: "Popover component", href: "/components/popovercomponent" },
-  { name: "Menu component", href: "/components/menucomponent" },
-  { name: "Dialog component", href: "/components/dialogcomponent" },
 ];
 
 export function installCommand(item: ComponentItem): string | null {
