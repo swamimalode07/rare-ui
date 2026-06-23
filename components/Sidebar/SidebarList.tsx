@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useAnimate } from "motion/react";
+import { useAnimate } from "motion/react";
 import { cn } from "@/lib/utils";
 import { components } from "@/lib/components";
 
@@ -66,25 +66,17 @@ const SidebarList = () => {
               itemRefs.current[i] = el;
             }}
           >
-            <motion.div
-              whileHover={{ x: 8 }}
-              transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 32,
-                mass: 0.5,
-              }}
+            <Link
+              href={component.href}
+              className={cn(
+                "flex w-full items-center rounded-lg p-1 text-left text-sm transition-colors duration-200",
+                isActive
+                  ? "text-foreground"
+                  : "text-foreground/55 hover:text-foreground",
+              )}
             >
-              <Link
-                href={component.href}
-                className={cn(
-                  "flex w-full items-center rounded-lg p-1 text-left text-sm transition-colors duration-200",
-                  isActive ? "text-foreground" : "text-foreground/55",
-                )}
-              >
-                {component.name}
-              </Link>
-            </motion.div>
+              {component.name}
+            </Link>
           </li>
         );
       })}
