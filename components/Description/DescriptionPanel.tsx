@@ -8,6 +8,7 @@ import { activeComponent, installCommand, PANEL_INFO } from "@/lib/components";
 import CopyButton from "./CopyButton";
 import CodeDrawer from "./CodeDrawer";
 import DependencyPill from "./DependencyPill";
+import ThemeToggle from "../ThemeToggle";
 
 const PANEL_SHIFT = 600;
 
@@ -45,12 +46,12 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
 
   return (
     <div className="pointer-events-none absolute right-0 top-0 z-40 h-full">
-      <div className="pointer-events-auto absolute top-4 right-4 z-50 flex items-center gap-2 rounded-2xl bg-neutral-900 p-2 shadow-sm shadow-black">
+      <div className="pointer-events-auto absolute top-4 right-4 z-50 flex items-center gap-2 rounded-2xl  bg-muted p-2 shadow-sm">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Close description" : "Open description"}
-          className="cursor-pointer rounded-full bg-neutral-800 p-1"
+          className="cursor-pointer rounded-full bg-popover p-1"
         >
           {open ? (
             <Maximize className="h-5 w-5" />
@@ -64,21 +65,23 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
             type="button"
             onClick={toggleCode}
             aria-label={codeOpen ? "Hide code" : "Get code"}
-            className="cursor-pointer rounded-full bg-neutral-800 p-1"
+            className="cursor-pointer rounded-full bg-popover p-1"
           >
             <CodeXml className="h-5 w-5" />
           </button>
         )}
+
+        <ThemeToggle className="rounded-full p-1 bg-popover" />
       </div>
 
       <motion.div
         initial={false}
         animate={{ x: open ? 0 : PANEL_SHIFT }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="pointer-events-auto relative flex h-full w-140 flex-col overflow-hidden rounded-2xl bg-black"
+        className="pointer-events-auto relative flex h-full w-140 flex-col overflow-hidden rounded-2xl bg-background"
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-black to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-black to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-background to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-background to-transparent" />
 
         <div className="no-scrollbar flex flex-1 flex-col gap-12 overflow-y-auto p-8 pt-60 text-left">
           <div className="flex flex-col gap-4">
@@ -119,10 +122,10 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
           {command && (
             <div className="flex flex-col gap-3">
               <SectionLabel>Installation</SectionLabel>
-              <span className="w-fit rounded-md bg-neutral-900 px-2.5 py-1 text-[11px] font-medium text-foreground/60">
+              <span className="w-fit rounded-md bg-muted px-2.5 py-1 text-[11px] font-medium text-foreground/60">
                 Rare UI · trusted shadcn registry
               </span>
-              <div className="flex items-center gap-2 rounded-lg bg-[#121212] p-2 pl-3">
+              <div className="flex items-center gap-2 rounded-lg bg-muted p-2 pl-3">
                 <code className="flex-1 overflow-x-auto whitespace-nowrap text-xs text-foreground/80">
                   {command}
                 </code>
@@ -134,7 +137,7 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
           {item?.usage && (
             <div className="flex flex-col gap-3">
               <SectionLabel>How to use</SectionLabel>
-              <div className="relative rounded-lg bg-[#121212] p-4">
+              <div className="relative rounded-lg bg-muted p-4">
                 <div className="absolute right-2 top-2">
                   <CopyButton value={item.usage} />
                 </div>

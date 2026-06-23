@@ -44,20 +44,20 @@ export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
       initial={false}
       animate={{ y: open ? "0%" : "110%" }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="absolute inset-x-0 bottom-0 z-10 flex h-full flex-col rounded-2xl bg-neutral-900 shadow-2xl shadow-black"
+      className="absolute inset-x-0 bottom-0 z-10 flex h-full flex-col rounded-2xl border bg-card shadow-2xl shadow-black/30"
     >
       <div
         onPointerDown={(event) => dragControls.start(event)}
         className="shrink-0 cursor-grab touch-none px-4 pb-2 pt-3 active:cursor-grabbing"
       >
-        <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-white/25" />
+        <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-foreground/25" />
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{item?.name ?? "Code"}</span>
           {code && !loading && <CopyButton value={code} />}
         </div>
       </div>
 
-      <pre className="mx-4 mb-4 flex-1 overflow-auto rounded-xl bg-neutral-900 p-3 font-mono text-xs leading-relaxed text-foreground/80 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <pre className="mx-4 mb-4 flex-1 overflow-auto rounded-xl bg-muted p-3 font-mono text-xs leading-relaxed text-foreground/80 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <code>{loading ? "Loading…" : code}</code>
       </pre>
     </motion.div>

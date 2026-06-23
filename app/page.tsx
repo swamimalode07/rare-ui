@@ -1,12 +1,17 @@
 import FolderComponent from "@/components/ui/folder-component";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const REGISTRY = "swamimalode07/rare-ui";
 
 export default function Home() {
   return (
     <div className="mx-auto h-screen flex w-full max-w-6xl flex-1 flex-col gap-12 px-6 py-16">
+      <div className="absolute right-6 top-6">
+        <ThemeToggle />
+      </div>
+
       <header className="flex flex-col items-center gap-3 text-center">
-        <span className="rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
+        <span className="rounded-full border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
           shadcn registry
         </span>
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">

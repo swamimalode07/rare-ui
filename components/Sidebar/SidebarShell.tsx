@@ -34,7 +34,7 @@ export default function SidebarShell({
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className="h-full"
       >
-        <div className="relative z-0 h-full rounded-2xl bg-[#121212] p-4">
+        <div className="relative z-0 h-full rounded-2xl bg-card p-4">
           {children}
         </div>
       </motion.div>

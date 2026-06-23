@@ -97,7 +97,7 @@ export default function BounceSidebarPage() {
   return (
     <div className="flex h-full gap-10 overflow-hidden p-6">
       <aside className="w-52 shrink-0">
-        <p className="mb-3 pl-6 text-xs font-medium uppercase tracking-wide text-foreground">
+        <p className="mb-3 pl-6 text-xs font-medium font-sans uppercase tracking-wide text-foreground">
           Contents
         </p>
         <BounceSidebar
@@ -128,7 +128,7 @@ export default function BounceSidebarPage() {
               }}
               className="mt-10"
             >
-              <h2 className="border-b border-white/10 pb-2 text-2xl font-medium text-foreground/90">
+              <h2 className="border-b pb-2 text-2xl font-medium text-foreground/90">
                 {section.title}
               </h2>
 

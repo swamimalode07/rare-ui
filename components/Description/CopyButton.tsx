@@ -50,7 +50,7 @@ const CopyButton = ({ value }: { value: string }) => {
       type="button"
       onClick={copy}
       aria-label="Copy install command"
-      className="shrink-0 cursor-pointer rounded-md p-1.5 text-foreground/60 transition-colors hover:bg-neutral-700 hover:text-foreground"
+      className="shrink-0 cursor-pointer rounded-md p-1.5 text-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
     >
       {copied ? <CheckIcon /> : <CopyIcon />}
     </button>
