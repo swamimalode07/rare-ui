@@ -36,7 +36,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <div className="flex min-h-dvh items-center justify-center bg-background px-8 text-center md:hidden">
+            <p className="text-base font-medium text-foreground">
+              Rare UI is only available on desktop.
+            </p>
+          </div>
+
+          <div className="hidden flex-1 flex-col md:flex">{children}</div>
         </ThemeProvider>
       </body>
     </html>
