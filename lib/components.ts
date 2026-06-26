@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { createElement, type ReactNode } from "react";
+import { MotionIcon } from "@/components/Description/icons";
 
 export type Dependency = {
   name: string;
@@ -53,7 +54,9 @@ export const components: ComponentItem[] = [
     description:
       "An animated folder whose cards fan out on hover and lift open on click, with a 3D-tilted flap. Supports color and size (sm/md/lg) props.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/folder-component.tsx`,
-    dependencies: [{ name: "motion" }],
+    dependencies: [
+      { name: "motion", icon: createElement(MotionIcon, { className: "h-4 w-4" }) },
+    ],
     interaction:
       "Hover to fan the cards out, then click to lift the folder open.",
     props: [

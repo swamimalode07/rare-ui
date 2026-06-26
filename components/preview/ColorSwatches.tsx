@@ -9,8 +9,6 @@ import { usePreviewControl } from "./PreviewControls";
 
 const SQUIRCLE = { cornerRadius: 16, cornerSmoothing: 5 } as const;
 
-const APPLE_BORDER = "inset 0 0 0 0.5px rgba(255,255,255,0.14)";
-
 type ColorSwatchesProps = {
   className?: string;
   showLabel?: boolean;
@@ -83,8 +81,7 @@ export default function ColorSwatches({
           dragMomentum={false}
           dragElastic={0}
           whileDrag={{ scale: 1.03 }}
-          style={{ boxShadow: APPLE_BORDER }}
-          className={`flex items-center gap-2.5 ${className}`}
+          className={`border-apple flex items-center gap-2.5 ${className}`}
         >
           {swatches}
         </motion.div>
@@ -95,8 +92,7 @@ export default function ColorSwatches({
   return (
     <Squircle
       {...SQUIRCLE}
-      style={{ boxShadow: APPLE_BORDER }}
-      className={`flex items-center gap-2.5 ${className}`}
+      className={`border-apple flex items-center gap-2.5 ${className}`}
     >
       {swatches}
     </Squircle>
