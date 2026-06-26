@@ -7,16 +7,10 @@ import { Squircle } from "@squircle-js/react";
 import { activeComponent, cleanDefault, swatchProp } from "@/lib/components";
 import { usePreviewControl } from "./PreviewControls";
 
-// Squircle isn't a forwardRef component, so `motion.create(Squircle)` can't get
-// the DOM node it needs for drag. Instead we use `asChild` to merge the
-// squircle clip-path onto a real motion.div, which motion can fully control.
 const SQUIRCLE = { cornerRadius: 16, cornerSmoothing: 5 } as const;
 
-// Apple-style hairline: a crisp 0.5px edge, a bright top bevel and a soft dark
-// bottom. Built from inset shadows so it follows the squircle's clip-path
-// (a real CSS `border` gets clipped at the rounded corners).
 const APPLE_BORDER =
-  "inset 0 0 0 0.5px rgba(255,255,255,0.10), inset 0 0.5px 0 rgba(255,255,255,0.16), inset 0 -0.5px 0 rgba(0,0,0,0.30)";
+  "inset 0 0 0 0.5px rgba(255,255,255,0.12), inset 0 1px 0.5px rgba(255,255,255,0.20), inset 0 -1px 0.5px rgba(0,0,0,0.35)";
 
 type ColorSwatchesProps = {
   className?: string;
@@ -64,7 +58,7 @@ export default function ColorSwatches({
         return (
           <button
             key={option}
-            type="button"
+            type="button" 
             onClick={() => setValue(option)}
             aria-label={`Set ${prop.name} to ${option}`}
             aria-pressed={selected}
