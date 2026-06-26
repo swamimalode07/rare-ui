@@ -10,6 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@databuddy/sdk": "^2.4.20",
     "@radix-ui/react-slot": "^1.2.5",
     "@squircle-js/react": "^1.3.0",
     "class-variance-authority": "^0.7.1",

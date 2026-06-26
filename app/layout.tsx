@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Databuddy } from '@databuddy/sdk/react';
 import "./globals.css";
 
 const inter = Inter({
@@ -65,6 +66,15 @@ export default function RootLayout({
           </div>
 
           <div className="hidden flex-1 flex-col md:flex">{children}</div>
+          <Databuddy
+            clientId="6714ae32-d16e-4158-bb10-4998f3ff7729"
+            trackHashChanges={true}
+            trackAttributes={true}
+            trackOutgoingLinks={true}
+            trackInteractions={true}
+            trackWebVitals={true}
+            trackErrors={true}
+          />
         </ThemeProvider>
       </body>
     </html>
