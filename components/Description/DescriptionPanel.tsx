@@ -101,11 +101,7 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
                   <DependencyPill
                     key={dep.name}
                     name={dep.name}
-                    icon={
-                      dep.icon ? (
-                        <img src={dep.icon} alt="" className="h-4 w-4" />
-                      ) : undefined
-                    }
+                    icon={dep.icon}
                   />
                 ))}
               </div>

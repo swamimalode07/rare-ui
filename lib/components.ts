@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
+
 export type Dependency = {
   name: string;
-  icon?: string;
+  icon?: ReactNode;
 };
 
 export type ComponentProp = {

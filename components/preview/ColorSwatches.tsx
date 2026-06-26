@@ -62,7 +62,7 @@ export default function ColorSwatches({
             aria-label={`Set ${prop.name} to ${option}`}
             aria-pressed={selected}
             title={option}
-            className={`h-7 w-7 cursor-pointer rounded-xl shadow-sm transition-transform duration-150  ${
+            className={`h-7 w-7 cursor-pointer rounded-xl shadow-xl transition-transform duration-150  ${
               selected
                 ? "ring-2 ring-neutral-700 ring-offset-1 ring-offset-background"
                 : ""

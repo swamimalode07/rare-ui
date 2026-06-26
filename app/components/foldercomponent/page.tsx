@@ -22,7 +22,7 @@ export default function FolderComponentPage() {
       <ColorSwatches
         draggable
         constraintsRef={previewRef}
-        className="absolute bottom-4 inset-x-0 mx-auto w-fit rounded-2xl bg-[#161616] px-4 py-2.5 shadow-xl backdrop-blur"
+        className="absolute bottom-4 inset-x-0 mx-auto w-fit rounded-2xl bg-muted px-4 py-2.5 shadow-xl backdrop-blur"
       />
     </div>
   );
