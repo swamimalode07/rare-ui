@@ -2,6 +2,9 @@
 
 import { motion } from "motion/react";
 import SidebarList from "./SidebarList";
+import { Squircle } from "@squircle-js/react";
+
+const MotionSquircle = motion.create(Squircle);
 
 // 1rem (16px) inset + 300px (w-75) panel = right edge at 316px, so -340px
 // parks the panel fully past the screen's left edge when closed.
@@ -74,17 +77,19 @@ const Sidebar = ({
         {open ? <OpenIcon /> : <ClosedIcon />}
       </button>
 
-      <motion.div
+      <MotionSquircle
+        cornerRadius={23}
+        cornerSmoothing={1}
         initial={false}
         animate={{ x: open ? 0 : -PANEL_SHIFT }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="pointer-events-auto h-full w-75 rounded-2xl bg-card p-4 pl-6"
+        className="pointer-events-auto h-full w-75 bg-card p-4 pl-6"
       >
         <h2 className="mt-18">Components</h2>
         <div className="mt-4">
           <SidebarList />
         </div>
-      </motion.div>
+      </MotionSquircle>
     </div>
   );
 };

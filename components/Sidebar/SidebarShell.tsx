@@ -5,10 +5,11 @@ import { motion } from "motion/react";
 import Sidebar from "./Sidebar";
 import { DescriptionPanel } from "../Description/DescriptionPanel";
 import { PreviewControlsProvider } from "../preview/PreviewControls";
+import { Squircle } from "@squircle-js/react";
 
 
-const NAV_SPACE = 316; 
-const INFO_SPACE = 576; 
+const NAV_SPACE = 316;
+const INFO_SPACE = 576;
 
 export default function SidebarShell({
   children,
@@ -33,9 +34,12 @@ export default function SidebarShell({
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full"
         >
-          <div className="relative z-0 h-full rounded-2xl bg-card p-4">
+          <Squircle
+            cornerRadius={23}
+            cornerSmoothing={1}
+            className="relative z-0 h-full bg-card p-4">
             {children}
-          </div>
+          </Squircle>
         </motion.div>
       </div>
     </PreviewControlsProvider>
