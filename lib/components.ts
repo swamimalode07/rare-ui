@@ -9,6 +9,8 @@ export type ComponentProp = {
   default?: string;
   required?: boolean;
   options?: string[];
+  control?: "swatch";
+  optionColors?: Record<string, string>;
   description: string;
 };
 
@@ -58,6 +60,12 @@ export const components: ComponentItem[] = [
         type: '"black" | "white" | "blue"',
         default: '"black"',
         options: ["black", "white", "blue"],
+        control: "swatch",
+        optionColors: {
+          black: "#000000",
+          white: "#ffffff",
+          blue: "#50B1FD",
+        },
         description:
           "Color theme of the folder, flap, and cards. Each theme sets matching fills, strokes, and inner shadows.",
       },
@@ -159,4 +167,12 @@ export function installCommand(item: ComponentItem): string | null {
 
 export function activeComponent(pathname: string): ComponentItem | undefined {
   return components.find((c) => c.href === pathname);
+}
+
+export function swatchProp(item?: ComponentItem): ComponentProp | undefined {
+  return item?.props?.find((p) => p.control === "swatch" && p.optionColors);
+}
+
+export function cleanDefault(prop?: ComponentProp): string | undefined {
+  return prop?.default?.replace(/^["']|["']$/g, "");
 }

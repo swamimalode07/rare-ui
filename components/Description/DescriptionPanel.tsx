@@ -10,6 +10,7 @@ import CodeDrawer from "./CodeDrawer";
 import DependencyPill from "./DependencyPill";
 import PropsTable from "./PropsTable";
 import ThemeToggle from "../ThemeToggle";
+import ColorSwatches from "../preview/ColorSwatches";
 
 const PANEL_SHIFT = 600;
 
@@ -126,6 +127,7 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
               <p className="-mt-1 text-sm leading-relaxed text-foreground/70">
                 Options you can pass to customize this component.
               </p>
+              <ColorSwatches showLabel className="rounded-xl bg-muted px-3 py-2.5" />
               <PropsTable props={item.props} />
             </div>
           )}
