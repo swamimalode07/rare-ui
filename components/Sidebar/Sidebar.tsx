@@ -4,8 +4,6 @@ import { motion } from "motion/react";
 import SidebarList from "./SidebarList";
 import { Squircle } from "@squircle-js/react";
 
-const MotionSquircle = motion.create(Squircle);
-
 const PANEL_SHIFT = 340;
 
 const OpenIcon = () => (
@@ -75,19 +73,19 @@ const Sidebar = ({
         {open ? <OpenIcon /> : <ClosedIcon />}
       </button>
 
-      <MotionSquircle
-        cornerRadius={23}
-        cornerSmoothing={1}
-        initial={false}
-        animate={{ x: open ? 0 : -PANEL_SHIFT }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="pointer-events-auto h-full w-75 bg-card p-4 pl-6"
-      >
-        <h2 className="mt-18">Components</h2>
-        <div className="mt-4">
-          <SidebarList />
-        </div>
-      </MotionSquircle>
+      <Squircle asChild cornerRadius={23} cornerSmoothing={1}>
+        <motion.div
+          initial={false}
+          animate={{ x: open ? 0 : -PANEL_SHIFT }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="pointer-events-auto h-full w-75 bg-card p-4 pl-6"
+        >
+          <h2 className="mt-18">Components</h2>
+          <div className="mt-4">
+            <SidebarList />
+          </div>
+        </motion.div>
+      </Squircle>
     </div>
   );
 };

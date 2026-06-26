@@ -5,7 +5,6 @@ import { motion } from "motion/react";
 import Sidebar from "./Sidebar";
 import { DescriptionPanel } from "../Description/DescriptionPanel";
 import { PreviewControlsProvider } from "../preview/PreviewControls";
-import { Squircle } from "@squircle-js/react";
 
 
 const NAV_SPACE = 316;
@@ -34,12 +33,12 @@ export default function SidebarShell({
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="h-full"
         >
-          <Squircle
-            cornerRadius={23}
-            cornerSmoothing={1}
-            className="relative z-0 h-full bg-card p-4">
+          <div
+            className="relative z-0 h-full rounded-[45px] bg-card p-4"
+            style={{ cornerShape: "squircle" } as React.CSSProperties}
+          >
             {children}
-          </Squircle>
+          </div>
         </motion.div>
       </div>
     </PreviewControlsProvider>

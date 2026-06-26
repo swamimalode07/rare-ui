@@ -9,8 +9,7 @@ import { usePreviewControl } from "./PreviewControls";
 
 const SQUIRCLE = { cornerRadius: 16, cornerSmoothing: 5 } as const;
 
-const APPLE_BORDER =
-  "inset 0 0 0 0.5px rgba(255,255,255,0.12), inset 0 1px 0.5px rgba(255,255,255,0.20), inset 0 -1px 0.5px rgba(0,0,0,0.35)";
+const APPLE_BORDER = "inset 0 0 0 0.5px rgba(255,255,255,0.14)";
 
 type ColorSwatchesProps = {
   className?: string;
