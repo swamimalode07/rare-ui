@@ -1,3 +1,4 @@
+import Link from "next/link";
 import FolderComponent from "@/components/ui/folder-component";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -21,6 +22,12 @@ export default function Home() {
           A collection of rare, animated components. Browse them in action below
           and install any item straight from GitHub with the shadcn CLI.
         </p>
+        <Link
+          href="/components"
+          className="mt-6 inline-flex items-center rounded-full bg-foreground px-6 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+        >
+          Go to Components
+        </Link>
       </header>
 
       <main className="items-center py-8">
