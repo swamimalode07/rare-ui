@@ -1,12 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState, type ComponentProps } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
 import Link from "next/link";
 import { motion, useAnimate } from "motion/react";
 import { arc } from "motion";
 import { cn } from "@/lib/utils";
 
 const MotionLink = motion.create(Link);
+
+// useLayoutEffect warns during SSR; fall back to useEffect on the server.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export type BounceSidebarItem = string | { label: string; href?: string };
 
@@ -35,12 +45,13 @@ export function BounceSidebar({
   const prevY = useRef<number | null>(null);
 
   const [dotSize, setDotSize] = useState(6);
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     const dpr = window.devicePixelRatio || 1;
     setDotSize(Math.round(6 * dpr) / dpr);
   }, []);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     let cancelled = false;
     const snap = () => {
       const el = itemRefs.current[activeIndex];
@@ -51,7 +62,11 @@ export function BounceSidebar({
         Math.round((el.offsetTop + el.offsetHeight / 2 - size / 2) * dpr) / dpr;
       animate(dot.current, { x: 0, y: toY }, { duration: 0 });
       prevY.current = toY;
+      setReady(true);
     };
+    // Position synchronously before the first paint so the dot never flashes
+    // at the top; re-snap on the next frame and after fonts load (offsets shift).
+    snap();
     const raf = requestAnimationFrame(snap);
     document.fonts?.ready.then(snap);
     return () => {
@@ -107,8 +122,13 @@ export function BounceSidebar({
       <span
         ref={dot}
         aria-hidden
-        className="absolute left-2 top-0 rounded-full"
-        style={{ width: dotSize, height: dotSize, backgroundColor: dotColor }}
+        className="absolute left-2 top-0 rounded-full transition-opacity duration-150"
+        style={{
+          width: dotSize,
+          height: dotSize,
+          backgroundColor: dotColor,
+          opacity: ready ? 1 : 0,
+        }}
       />
 
       {items.map((item, index) => {
