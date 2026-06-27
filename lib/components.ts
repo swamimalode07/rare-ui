@@ -145,7 +145,7 @@ export function Demo() {
   ]
   
   export function Demo() {
-    return <BounceSidebar items={items} dotColor="#22c55e" />
+    return <BounceSidebar items={items} dotColor="#FC4C01" />
   }`,
   },
   // {
@@ -158,7 +158,7 @@ export function Demo() {
   //   dependencies: [{ name: "motion" }, { name: "vaul" }],
   //   interaction: "Click the trigger to open the drawer and step between views.",
   //   usage: `import FamilyDrawer from "@/components/ui/family-drawer"
-  
+
   // export function Demo() {
   //   return <FamilyDrawer />
   // }`,
