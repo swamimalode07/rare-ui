@@ -90,79 +90,79 @@ export function Demo() {
 }`,
   },
   // Temporarily hidden for launch — keep only the Folder component visible.
-  // {
-  //   name: "Bounce sidebar",
-  //   href: "/components/bouncesidebar",
-  //   registry: "bounce-sidebar",
-  //   description:
-  //     "A vertical nav whose active marker springs and bounces between items. Pass your own items and dot color; controlled or uncontrolled.",
-  //   source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/bounce-sidebar.tsx`,
-  //   dependencies: [{ name: "motion" }],
-  //   interaction: "Click any item to spring the bouncing marker over to it.",
-  //   props: [
-  //     {
-  //       name: "items",
-  //       type: "string[]",
-  //       required: true,
-  //       description: "Labels rendered as the vertical list of nav items.",
-  //     },
-  //     {
-  //       name: "value",
-  //       type: "number",
-  //       description:
-  //         "Active item index for controlled usage. When set, the component won't manage its own state.",
-  //     },
-  //     {
-  //       name: "defaultValue",
-  //       type: "number",
-  //       default: "0",
-  //       description:
-  //         "Initial active index for uncontrolled usage. Ignored when value is provided.",
-  //     },
-  //     {
-  //       name: "onChange",
-  //       type: "(index: number) => void",
-  //       description: "Called with the new index whenever an item is selected.",
-  //     },
-  //     {
-  //       name: "dotColor",
-  //       type: "string",
-  //       default: '"#FC4C01"',
-  //       description:
-  //         "Any CSS color for the bouncing active marker (hex, rgb, hsl, var).",
-  //     },
-  //     {
-  //       name: "className",
-  //       type: "string",
-  //       description: "Extra classes merged onto the root <ul> element.",
-  //     },
-  //   ],
-  //   usage: `import { BounceSidebar } from "@/components/ui/bounce-sidebar"
-  //
-  // const items = [
-  //   { label: "Home", href: "/" },
-  //   { label: "About", href: "/about" },
-  // ]
-  //
-  // export function Demo() {
-  //   return <BounceSidebar items={items} dotColor="#22c55e" />
-  // }`,
-  // },
   {
-    name: "Family drawer",
-    href: "/components/familydrawer",
-    registry: "family drawer",
+    name: "Bounce sidebar",
+    href: "/components/bouncesidebar",
+    registry: "bounce-sidebar",
     description:
-      "A bottom drawer with smooth, morphing transitions between stacked views, inspired by the Family app. Built on Vaul.",
-    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/family-drawer.tsx`,
-    dependencies: [{ name: "motion" }, { name: "vaul" }],
-    interaction: "Click the trigger to open the drawer and step between views.",
-    usage: `import FamilyDrawer from "@/components/ui/family-drawer"
+      "A vertical nav whose active marker springs and bounces between items. Pass your own items and dot color; controlled or uncontrolled.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/bounce-sidebar.tsx`,
+    dependencies: [{ name: "motion" }],
+    interaction: "Click any item to spring the bouncing marker over to it.",
+    props: [
+      {
+        name: "items",
+        type: "string[]",
+        required: true,
+        description: "Labels rendered as the vertical list of nav items.",
+      },
+      {
+        name: "value",
+        type: "number",
+        description:
+          "Active item index for controlled usage. When set, the component won't manage its own state.",
+      },
+      {
+        name: "defaultValue",
+        type: "number",
+        default: "0",
+        description:
+          "Initial active index for uncontrolled usage. Ignored when value is provided.",
+      },
+      {
+        name: "onChange",
+        type: "(index: number) => void",
+        description: "Called with the new index whenever an item is selected.",
+      },
+      {
+        name: "dotColor",
+        type: "string",
+        default: '"#FC4C01"',
+        description:
+          "Any CSS color for the bouncing active marker (hex, rgb, hsl, var).",
+      },
+      {
+        name: "className",
+        type: "string",
+        description: "Extra classes merged onto the root <ul> element.",
+      },
+    ],
+    usage: `import { BounceSidebar } from "@/components/ui/bounce-sidebar"
+  
+  const items = [
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+  ]
   
   export function Demo() {
-    return <FamilyDrawer />
+    return <BounceSidebar items={items} dotColor="#22c55e" />
   }`,
   },
+  // {
+  //   name: "Family drawer",
+  //   href: "/components/familydrawer",
+  //   registry: "family drawer",
+  //   description:
+  //     "A bottom drawer with smooth, morphing transitions between stacked views, inspired by the Family app. Built on Vaul.",
+  //   source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/family-drawer.tsx`,
+  //   dependencies: [{ name: "motion" }, { name: "vaul" }],
+  //   interaction: "Click the trigger to open the drawer and step between views.",
+  //   usage: `import FamilyDrawer from "@/components/ui/family-drawer"
+  
+  // export function Demo() {
+  //   return <FamilyDrawer />
+  // }`,
+  // },
 ];
 
 export function installCommand(item: ComponentItem): string | null {

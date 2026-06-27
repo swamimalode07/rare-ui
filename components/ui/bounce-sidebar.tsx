@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState, type ComponentProps } from "react";
+import Link from "next/link";
 import { motion, useAnimate } from "motion/react";
 import { arc } from "motion";
 import { cn } from "@/lib/utils";
 
+const MotionLink = motion.create(Link);
+
+export type BounceSidebarItem = string | { label: string; href?: string };
+
 export type BounceSidebarProps = Omit<ComponentProps<"ul">, "onChange"> & {
-  items: string[];
+  items: BounceSidebarItem[];
   value?: number;
   defaultValue?: number;
   onChange?: (index: number) => void;
@@ -106,27 +111,46 @@ export function BounceSidebar({
         style={{ width: dotSize, height: dotSize, backgroundColor: dotColor }}
       />
 
-      {items.map((item, index) => (
-        <li
-          key={item}
-          ref={(el) => {
-            itemRefs.current[index] = el;
-          }}
-        >
-          <motion.button
-            type="button"
-            data-slot="bounce-sidebar-item"
-            data-active={index === activeIndex}
-            onClick={() => select(index)}
-            className={cn(
-              "flex w-full cursor-pointer items-center rounded-lg p-1 text-left text-sm transition-colors duration-200",
-              index === activeIndex ? "text-foreground" : "text-foreground/55",
-            )}
+      {items.map((item, index) => {
+        const label = typeof item === "string" ? item : item.label;
+        const href = typeof item === "string" ? undefined : item.href;
+        const isActive = index === activeIndex;
+        const itemClassName = cn(
+          "flex w-full cursor-pointer items-center rounded-lg p-1 text-left text-sm transition-colors duration-200",
+          isActive ? "text-foreground" : "text-foreground/55",
+        );
+
+        return (
+          <li
+            key={label}
+            ref={(el) => {
+              itemRefs.current[index] = el;
+            }}
           >
-            {item}
-          </motion.button>
-        </li>
-      ))}
+            {href ? (
+              <MotionLink
+                href={href}
+                data-slot="bounce-sidebar-item"
+                data-active={isActive}
+                onClick={() => select(index)}
+                className={itemClassName}
+              >
+                {label}
+              </MotionLink>
+            ) : (
+              <motion.button
+                type="button"
+                data-slot="bounce-sidebar-item"
+                data-active={isActive}
+                onClick={() => select(index)}
+                className={itemClassName}
+              >
+                {label}
+              </motion.button>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }
