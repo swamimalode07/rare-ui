@@ -148,21 +148,21 @@ export function Demo() {
   //   return <BounceSidebar items={items} dotColor="#22c55e" />
   // }`,
   // },
-  // {
-  //   name: "Family drawer",
-  //   href: "/components/familydrawer",
-  //   registry: "family drawer",
-  //   description:
-  //     "A bottom drawer with smooth, morphing transitions between stacked views, inspired by the Family app. Built on Vaul.",
-  //   source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/family-drawer.tsx`,
-  //   dependencies: [{ name: "motion" }, { name: "vaul" }],
-  //   interaction: "Click the trigger to open the drawer and step between views.",
-  //   usage: `import FamilyDrawer from "@/components/ui/family-drawer"
-  //
-  // export function Demo() {
-  //   return <FamilyDrawer />
-  // }`,
-  // },
+  {
+    name: "Family drawer",
+    href: "/components/familydrawer",
+    registry: "family drawer",
+    description:
+      "A bottom drawer with smooth, morphing transitions between stacked views, inspired by the Family app. Built on Vaul.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/family-drawer.tsx`,
+    dependencies: [{ name: "motion" }, { name: "vaul" }],
+    interaction: "Click the trigger to open the drawer and step between views.",
+    usage: `import FamilyDrawer from "@/components/ui/family-drawer"
+  
+  export function Demo() {
+    return <FamilyDrawer />
+  }`,
+  },
 ];
 
 export function installCommand(item: ComponentItem): string | null {
