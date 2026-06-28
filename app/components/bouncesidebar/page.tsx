@@ -1,16 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion, stagger, type Variants } from "motion/react";
 import { BounceSidebar } from "@/components/ui/bounce-sidebar";
 
-const LOREM_A =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+const STEP = 0.04;
+const getDelay = stagger(STEP, { startDelay: 0.05 });
 
-const LOREM_B =
-  "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: (order: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: getDelay(order, TOTAL), duration: 0.35, ease: "easeOut" },
+  }),
+};
 
-const LOREM_C =
-  "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.";
+const LOREM_A = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+
+const LOREM_B = "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+const LOREM_C = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.";
 
 const sections = [
   {
@@ -50,6 +60,8 @@ const sections = [
     blocks: [{ text: LOREM_C }, { heading: "Further reading", text: LOREM_A }],
   },
 ];
+
+const TOTAL = 2 + sections.reduce((n, s) => n + 1 + s.blocks.length, 0);
 
 export default function BounceSidebarPage() {
   const [active, setActive] = useState(0);
@@ -94,6 +106,8 @@ export default function BounceSidebarPage() {
     return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
+  let order = 0;
+
   return (
     <div className="flex h-full gap-10 overflow-hidden p-6">
       <aside className="w-52 shrink-0">
@@ -112,13 +126,25 @@ export default function BounceSidebarPage() {
         ref={scrollRef}
         className="min-h-0 flex-1 overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
-        <article className="max-w-2xl">
-          <h1 className="text-5xl font-medium tracking-wider font-cal text-foreground"> 
+        <motion.article
+          className="max-w-2xl"
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.h1
+            variants={fadeUp}
+            custom={order++}
+            className="text-5xl font-medium tracking-wider font-cal text-foreground"
+          >
             Rare UI
-          </h1>
-          <p className="mt-2 text-lg text-foreground/40">
+          </motion.h1>
+          <motion.p
+            variants={fadeUp}
+            custom={order++}
+            className="mt-2 text-lg text-foreground/40"
+          >
             From Rare UI, the free component encyclopedia
-          </p>
+          </motion.p>
 
           {sections.map((section, index) => (
             <section
@@ -128,12 +154,21 @@ export default function BounceSidebarPage() {
               }}
               className="mt-10"
             >
-              <h2 className="border-b pb-2 font-cal tracking-wide text-3xl font-medium text-foreground/90">
+              <motion.h2
+                variants={fadeUp}
+                custom={order++}
+                className="border-b pb-2 font-cal tracking-wide text-3xl font-medium text-foreground/90"
+              >
                 {section.title}
-              </h2>
+              </motion.h2>
 
               {section.blocks.map((block, blockIndex) => (
-                <div key={blockIndex} className="mt-6">
+                <motion.div
+                  key={blockIndex}
+                  variants={fadeUp}
+                  custom={order++}
+                  className="mt-6"
+                >
                   {"heading" in block && block.heading && (
                     <h3 className="text-lg font-cal tracking-wide font-normal text-foreground/80">
                       {block.heading}
@@ -142,11 +177,11 @@ export default function BounceSidebarPage() {
                   <p className="mt-3 font-sans text-sm leading-6 text-foreground/40">
                     {block.text}
                   </p>
-                </div>
+                </motion.div>
               ))}
             </section>
           ))}
-        </article>
+        </motion.article>
       </div>
     </div>
   );
