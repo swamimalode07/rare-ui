@@ -97,7 +97,7 @@ export default function BounceSidebarPage() {
   return (
     <div className="flex h-full gap-10 overflow-hidden p-6">
       <aside className="w-52 shrink-0">
-        <p className="mb-3 pl-6 text-xs font-medium font-sans uppercase tracking-wide text-foreground">
+        <p className="mb-3 pl-2 mt-2 text-sm font-medium font-sans uppercase tracking-wide text-foreground">
           Contents
         </p>
         <BounceSidebar
@@ -113,10 +113,10 @@ export default function BounceSidebarPage() {
         className="min-h-0 flex-1 overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         <article className="max-w-2xl">
-          <h1 className="text-3xl font-semibold text-foreground">
-            Lorem ipsum
+          <h1 className="text-5xl font-medium tracking-wider font-cal text-foreground"> 
+            Rare UI
           </h1>
-          <p className="mt-2 text-sm text-foreground/40">
+          <p className="mt-2 text-lg text-foreground/40">
             From Rare UI, the free component encyclopedia
           </p>
 
@@ -128,18 +128,18 @@ export default function BounceSidebarPage() {
               }}
               className="mt-10"
             >
-              <h2 className="border-b pb-2 text-2xl font-medium text-foreground/90">
+              <h2 className="border-b pb-2 font-cal tracking-wide text-3xl font-medium text-foreground/90">
                 {section.title}
               </h2>
 
               {section.blocks.map((block, blockIndex) => (
                 <div key={blockIndex} className="mt-6">
                   {"heading" in block && block.heading && (
-                    <h3 className="text-lg font-medium text-foreground/80">
+                    <h3 className="text-lg font-cal tracking-wide font-normal text-foreground/80">
                       {block.heading}
                     </h3>
                   )}
-                  <p className="mt-3 text-sm leading-7 text-foreground/60">
+                  <p className="mt-3 font-sans text-sm leading-6 text-foreground/40">
                     {block.text}
                   </p>
                 </div>

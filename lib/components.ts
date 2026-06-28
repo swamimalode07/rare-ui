@@ -89,65 +89,64 @@ export function Demo() {
   return <Folder color="blue" size="md" />
 }`,
   },
-  // Temporarily hidden for launch — keep only the Folder component visible.
-  // {
-  //   name: "Bounce sidebar",
-  //   href: "/components/bouncesidebar",
-  //   registry: "bounce-sidebar",
-  //   description:
-  //     "A vertical nav whose active marker springs and bounces between items. Pass your own items and dot color; controlled or uncontrolled.",
-  //   source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/bounce-sidebar.tsx`,
-  //   dependencies: [{ name: "motion" }],
-  //   interaction: "Click any item to spring the bouncing marker over to it.",
-  //   props: [
-  //     {
-  //       name: "items",
-  //       type: "string[]",
-  //       required: true,
-  //       description: "Labels rendered as the vertical list of nav items.",
-  //     },
-  //     {
-  //       name: "value",
-  //       type: "number",
-  //       description:
-  //         "Active item index for controlled usage. When set, the component won't manage its own state.",
-  //     },
-  //     {
-  //       name: "defaultValue",
-  //       type: "number",
-  //       default: "0",
-  //       description:
-  //         "Initial active index for uncontrolled usage. Ignored when value is provided.",
-  //     },
-  //     {
-  //       name: "onChange",
-  //       type: "(index: number) => void",
-  //       description: "Called with the new index whenever an item is selected.",
-  //     },
-  //     {
-  //       name: "dotColor",
-  //       type: "string",
-  //       default: '"#FC4C01"',
-  //       description:
-  //         "Any CSS color for the bouncing active marker (hex, rgb, hsl, var).",
-  //     },
-  //     {
-  //       name: "className",
-  //       type: "string",
-  //       description: "Extra classes merged onto the root <ul> element.",
-  //     },
-  //   ],
-  //   usage: `import { BounceSidebar } from "@/components/ui/bounce-sidebar"
+  {
+    name: "Bounce sidebar",
+    href: "/components/bouncesidebar",
+    registry: "bounce-sidebar",
+    description:
+      "A vertical nav whose active marker springs and bounces between items. Pass your own items and dot color; controlled or uncontrolled.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/bounce-sidebar.tsx`,
+    dependencies: [{ name: "motion" }],
+    interaction: "Click any item to spring the bouncing marker over to it.",
+    props: [
+      {
+        name: "items",
+        type: "string[]",
+        required: true,
+        description: "Labels rendered as the vertical list of nav items.",
+      },
+      {
+        name: "value",
+        type: "number",
+        description:
+          "Active item index for controlled usage. When set, the component won't manage its own state.",
+      },
+      {
+        name: "defaultValue",
+        type: "number",
+        default: "0",
+        description:
+          "Initial active index for uncontrolled usage. Ignored when value is provided.",
+      },
+      {
+        name: "onChange",
+        type: "(index: number) => void",
+        description: "Called with the new index whenever an item is selected.",
+      },
+      {
+        name: "dotColor",
+        type: "string",
+        default: '"#FC4C01"',
+        description:
+          "Any CSS color for the bouncing active marker (hex, rgb, hsl, var).",
+      },
+      {
+        name: "className",
+        type: "string",
+        description: "Extra classes merged onto the root <ul> element.",
+      },
+    ],
+    usage: `import { BounceSidebar } from "@/components/ui/bounce-sidebar"
   
-  // const items = [
-  //   { label: "Home", href: "/" },
-  //   { label: "About", href: "/about" },
-  // ]
+  const items = [
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+  ]
   
-  // export function Demo() {
-  //   return <BounceSidebar items={items} dotColor="#FC4C01" />
-  // }`,
-  // },
+  export function Demo() {
+    return <BounceSidebar items={items} dotColor="#FC4C01" />
+  }`,
+  },
   // {
   //   name: "Family drawer",
   //   href: "/components/familydrawer",

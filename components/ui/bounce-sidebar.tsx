@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ComponentProps,
-} from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
 import Link from "next/link";
 import { motion, useAnimate } from "motion/react";
 import { arc } from "motion";
@@ -14,7 +8,6 @@ import { cn } from "@/lib/utils";
 
 const MotionLink = motion.create(Link);
 
-// useLayoutEffect warns during SSR; fall back to useEffect on the server.
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
@@ -64,8 +57,7 @@ export function BounceSidebar({
       prevY.current = toY;
       setReady(true);
     };
-    // Position synchronously before the first paint so the dot never flashes
-    // at the top; re-snap on the next frame and after fonts load (offsets shift).
+
     snap();
     const raf = requestAnimationFrame(snap);
     document.fonts?.ready.then(snap);
@@ -137,7 +129,7 @@ export function BounceSidebar({
         const isActive = index === activeIndex;
         const itemClassName = cn(
           "flex w-full cursor-pointer items-center rounded-lg p-1 text-left text-sm transition-colors duration-200",
-          isActive ? "text-foreground" : "text-foreground/55",
+          isActive ? "text-foreground" : "text-foreground/50",
         );
 
         return (

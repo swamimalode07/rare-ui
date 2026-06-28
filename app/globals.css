@@ -148,6 +148,8 @@
   --font-sans: var(--font-inter), Inter, sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-serif);
+  --font-cal: var(--font-cal-sans), sans-serif;
+  --font-runde: var(--font-open-runde), sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
