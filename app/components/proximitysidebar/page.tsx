@@ -344,43 +344,42 @@ const sections: ProximitySection[] = docs.flatMap((group) => [
 
 export default function Page() {
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground">
-      <aside className="w-24 shrink-0 border-r">
+    <div className="flex h-screen overflow-hidden bg-secondary text-foreground">
+      <aside className="w-24 shrink-0">
         <ProximitySidebar side="left" sections={sections} />
       </aside>
 
-      <main className="flex-1 overflow-y-auto">
-        <article className="max-w-3xl px-8 py-20 md:px-14">
+      <main className="min-h-0 flex-1 overflow-auto px-8 py-20 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden md:px-14">
+        <article className="max-w-2xl">
           {docs.map((group, groupIndex) => (
             <section
               key={group.id}
               id={group.id}
-              className="scroll-mt-12 border-b py-16 first:pt-0 last:border-b-0"
+              className="mt-10 scroll-mt-12 first:mt-0"
             >
-              <p className="mb-3 text-sm font-medium text-muted-foreground">
+              <p className="mb-2 text-sm text-foreground/40">
                 {group.eyebrow}
               </p>
               {groupIndex === 0 ? (
-                <h1 className="text-5xl font-semibold tracking-tight">
+                <h1 className="font-cal text-5xl font-medium tracking-wider text-foreground">
                   {group.title}
                 </h1>
               ) : (
-                <h2 className="text-4xl font-semibold tracking-tight">
+                <h2 className="border-b pb-2 font-cal text-3xl font-medium tracking-wide text-foreground/90">
                   {group.title}
                 </h2>
               )}
-              <p className="mt-5 text-lg leading-8 text-muted-foreground">
+              <p className="mt-2 text-lg text-foreground/40">
                 {group.description}
               </p>
 
               {group.id === "reference" ? (
-                <div className="mt-10 grid gap-4">
+                <div className="mt-6 grid gap-6">
                   <div
                     id="reference-props"
-                    className="scroll-mt-12 border-l pl-5"
+                    className="scroll-mt-12"
                   >
-                    <h3 className="text-base font-medium">Props</h3>
-                    <p className="mt-2 leading-7 text-muted-foreground">
+                    <p className="font-sans text-sm leading-6 text-foreground/40">
                       Pass <code>sections</code>, <code>side</code>,{" "}
                       <code>className</code>, and <code>activeOffset</code>.
                       The section ids should match elements in the document.
@@ -388,24 +387,23 @@ export default function Page() {
                   </div>
                   <div
                     id="reference-output"
-                    className="scroll-mt-12 border-l pl-5"
+                    className="scroll-mt-12"
                   >
-                    <h3 className="text-base font-medium">Output</h3>
-                    <p className="mt-2 leading-7 text-muted-foreground">
+                    <p className="font-sans text-sm leading-6 text-foreground/40">
                       The component renders an accessible navigation rail where
                       each dash is a button tied to its matching content block.
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="mt-12 space-y-10">
+                <div className="mt-6 space-y-6">
                   {group.items.map((item) => (
                     <section
                       key={item.id}
                       id={item.id}
                       className="scroll-mt-12"
                     >
-                      <p className="leading-7 text-muted-foreground">
+                      <p className="font-sans text-sm leading-6 text-foreground/40">
                         {item.description}
                       </p>
                     </section>
