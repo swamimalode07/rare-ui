@@ -147,6 +147,14 @@ export function Demo() {
     return <BounceSidebar items={items} dotColor="#FC4C01" />
   }`,
   },
+  {
+    name:"Proximity Sidebar",
+    href: "/components/proximitysidebar",
+    registry: "proximity-sidebar",
+    description:"A vertical nav whose items expand and contract based on proximity to the cursor. Pass your own items and colors; controlled or uncontrolled.",
+    source:`${REGISTRY_HOMEPAGE}/blob/main/components/ui/proximity-sidebar.tsx`,
+    dependencies:[{name:"motion"}],
+  },
   // {
   //   name: "Family drawer",
   //   href: "/components/familydrawer",
