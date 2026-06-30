@@ -53,7 +53,7 @@ type ProximitySidebarProps = {
 
 const RADIUS = 40
 const MAX_DASH_WIDTH = 110
-const SCROLL_PULSE_DURATION = 500
+const SCROLL_IDLE_RESET_DELAY = 80
 
 const DASH_PRESETS: Record<SectionKind, DashPreset> = {
   title: {
@@ -249,7 +249,7 @@ const ProximitySidebar = ({
       resetTimer.current = window.setTimeout(() => {
         mouseY.set(Infinity)
         resetTimer.current = null
-      }, SCROLL_PULSE_DURATION)
+      }, SCROLL_IDLE_RESET_DELAY)
     },
     [clearPendingReset, mouseY, setMouseToDash]
   )
@@ -358,7 +358,7 @@ const ProximitySidebar = ({
   return (
     <nav
       aria-label="Page sections"
-      className={`flex min-h-screen items-center ${
+      className={`flex h-full min-h-0 items-center ${
         side === "left" ? "justify-start" : "justify-end"
       } ${className}`}
     >

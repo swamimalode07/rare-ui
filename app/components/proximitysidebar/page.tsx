@@ -344,12 +344,12 @@ const sections: ProximitySection[] = docs.flatMap((group) => [
 
 export default function Page() {
   return (
-    <div className="flex h-screen overflow-hidden bg-secondary text-foreground">
-      <aside className="w-24 shrink-0">
+    <div className="flex h-full min-h-0 overflow-hidden bg-secondary text-foreground">
+      <aside className="h-full w-24 shrink-0">
         <ProximitySidebar side="left" sections={sections} />
       </aside>
 
-      <main className="min-h-0 flex-1 overflow-auto px-8 py-20 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden md:px-14">
+      <main className="min-h-0 flex-1 overflow-auto px-8 py-20 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden md:px-14 ml-20">
         <article className="max-w-2xl">
           {docs.map((group, groupIndex) => (
             <section
