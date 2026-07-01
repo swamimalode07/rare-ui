@@ -44,7 +44,7 @@ export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
       initial={false}
       animate={{ y: open ? "0%" : "110%" }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="absolute inset-x-0 bottom-0 z-10 flex h-full flex-col rounded-2xl border bg-card shadow-2xl shadow-black/30"
+      className="absolute inset-x-0 bottom-0 z-10 flex h-full flex-col rounded-2xl  bg-card shadow-2xl shadow-black/30"
     >
       <div
         onPointerDown={(event) => dragControls.start(event)}

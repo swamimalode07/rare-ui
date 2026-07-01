@@ -157,9 +157,59 @@ export function Demo() {
       "An interactive sidebar with proximity hover effects that appears while scrolling and responds to scroll intensity.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/proximity-sidebar.tsx`,
     dependencies: [{ name: "motion", icon: createElement(MotionIcon, { className: "h-4 w-4" }) }],
+    interaction:
+      "Scroll through content to track the current section, then move the pointer near dashes to expand them and click to smooth-scroll to a section.",
+    props: [
+      {
+        name: "sections",
+        type: "Array<{ id: string; label: string; kind?: \"title\" | \"subtitle\" | \"section\" | \"body\"; level?: 1 | 2 | 3 | 4 | 5 | 6 }>",
+        required: true,
+        description:
+          "Ordered section map used for rendering dashes and scroll targeting. Each id must match an element id present in the page.",
+      },
+      {
+        name: "side",
+        type: '"left" | "right"',
+        default: '"left"',
+        options: ["left", "right"],
+        description:
+          "Pins the minimap to the chosen side and flips dash transform origin accordingly.",
+      },
+      {
+        name: "activeOffset",
+        type: "number",
+        default: "0.4",
+        description:
+          "Viewport anchor ratio used to detect the active section while scrolling (0 = top, 1 = bottom).",
+      },
+      {
+        name: "className",
+        type: "string",
+        description: "Additional classes for the outer nav wrapper.",
+      },
+    ],
+    usage: `import ProximitySidebar from "@/components/ui/proximity-sidebar"
+
+const sections = [
+  { id: "intro", label: "Introduction", level: 1 },
+  { id: "setup", label: "Setup", level: 2 },
+  { id: "api", label: "API", kind: "section" },
+  { id: "faq", label: "FAQ", kind: "body" },
+]
+
+export function Demo() {
+  return (
+    <aside className="sticky top-20 h-[70vh]">
+      <ProximitySidebar
+        sections={sections}
+        side="left"
+        activeOffset={0.4}
+      />
+    </aside>
+  )
+}`,
     credits: [
       "Inspired by devouringdetails.com",
-      
     ],
   },
   // {

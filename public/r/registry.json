@@ -57,6 +57,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "proximity-sidebar",
+      "type": "registry:ui",
+      "title": "Proximity Sidebar",
+      "description": "A vertical nav whose active marker springs and bounces between items, with a configurable dot color.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/proximity-sidebar.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
