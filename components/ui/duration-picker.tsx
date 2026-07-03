@@ -13,7 +13,7 @@ const PEN_PATH = 'M3.78181 16.3092L3 21L7.69086 20.2182C8.50544 20.0825 9.25725 
 const TICK_PATH = 'M7.959 20.513L1.592 12.872L3.128 11.592L8.041 17.487L20.947 3.587L22.413 4.948L7.959 20.513Z'
 
 const OPEN_GAP = 8
-const CORNER_RADIUS = 8
+const CORNER_RADIUS = 12
 const GAP_SPRING = { stiffness: 200, damping: 16, mass: 1 }
 const ICON_SPRING = { stiffness: 200, damping: 20 }
 const WIDTH_SPRING = { stiffness: 250, damping: 23 }
@@ -144,8 +144,8 @@ const DurationField = ({ value, onValueChange, max, isEditing, shouldReduceMotio
                 placeholder={isEditing ? '' : '0'}
                 readOnly={!isEditing}
                 disabled={disabled}
-                style={{ x, width: isEditing ? 40 : collapsedWidth }}
-                animate={{ width: isEditing ? 40 : collapsedWidth }}
+                style={{ x, width: isEditing ? 44 : collapsedWidth }}
+                animate={{ width: isEditing ? 44 : collapsedWidth }}
                 transition={shouldReduceMotion ? { duration: 0 } : { type: 'spring', ...WIDTH_SPRING }}
                 className='h-full text-center font-semibold text-black dark:text-white outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
             />
@@ -256,11 +256,11 @@ function DurationPicker({
             className={cn('flex flex-row items-center justify-center text-card-foreground', disabled && 'opacity-50', className)}
             {...props}
         >
-            <SquircleSegment leftRadius={CORNER_RADIUS} rightRadius={innerRadius} style={{ paddingRight: innerPadRight }} className="bg-[#F4F4F9] dark:bg-[#262626] h-10 flex items-center gap-1 pl-2">
+            <SquircleSegment leftRadius={CORNER_RADIUS} rightRadius={innerRadius} style={{ paddingRight: innerPadRight }} className="bg-[#F4F4F9] dark:bg-[#262626] h-12 flex items-center gap-1 pl-2">
                 <DurationField value={hoursText} onValueChange={handleHoursChange} max={maxHours} isEditing={isEditing} shouldReduceMotion={!!shouldReduceMotion} disabled={disabled} swayX={swayX} inputRef={hoursInputRef} />
                 <motion.span style={{ x: swayX }} className='text-[#868593]/70 font-semibold font-runde'>{hoursLabel}</motion.span>
             </SquircleSegment>
-            <SquircleSegment leftRadius={innerRadius} rightRadius={innerRadius} style={{ marginLeft: segmentSpacing, paddingLeft: innerPadLeft, paddingRight: innerPadRight }} className="bg-[#F4F4F9] dark:bg-[#262626] h-10 flex items-center gap-1">
+            <SquircleSegment leftRadius={innerRadius} rightRadius={innerRadius} style={{ marginLeft: segmentSpacing, paddingLeft: innerPadLeft, paddingRight: innerPadRight }} className="bg-[#F4F4F9] dark:bg-[#262626] h-12 flex items-center gap-1">
                 <DurationField value={minutesText} onValueChange={handleMinutesChange} max={maxMinutes} isEditing={isEditing} shouldReduceMotion={!!shouldReduceMotion} disabled={disabled} swayX={swayX} />
                 <motion.span style={{ x: swayX }} className='text-[#868593]/70 font-medium font-runde'>{minutesLabel}</motion.span>
             </SquircleSegment>
@@ -271,9 +271,9 @@ function DurationPicker({
                     onClick={toggleEdit}
                     disabled={disabled}
                     aria-label={isEditing ? 'Save duration' : 'Edit duration'}
-                    className='w-10 h-10 bg-[#F4F4F9] dark:bg-[#262626] flex justify-center items-center active:scale-90 transition-transform disabled:active:scale-100'
+                    className='w-12 h-12 bg-[#F4F4F9] dark:bg-[#262626] flex justify-center items-center active:scale-90 transition-transform disabled:active:scale-100'
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
                         <motion.path fill="#868593" stroke="#868593" strokeLinejoin="round" strokeLinecap="round" style={{ strokeWidth: iconStrokeWidth }} d={iconPath} />
                     </svg>
                 </button>
