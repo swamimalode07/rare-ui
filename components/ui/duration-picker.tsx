@@ -221,7 +221,9 @@ function DurationPicker({
         clamp: true,
         mixer: (from, to) => interpolate(from, to, { maxSegmentLength: 1 }),
     })
-    const iconStrokeWidth = useTransform(iconProgress, [0, 1], [0, 1.75], { clamp: true })
+    const iconStrokeWidth = useTransform(iconProgress, [0, 1], [0, 2.5], { clamp: true })
+    const iconStrokeOpacity = useTransform(iconProgress, [0, 1], [0, 1], { clamp: true })
+    const iconDashOpacity = useTransform(iconProgress, [0, 0.4], [1, 0], { clamp: true })
     const hoursInputRef = useRef<HTMLInputElement>(null)
 
     const toggleEdit = () => {
@@ -274,7 +276,8 @@ function DurationPicker({
                     className='w-12 h-12 bg-[#F4F4F9] dark:bg-[#262626] flex justify-center items-center active:scale-90 transition-transform disabled:active:scale-100'
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
-                        <motion.path fill="#868593" stroke="#868593" strokeLinejoin="round" strokeLinecap="round" style={{ strokeWidth: iconStrokeWidth }} d={iconPath} />
+                        <motion.path fill="#868593" stroke="#868593" strokeWidth={0} strokeLinejoin="round" strokeLinecap="round" style={{ strokeWidth: iconStrokeWidth, strokeOpacity: iconStrokeOpacity }} d={iconPath} />
+                        <motion.path d="M14 6L18 10" fill="none" strokeWidth={1.5} strokeLinecap="round" className="stroke-[#F4F4F9] dark:stroke-[#262626]" style={{ opacity: iconDashOpacity }} />
                     </svg>
                 </button>
             </SquircleSegment>
