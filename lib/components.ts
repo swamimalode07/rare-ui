@@ -96,7 +96,7 @@ export function Demo() {
     href: "/components/bouncesidebar",
     registry: "bounce-sidebar",
     description:
-      "A vertical nav whose active marker springs and bounces between items. Pass your own items and dot color; controlled or uncontrolled.",
+      "A vertical navigation list with a bouncy, spring-animated active indicator.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/bounce-sidebar.tsx`,
     dependencies: [{ name: "motion", icon: createElement(MotionIcon, { className: "h-4 w-4" }) }],
     interaction: "Click any item to spring the bouncing marker over to it.",
@@ -217,7 +217,7 @@ export function Demo() {
     href: "/components/durationpicker",
     registry: "duration-picker",
     description:
-      "A gooey, spring-driven duration picker. At rest it sits as one merged squircle pill; tap the pen and the hour and minute segments pull apart with a fluid stretch while the pen morphs into a tick. Confirm, and everything fuses back together with each field shrinking to hug its value.",
+      "A gooey, spring-animated picker for entering a duration in hours and minutes.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/duration-picker.tsx`,
     dependencies: [
       { name: "motion", icon: createElement(MotionIcon, { className: "h-4 w-4" }) },
