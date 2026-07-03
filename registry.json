@@ -71,6 +71,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "duration-picker",
+      "type": "registry:ui",
+      "title": "Duration Picker",
+      "description": "A gooey, spring-driven duration picker: a merged squircle pill that springs apart into hour and minute fields, with a pen-to-tick morph, clamp-and-shake validation, and controlled or uncontrolled usage.",
+      "dependencies": ["motion", "figma-squircle", "flubber", "react-use-measure", "@radix-ui/react-slot"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/duration-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
