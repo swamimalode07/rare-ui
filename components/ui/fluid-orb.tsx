@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 
 export type FluidOrbProps = React.ComponentProps<'div'> & {
   size?: number
+  color?: string
 }
 
 const VERT = `
@@ -20,6 +21,7 @@ precision highp float;
 
 uniform vec2 u_resolution;
 uniform float u_time;
+uniform vec3 u_color;
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
@@ -66,18 +68,28 @@ void main() {
   float shade = clamp(g + (f - 0.5) * 0.8 * anchor, 0.0, 1.0);
 
   vec3 white = vec3(0.99, 1.0, 1.0);
-  vec3 lightBlue = vec3(0.55, 0.80, 1.0);
-  vec3 darkBlue = vec3(0.10, 0.45, 0.95);
+  vec3 light = mix(white, u_color, 0.5);
+  vec3 dark = u_color;
 
   vec3 col = white;
-  col = mix(col, lightBlue, smoothstep(0.28, 0.52, shade));
-  col = mix(col, darkBlue, smoothstep(0.58, 0.88, shade));
+  col = mix(col, light, smoothstep(0.28, 0.52, shade));
+  col = mix(col, dark, smoothstep(0.58, 0.88, shade));
 
   float edge = smoothstep(0.5, 0.49, distance(uv, vec2(0.5)));
 
-  gl_FragColor = vec4(col, edge);
+  gl_FragColor = vec4(col * edge, edge);
 }
 `
+
+function hexToRgb(hex: string): [number, number, number] {
+  let h = hex.replace('#', '').trim()
+  if (h.length === 3) {
+    h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]
+  }
+  const n = parseInt(h, 16)
+  if (h.length !== 6 || Number.isNaN(n)) return [0.1, 0.45, 0.95]
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
+}
 
 function compile(gl: WebGLRenderingContext, type: number, src: string) {
   const shader = gl.createShader(type)
@@ -92,7 +104,13 @@ function compile(gl: WebGLRenderingContext, type: number, src: string) {
   return shader
 }
 
-const FluidOrb = ({ size = 240, className, style, ...props }: FluidOrbProps) => {
+const FluidOrb = ({
+  size = 240,
+  color = '#1A73F2',
+  className,
+  style,
+  ...props
+}: FluidOrbProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -129,6 +147,7 @@ const FluidOrb = ({ size = 240, className, style, ...props }: FluidOrbProps) => 
 
     const uResolution = gl.getUniformLocation(program, 'u_resolution')
     const uTime = gl.getUniformLocation(program, 'u_time')
+    gl.uniform3f(gl.getUniformLocation(program, 'u_color'), ...hexToRgb(color))
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     const px = Math.round(size * dpr)
@@ -155,7 +174,7 @@ const FluidOrb = ({ size = 240, className, style, ...props }: FluidOrbProps) => 
       gl.deleteShader(frag)
       gl.deleteBuffer(buffer)
     }
-  }, [size])
+  }, [size, color])
 
   return (
     <div

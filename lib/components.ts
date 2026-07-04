@@ -338,6 +338,21 @@ export function Demo() {
       "Ambient — the color patches drift left, right, up, down and diagonally on their own, blending and reforming with no interaction required. Honors prefers-reduced-motion by holding a still frame.",
     props: [
       {
+        name: "color",
+        type: "string",
+        default: '"#1A73F2"',
+        options: ["#1A73F2", "#FF3B30", "#F75001", "#34C759"],
+        control: "swatch",
+        optionColors: {
+          "#1A73F2": "#1A73F2",
+          "#FF3B30": "#FF3B30",
+          "#F75001": "#F75001",
+          "#34C759": "#34C759",
+        },
+        description:
+          "Any hex color for the fluid. The middle and bottom bands are derived from it (a pale tint and the full color), while the top stays white. Defaults to the original blue.",
+      },
+      {
         name: "size",
         type: "number",
         default: "240",
@@ -354,7 +369,7 @@ export function Demo() {
     usage: `import FluidOrb from "@/components/ui/fluid-orb"
 
 export function Demo() {
-  return <FluidOrb size={280} />
+  return <FluidOrb size={280} color="#F75001" />
 }`,
   }
   // {
