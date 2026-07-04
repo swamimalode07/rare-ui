@@ -326,6 +326,36 @@ export function Demo() {
 
 // Zero-config: it also works fully uncontrolled
 // <DurationPicker onConfirm={(d) => console.log("saved", d)} />`,
+  },
+  {
+    name: "Fluid Orb",
+    href: "/components/fluidorb",
+    registry: "fluid-orb",
+    description:
+      "A WebGL fluid orb with fixed white, light-blue and dark-blue bands and big soft patches that slosh around like liquid in a tilting glass, inspired by ChatGPT's voice mode.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/fluid-orb.tsx`,
+    interaction:
+      "Ambient — the color patches drift left, right, up, down and diagonally on their own, blending and reforming with no interaction required. Honors prefers-reduced-motion by holding a still frame.",
+    props: [
+      {
+        name: "size",
+        type: "number",
+        default: "240",
+        description:
+          "Diameter of the orb in pixels. Also drives the canvas resolution (clamped to 2x device pixel ratio).",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          "Extra classes merged onto the root element (data-slot=\"fluid-orb\").",
+      },
+    ],
+    usage: `import FluidOrb from "@/components/ui/fluid-orb"
+
+export function Demo() {
+  return <FluidOrb size={280} />
+}`,
   }
   // {
   //   name: "Family drawer",
