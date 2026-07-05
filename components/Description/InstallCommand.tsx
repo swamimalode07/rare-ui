@@ -11,12 +11,11 @@ import { cn } from "@/lib/utils";
 import { LOGOS } from "../logos";
 import CopyButton from "../CopyButton";
 
-/** Brand color applied to a tab (logo + label) when it is active. */
 const ACTIVE_COLOR: Record<PackageManager, string> = {
-  npm: "#CB3837", // red
-  pnpm: "#F9AD00", // yellow
-  yarn: "#38BDF8", // sky blue
-  bun: "#FFFFFF", // white
+  npm: "#CB3837", 
+  pnpm: "#F9AD00", 
+  yarn: "#38BDF8",
+  bun: "#FFFFFF",
 };
 
 export default function InstallCommand({ item }: { item: ComponentItem }) {

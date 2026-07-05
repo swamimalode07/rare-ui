@@ -1,14 +1,3 @@
-/**
- * Central home for SVG brand logos used across the site.
- *
- * Each logo is a component that accepts a `className` (size/color via
- * Tailwind). Keep them `viewBox`-based and use `fill="currentColor"` where a
- * mark should inherit text color; keep brand colors inline where they must stay
- * fixed.
- *
- * To add a logo: drop in a new component below and register it in `LOGOS`.
- */
-
 export type LogoProps = { className?: string };
 
 export function NpmLogo({ className }: LogoProps) {
