@@ -95,6 +95,11 @@
       "files": [
         {
           "path": "components/ui/fluid-orb.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "scroll-progress",
       "type": "registry:ui",
       "title": "Scroll Progress",
