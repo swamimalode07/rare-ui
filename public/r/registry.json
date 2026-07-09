@@ -95,6 +95,15 @@
       "files": [
         {
           "path": "components/ui/fluid-orb.tsx",
+      "name": "scroll-progress",
+      "type": "registry:ui",
+      "title": "Scroll Progress",
+      "description": "A scroll progress pill that tracks reading position and expands into a squircle menu of sections you can jump to.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/scroll-progress.tsx",
           "type": "registry:ui"
         }
       ]

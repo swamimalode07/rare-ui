@@ -374,6 +374,74 @@ export function Demo() {
     credits: [
       "Inspired by chatgpt.com",
     ],
+  },
+  {
+    name: "Scroll Progress",
+    href: "/components/scrollprogressindicator",
+    registry: "scroll-progress",
+    description:
+      "A scroll progress pill that tracks reading position and expands into a squircle menu of sections you can jump to.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/scroll-progress.tsx`,
+    dependencies: [
+      { name: "motion", icon: createElement(MotionIcon, { className: "h-4 w-4" }) },
+    ],
+    interaction:
+      "Scroll to fill the ring and watch the active section label crossfade in. Click the pill to morph it into a squircle menu, then tap any section to smooth-scroll there. Click outside or press Escape to close.",
+    props: [
+      {
+        name: "sections",
+        type: "Array<{ id: string; label: string }>",
+        default: "[]",
+        description:
+          "Ordered sections shown as the reader moves and listed in the menu. Each id must match an element id present in the scrolled content.",
+      },
+      {
+        name: "containerRef",
+        type: "React.RefObject<HTMLElement | null>",
+        description:
+          "Scroll container to track and scroll within. Defaults to the window when omitted.",
+      },
+      {
+        name: "offset",
+        type: "number",
+        default: "120",
+        description:
+          "Distance in pixels below the scroller's top edge that a section must cross to be marked active.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          "Extra classes merged onto the fixed root wrapper — use it to reposition the pill.",
+      },
+    ],
+    usage: `"use client"
+
+import { useRef } from "react"
+import ScrollProgress from "@/components/ui/scroll-progress"
+
+const sections = [
+  { id: "intro", label: "Introduction" },
+  { id: "usage", label: "Usage" },
+  { id: "faq", label: "FAQ" },
+]
+
+export function Demo() {
+  const scrollRef = useRef<HTMLElement>(null)
+
+  return (
+    <main ref={scrollRef} className="relative h-full overflow-auto">
+      <ScrollProgress containerRef={scrollRef} sections={sections} />
+
+      <section id="intro">{/* ... */}</section>
+      <section id="usage">{/* ... */}</section>
+      <section id="faq">{/* ... */}</section>
+    </main>
+  )
+}
+
+// Tracks the window with no container ref:
+// <ScrollProgress sections={sections} />`,
   }
   // {
   //   name: "Family drawer",
