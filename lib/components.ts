@@ -326,6 +326,30 @@ export function Demo() {
 
 // Zero-config: it also works fully uncontrolled
 // <DurationPicker onConfirm={(d) => console.log("saved", d)} />`,
+  },
+  {
+    name: "Scroll Progress",
+    href: "/components/scrollprogressindicator",
+    registry: "scroll-progress",
+    description:
+      "A scroll progress indicator that tracks how far the page (or a container) has been scrolled.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/scroll-progress.tsx`,
+    dependencies: [
+      { name: "motion", icon: createElement(MotionIcon, { className: "h-4 w-4" }) },
+    ],
+    interaction: "Scroll the page to watch the indicator fill toward 100%.",
+    props: [
+      {
+        name: "className",
+        type: "string",
+        description: "Extra classes merged onto the root element.",
+      },
+    ],
+    usage: `import ScrollProgress from "@/components/ui/scroll-progress"
+
+export function Demo() {
+  return <ScrollProgress />
+}`,
   }
   // {
   //   name: "Family drawer",
