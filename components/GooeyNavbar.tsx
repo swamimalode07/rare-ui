@@ -82,7 +82,7 @@ export default function GooeyNavbar() {
   const animateLayout = !reduceMotion;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-5 z-50 flex justify-center px-4 sm:px-6">
+    <div className="pointer-events-none fixed inset-x-0 top-7.5 z-50 flex justify-center px-4 sm:px-6">
       <motion.nav
         layout={animateLayout}
         transition={spring}
@@ -144,7 +144,7 @@ export default function GooeyNavbar() {
             onBlur={() => setStarHovered(false)}
             className={cn(
               pill,
-              "relative flex h-12 w-12 items-center justify-center transition-[background-color,filter] duration-200 ease-out hover:bg-neutral-800 hover:drop-shadow-[0_0_14px_rgba(255,200,61,0.4)]",
+              "relative flex h-12 w-12 items-center justify-center transition-colors duration-200 ease-out hover:bg-neutral-800",
             )}
           >
             <motion.span
