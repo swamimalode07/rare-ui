@@ -17,9 +17,9 @@ export default function Home() {
           <h1 className="max-w-4xl text-balance dark:text-white font-runde text-black text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
             Tasteful Components, Made to Stand Out.
           </h1>
-          <p className="max-w-xl text-balance text-base text-muted-foreground sm:text-lg">
+          <p className="max-w-xl font-medium text-muted-foreground sm:text-lg">
             A collection of rare, animated components. Browse them in action
-            below and install any item straight from GitHub with the shadcn CLI.
+            below and install any component with shadcn CLI.
           </p>
           <HeroCta />
         </div>

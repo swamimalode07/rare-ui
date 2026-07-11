@@ -47,7 +47,7 @@ const SparkleIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const pill = "rounded-full bg-neutral-900 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.4)]";
+const pill = "rounded-full border-apple bg-neutral-900";
 
 export default function GooeyNavbar() {
   const pathname = usePathname();
@@ -55,9 +55,9 @@ export default function GooeyNavbar() {
   const [starHovered, setStarHovered] = useState(false);
   const reduceMotion = useReducedMotion();
 
-  const morphSpring = { type: "spring", stiffness: 350, damping: 25 } as const;
-  const popSpring = { type: "spring", stiffness: 450, damping: 16 } as const;
-  const fade = { duration: 0.2, ease: "easeOut" } as const;
+  const morphSpring = { type: "spring", stiffness: 250, damping: 24 } as const;
+  const popSpring = { type: "spring", stiffness: 320, damping: 15 } as const;
+  const fade = { duration: 0.3, ease: "easeOut" } as const;
   const morphTransition = {
     scale: morphSpring,
     rotate: morphSpring,
@@ -144,7 +144,7 @@ export default function GooeyNavbar() {
             onBlur={() => setStarHovered(false)}
             className={cn(
               pill,
-              "relative flex h-12 w-12 items-center justify-center transition-[background-color,box-shadow] duration-200 ease-out hover:bg-neutral-800 hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.4),0_0_18px_rgba(255,200,61,0.35)]",
+              "relative flex h-12 w-12 items-center justify-center transition-[background-color,filter] duration-200 ease-out hover:bg-neutral-800 hover:drop-shadow-[0_0_14px_rgba(255,200,61,0.4)]",
             )}
           >
             <motion.span
@@ -191,9 +191,9 @@ export default function GooeyNavbar() {
                   ? { duration: 0 }
                   : starHovered
                     ? {
-                        scale: { ...popSpring, delay: 0.07 },
-                        rotate: { ...popSpring, delay: 0.07 },
-                        opacity: { ...fade, delay: 0.07 },
+                        scale: { ...popSpring, delay: 0.1 },
+                        rotate: { ...popSpring, delay: 0.1 },
+                        opacity: { ...fade, delay: 0.1 },
                       }
                     : { duration: 0.15 }
               }
@@ -213,9 +213,9 @@ export default function GooeyNavbar() {
                   ? { duration: 0 }
                   : starHovered
                     ? {
-                        scale: { ...popSpring, delay: 0.13 },
-                        rotate: { ...popSpring, delay: 0.13 },
-                        opacity: { ...fade, delay: 0.13 },
+                        scale: { ...popSpring, delay: 0.18 },
+                        rotate: { ...popSpring, delay: 0.18 },
+                        opacity: { ...fade, delay: 0.18 },
                       }
                     : { duration: 0.15 }
               }
