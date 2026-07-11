@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -69,7 +69,7 @@ const FolderComponent = ({
   className,
   ...props
 }: FolderComponentProps) => {
-  const theme = themes[color];
+  const theme = themes[color] ?? themes.black;
   const scale = sizeScales[size];
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

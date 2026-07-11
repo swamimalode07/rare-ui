@@ -476,7 +476,7 @@ export function installCommand(
   pm: PackageManager = "npm",
 ): string | null {
   if (!item.registry) return null;
-  return `${PM_EXECUTORS[pm]} shadcn@latest add ${REGISTRY_REPO}/${item.registry}`;
+  return `${PM_EXECUTORS[pm]} shadcn add ${REGISTRY_REPO}/${item.registry}`;
 }
 
 export function activeComponent(pathname: string): ComponentItem | undefined {

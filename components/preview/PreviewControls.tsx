@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import { usePathname } from "next/navigation";
 
 type PreviewValues = Record<string, string>;
 
@@ -30,8 +31,12 @@ export function PreviewControlsProvider({
 }
 
 export function usePreviewControl(name: string, fallback: string) {
+  const pathname = usePathname();
   const ctx = useContext(PreviewControlsContext);
-  const value = ctx?.values[name] ?? fallback;
-  const setValue = (next: string) => ctx?.setValue(name, next);
+  // Values are scoped per page so one component's control values (e.g. a hex
+  // color) never leak into another component expecting a different format.
+  const key = `${pathname}:${name}`;
+  const value = ctx?.values[key] ?? fallback;
+  const setValue = (next: string) => ctx?.setValue(key, next);
   return [value, setValue] as const;
 }
