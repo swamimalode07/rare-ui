@@ -10,7 +10,7 @@ export default function Home() {
           style={{ cornerShape: "squircle" } as React.CSSProperties}
         >
           <img
-            src="/assets/landing/herobg.png"
+            src="/assets/landing/herobg.webp"
             alt=""
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 size-full rounded-[inherit] object-cover"
