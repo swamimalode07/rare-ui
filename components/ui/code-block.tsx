@@ -17,9 +17,9 @@ export type CodeBlockProps = Omit<React.ComponentProps<'div'>, 'children'> & {
     code: string
     /** Prism language id, e.g. "tsx", "css", "json", "bash". */
     language?: string
-    /** Any hex color. The whole theme is shades of it — light tints of the accent in dark mode, deep shades of it in light mode. */
+    /** Any hex color. The whole theme is built from shades of it. */
     accent?: string
-    /** Color scheme. "auto" (default) follows the page theme — the html element's dark/light class or data-theme, falling back to the OS preference. Pass "dark" or "light" to pin a palette. */
+    /** "auto" follows the page theme; pass "dark" or "light" to pin it. */
     mode?: 'auto' | 'dark' | 'light'
     /** Filename or path shown in the header. Falls back to the language id when omitted. */
     filename?: string
@@ -34,13 +34,6 @@ export type CodeBlockProps = Omit<React.ComponentProps<'div'>, 'children'> & {
     /** Optional 1-based line numbers to highlight with an accent wash. Off when omitted. */
     highlightLines?: number[]
 }
-
-/* ---------------------------------- theme ---------------------------------- */
-
-/**
- * Resolves the page color scheme without a theme library: a dark/light class
- * or data-theme on <html> wins, otherwise the OS preference decides.
- */
 function resolvePageMode(): 'dark' | 'light' {
     const root = document.documentElement
     if (root.classList.contains('dark')) return 'dark'
@@ -48,7 +41,7 @@ function resolvePageMode(): 'dark' | 'light' {
     const attr = root.getAttribute('data-theme')
     if (attr === 'dark') return 'dark'
     if (attr === 'light') return 'light'
-    // matchMedia is missing in some test environments (jsdom).
+    // jsdom has no matchMedia
     if (typeof window.matchMedia !== 'function') return 'dark'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
@@ -63,7 +56,7 @@ function subscribeToPageMode(onChange: () => void) {
         typeof window.matchMedia === 'function'
             ? window.matchMedia('(prefers-color-scheme: dark)')
             : null
-    // Older Safari only supports the deprecated addListener API.
+    // old Safari doesn't have addEventListener here
     media?.addEventListener?.('change', onChange)
     return () => {
         observer.disconnect()
@@ -71,10 +64,8 @@ function subscribeToPageMode(onChange: () => void) {
     }
 }
 
-// Dark on the server; the store re-checks on hydration.
+// the server can't know the theme, so assume dark
 const serverMode = () => 'dark' as const
-
-/* ---------------------------------- color ---------------------------------- */
 
 const FALLBACK_HSL: [number, number, number] = [211, 100, 52]
 
@@ -120,21 +111,14 @@ const hsl = (h: number, s: number, l: number, a = 1) => {
         : `hsl(${hue.toFixed(1)} ${s.toFixed(1)}% ${l.toFixed(1)}% / ${a})`
 }
 
-/**
- * Builds a monochrome palette from a single accent color. Every color is a
- * shade of the accent's own hue. In dark mode tokens climb through light
- * tints toward pure white on a dark surface; in light mode the scale flips
- * to dark shades on a light surface.
- */
 function buildTheme(accent: string, mode: 'dark' | 'light' = 'dark') {
     const [h, s, l] = hexToHsl(accent)
     const tint = (lightness: number, sat = s) => hsl(h, sat, lightness)
     const dark = mode !== 'light'
-    // Clamp the accent so it stays readable against its surface.
     const accentTone = dark
         ? tint(Math.min(Math.max(l, 56), 70))
         : tint(Math.min(Math.max(l, 38), 50))
-    // Light mode mirrors the dark lightness ramp around the surface.
+    // light mode just flips the lightness ramp
     const ramp = (lightness: number) => (dark ? lightness : 100 - lightness)
 
     const colors = dark
@@ -289,8 +273,6 @@ function CopyButton({ code, floating }: { code: string; floating?: boolean }) {
     )
 }
 
-/* -------------------------------- code block ------------------------------- */
-
 export function CodeBlock({
     code,
     language = 'tsx',
@@ -306,7 +288,7 @@ export function CodeBlock({
     style,
     ...props
 }: CodeBlockProps) {
-    // Coerce bad runtime values so misuse degrades instead of throwing.
+    // don't crash on bad props
     const safeLanguage = typeof language === 'string' ? language : 'tsx'
     const pageMode = useSyncExternalStore(subscribeToPageMode, resolvePageMode, serverMode)
     const safeMode = mode === 'light' || mode === 'dark' ? mode : pageMode

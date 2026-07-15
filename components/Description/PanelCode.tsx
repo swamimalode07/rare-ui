@@ -10,10 +10,7 @@ type PanelCodeProps = {
   className?: string;
 };
 
-/**
- * Shared code surface for the description panel and code drawer: a frameless
- * CodeBlock that follows the site theme, on the panel's muted background.
- */
+// shared code surface for the panel + drawer
 export default function PanelCode({
   code,
   language = "tsx",
