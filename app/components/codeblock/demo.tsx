@@ -40,6 +40,7 @@ export default function CodeBlockPage() {
         language="tsx"
         accent={accent}
         filename="orbit.tsx"
+        showFrame={false}
         className="max-h-[70vh] w-full max-w-xl"
       />
 

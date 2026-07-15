@@ -35,7 +35,10 @@ export type CodeBlockProps = Omit<React.ComponentProps<'div'>, 'children'> & {
 
 /* ---------------------------------- color ---------------------------------- */
 
+const FALLBACK_HSL: [number, number, number] = [211, 100, 52]
+
 function hexToHsl(hex: string): [number, number, number] {
+    if (typeof hex !== 'string') return FALLBACK_HSL
     let value = hex.replace('#', '')
     if (value.length === 4 || value.length === 8) {
         value = value.slice(0, value.length === 4 ? 3 : 6)
@@ -46,7 +49,7 @@ function hexToHsl(hex: string): [number, number, number] {
     const r = parseInt(value.slice(0, 2), 16) / 255
     const g = parseInt(value.slice(2, 4), 16) / 255
     const b = parseInt(value.slice(4, 6), 16) / 255
-    if ([r, g, b].some(Number.isNaN)) return [211, 100, 52]
+    if (value.length !== 6 || [r, g, b].some(Number.isNaN)) return FALLBACK_HSL
 
     const max = Math.max(r, g, b)
     const min = Math.min(r, g, b)
@@ -238,9 +241,18 @@ export function CodeBlock({
     style,
     ...props
 }: CodeBlockProps) {
+    // Coerce props defensively so bad runtime values (a fetch that returned
+    // undefined, a bare number for highlightLines) degrade instead of throwing.
+    const safeLanguage = typeof language === 'string' ? language : 'tsx'
     const { colors, theme } = useMemo(() => buildTheme(accent), [accent])
-    const trimmed = useMemo(() => code.replace(/^\n+/, '').trimEnd(), [code])
-    const highlighted = useMemo(() => new Set(highlightLines ?? []), [highlightLines])
+    const trimmed = useMemo(() => {
+        const source = typeof code === 'string' ? code : String(code ?? '')
+        return source.replace(/^\n+/, '').trimEnd()
+    }, [code])
+    const highlighted = useMemo(
+        () => new Set(Array.isArray(highlightLines) ? highlightLines : []),
+        [highlightLines],
+    )
 
     const cssVars = {
         '--cb-accent': colors.accent,
@@ -270,7 +282,7 @@ export function CodeBlock({
                     className='flex h-10 shrink-0 items-center gap-3 border-b border-(--cb-border) bg-(--cb-header-bg) px-3.5 backdrop-blur-md'
                 >
                     <span className='min-w-0 flex-1 truncate font-mono text-xs text-white/60'>
-                        {filename ?? language}
+                        {filename ?? safeLanguage}
                     </span>
                     {showCopyButton && <CopyButton code={trimmed} />}
                 </div>
@@ -281,14 +293,14 @@ export function CodeBlock({
             <div
                 data-slot='code-block-viewport'
                 role='region'
-                aria-label={filename ?? `${language} code`}
+                aria-label={filename ?? `${safeLanguage} code`}
                 tabIndex={0}
                 className={cn(
                     'min-h-0 flex-1 overflow-auto outline-none selection:bg-(--cb-selection) focus-visible:ring-2 focus-visible:ring-(--cb-accent)/40 [scrollbar-width:thin] [scrollbar-color:var(--cb-border)_transparent]',
                     showFrame && 'py-3',
                 )}
             >
-                <Highlight code={trimmed} language={language} theme={theme}>
+                <Highlight code={trimmed} language={safeLanguage} theme={theme}>
                     {({ tokens, getLineProps, getTokenProps }) => {
                         const gutterWidth = `${String(tokens.length).length}ch`
                         return (
