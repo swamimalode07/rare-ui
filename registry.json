@@ -112,6 +112,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "A clean code block that builds its entire theme from a single accent color. Pass code and a hex, it does the rest.",
+      "dependencies": ["motion", "prism-react-renderer", "lucide-react"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/code-block.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

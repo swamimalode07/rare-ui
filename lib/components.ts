@@ -442,6 +442,106 @@ export function Demo() {
 
 // Tracks the window with no container ref:
 // <ScrollProgress sections={sections} />`,
+  },
+  {
+    name: "Code Block",
+    href: "/components/codeblock",
+    registry: "code-block",
+    description:
+      "A clean code block that builds its entire theme from a single accent color. Pass code and a hex, it does the rest.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/code-block.tsx`,
+    dependencies: [
+      { name: "motion", icon: createElement(MotionIcon, { className: "h-4 w-4" }) },
+      { name: "prism-react-renderer" },
+    ],
+    interaction:
+      "Pick an accent swatch to re-shade the whole block from that color. Hit the copy button to see it spring into a check.",
+    props: [
+      {
+        name: "code",
+        type: "string",
+        required: true,
+        description: "The source code to render.",
+      },
+      {
+        name: "language",
+        type: "string",
+        default: '"tsx"',
+        description:
+          'Prism language id, e.g. "tsx", "css", "json", "bash". Also shown as the tag in the header.',
+      },
+      {
+        name: "accent",
+        type: "string",
+        default: '"#F75001"',
+        options: ["#F75001", "#1A73F2", "#FF3B30", "#34C759"],
+        control: "swatch",
+        optionColors: {
+          "#F75001": "#F75001",
+          "#1A73F2": "#1A73F2",
+          "#FF3B30": "#FF3B30",
+          "#34C759": "#34C759",
+        },
+        description:
+          "Any hex color. The whole theme is shades of it: the darkest shade is the background, tokens are tints of the accent, and the lightest text is always white.",
+      },
+      {
+        name: "filename",
+        type: "string",
+        description:
+          "Filename or path shown on the left of the header. Falls back to the language id when omitted.",
+      },
+      {
+        name: "showFrame",
+        type: "boolean",
+        default: "true",
+        description:
+          "Toggles the outer layout — background, border, rounded corners, and header. Turn off to render nothing but the highlighted code.",
+      },
+      {
+        name: "showHeader",
+        type: "boolean",
+        default: "true",
+        description:
+          "Toggles the header bar. When hidden, the copy button floats over the top-right corner instead. Ignored when showFrame is off.",
+      },
+      {
+        name: "showLineNumbers",
+        type: "boolean",
+        default: "true",
+        description: "Toggles the line-number gutter.",
+      },
+      {
+        name: "showCopyButton",
+        type: "boolean",
+        default: "true",
+        description: "Toggles the copy-to-clipboard button.",
+      },
+      {
+        name: "highlightLines",
+        type: "number[]",
+        description:
+          "Optional 1-based line numbers to highlight with a soft accent wash. Off when omitted.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="code-block") — use it for width and max-height.',
+      },
+    ],
+    usage: `import CodeBlock from "@/components/ui/code-block"
+
+export function Demo() {
+  return (
+    <CodeBlock
+      code={\`const greet = (name: string) => \\\`Hello, \\\${name}!\\\`\`}
+      language="ts"
+      accent="#F75001"
+      filename="greet.ts"
+    />
+  )
+}`,
   }
   // {
   //   name: "Family drawer",
