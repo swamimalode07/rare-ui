@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, useDragControls } from "motion/react";
 import type { ComponentItem } from "@/lib/components";
-import CopyButton from "../CopyButton";
+import PanelCode from "./PanelCode";
 
 type CodeDrawerProps = {
   open: boolean;
@@ -53,13 +53,14 @@ export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
         <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-foreground/25" />
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{item?.name ?? "Code"}</span>
-          {code && !loading && <CopyButton value={code} />}
         </div>
       </div>
 
-      <pre className="mx-4 mb-4 flex-1 overflow-auto rounded-xl bg-muted p-3 font-mono text-xs leading-relaxed text-foreground/80 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        <code>{loading ? "Loading…" : code}</code>
-      </pre>
+      <PanelCode
+        code={loading ? "// Loading…" : code ?? ""}
+        showLineNumbers
+        className="mx-4 mb-4 min-h-0 flex-1"
+      />
     </motion.div>
   );
 }

@@ -3,7 +3,7 @@
 import { Copy } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Highlight, type PrismTheme } from 'prism-react-renderer'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -17,8 +17,10 @@ export type CodeBlockProps = Omit<React.ComponentProps<'div'>, 'children'> & {
     code: string
     /** Prism language id, e.g. "tsx", "css", "json", "bash". */
     language?: string
-    /** Any hex color. The whole theme is shades of it — darkest as the background, lightest text always white. */
+    /** Any hex color. The whole theme is shades of it — light tints of the accent in dark mode, deep shades of it in light mode. */
     accent?: string
+    /** Color scheme. "auto" (default) follows the page theme — the html element's dark/light class or data-theme, falling back to the OS preference. Pass "dark" or "light" to pin a palette. */
+    mode?: 'auto' | 'dark' | 'light'
     /** Filename or path shown in the header. Falls back to the language id when omitted. */
     filename?: string
     /** Show the outer frame — background, border, rounded corners, and header. Turn off to render just the code. */
@@ -32,6 +34,45 @@ export type CodeBlockProps = Omit<React.ComponentProps<'div'>, 'children'> & {
     /** Optional 1-based line numbers to highlight with an accent wash. Off when omitted. */
     highlightLines?: number[]
 }
+
+/* ---------------------------------- theme ---------------------------------- */
+
+/**
+ * Resolves the page color scheme without a theme library: a dark/light class
+ * or data-theme on <html> wins, otherwise the OS preference decides.
+ */
+function resolvePageMode(): 'dark' | 'light' {
+    const root = document.documentElement
+    if (root.classList.contains('dark')) return 'dark'
+    if (root.classList.contains('light')) return 'light'
+    const attr = root.getAttribute('data-theme')
+    if (attr === 'dark') return 'dark'
+    if (attr === 'light') return 'light'
+    // matchMedia is missing in some test environments (jsdom).
+    if (typeof window.matchMedia !== 'function') return 'dark'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function subscribeToPageMode(onChange: () => void) {
+    const observer = new MutationObserver(onChange)
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'data-theme'],
+    })
+    const media =
+        typeof window.matchMedia === 'function'
+            ? window.matchMedia('(prefers-color-scheme: dark)')
+            : null
+    // Older Safari only supports the deprecated addListener API.
+    media?.addEventListener?.('change', onChange)
+    return () => {
+        observer.disconnect()
+        media?.removeEventListener?.('change', onChange)
+    }
+}
+
+// Dark on the server; the store re-checks on hydration.
+const serverMode = () => 'dark' as const
 
 /* ---------------------------------- color ---------------------------------- */
 
@@ -81,41 +122,64 @@ const hsl = (h: number, s: number, l: number, a = 1) => {
 
 /**
  * Builds a monochrome palette from a single accent color. Every color is a
- * shade of the accent's own hue: the darkest shade becomes the background,
- * tokens climb through tints of the accent, and the lightest text is always
- * pure white.
+ * shade of the accent's own hue. In dark mode tokens climb through light
+ * tints toward pure white on a dark surface; in light mode the scale flips
+ * to dark shades on a light surface.
  */
-function buildTheme(accent: string) {
+function buildTheme(accent: string, mode: 'dark' | 'light' = 'dark') {
     const [h, s, l] = hexToHsl(accent)
     const tint = (lightness: number, sat = s) => hsl(h, sat, lightness)
-    const accentTone = tint(Math.min(Math.max(l, 56), 70))
+    const dark = mode !== 'light'
+    // Clamp the accent so it stays readable against its surface.
+    const accentTone = dark
+        ? tint(Math.min(Math.max(l, 56), 70))
+        : tint(Math.min(Math.max(l, 38), 50))
+    // Light mode mirrors the dark lightness ramp around the surface.
+    const ramp = (lightness: number) => (dark ? lightness : 100 - lightness)
 
-    const colors = {
-        accent: accentTone,
-        // Neutral chrome — matches the Rare UI preview surface (dark --card).
-        bg: 'oklch(0.1822 0 0)',
-        border: 'rgb(255 255 255 / 0.08)',
-        headerBg: 'rgb(255 255 255 / 0.03)',
-        plain: '#ffffff',
-        gutter: 'rgb(255 255 255 / 0.28)',
-        selection: hsl(h, s, 58, 0.3),
-        lineWash: hsl(h, s, 58, 0.1),
-    }
+    const colors = dark
+        ? {
+              accent: accentTone,
+              // Neutral chrome — matches the Rare UI preview surface (dark --card).
+              bg: 'oklch(0.1822 0 0)',
+              border: 'rgb(255 255 255 / 0.08)',
+              headerBg: 'rgb(255 255 255 / 0.03)',
+              plain: '#ffffff',
+              muted: 'rgb(255 255 255 / 0.6)',
+              gutter: 'rgb(255 255 255 / 0.28)',
+              hoverWash: 'rgb(255 255 255 / 0.08)',
+              floatBg: 'rgb(255 255 255 / 0.05)',
+              selection: hsl(h, s, 58, 0.3),
+              lineWash: hsl(h, s, 58, 0.1),
+          }
+        : {
+              accent: accentTone,
+              bg: 'oklch(0.985 0 0)',
+              border: 'rgb(0 0 0 / 0.08)',
+              headerBg: 'rgb(0 0 0 / 0.03)',
+              plain: '#171717',
+              muted: 'rgb(0 0 0 / 0.6)',
+              gutter: 'rgb(0 0 0 / 0.32)',
+              hoverWash: 'rgb(0 0 0 / 0.06)',
+              floatBg: 'rgb(0 0 0 / 0.04)',
+              selection: hsl(h, s, 45, 0.25),
+              lineWash: hsl(h, s, 45, 0.08),
+          }
 
     const theme: PrismTheme = {
-        plain: { color: '#ffffff', backgroundColor: 'transparent' },
+        plain: { color: colors.plain, backgroundColor: 'transparent' },
         styles: [
-            { types: ['comment', 'prolog', 'doctype', 'cdata'], style: { color: tint(42, s * 0.35), fontStyle: 'italic' } },
-            { types: ['punctuation'], style: { color: tint(62, s * 0.3) } },
-            { types: ['operator', 'combinator'], style: { color: tint(70, s * 0.4) } },
+            { types: ['comment', 'prolog', 'doctype', 'cdata'], style: { color: tint(ramp(42), s * 0.35), fontStyle: 'italic' } },
+            { types: ['punctuation'], style: { color: tint(ramp(62), s * 0.3) } },
+            { types: ['operator', 'combinator'], style: { color: tint(ramp(70), s * 0.4) } },
             { types: ['keyword', 'selector', 'atrule', 'important', 'tag'], style: { color: accentTone } },
-            { types: ['string', 'char', 'inserted', 'url'], style: { color: tint(76) } },
-            { types: ['function'], style: { color: tint(88, s * 0.5) } },
-            { types: ['attr-name'], style: { color: tint(78, s * 0.7), fontStyle: 'italic' } },
-            { types: ['number', 'boolean', 'constant', 'symbol', 'deleted'], style: { color: tint(70) } },
-            { types: ['class-name', 'maybe-class-name', 'builtin'], style: { color: tint(93, s * 0.35) } },
-            { types: ['property', 'variable', 'parameter'], style: { color: tint(97, s * 0.15) } },
-            { types: ['regex'], style: { color: tint(72, s * 0.6) } },
+            { types: ['string', 'char', 'inserted', 'url'], style: { color: tint(ramp(76)) } },
+            { types: ['function'], style: { color: tint(ramp(88), s * 0.5) } },
+            { types: ['attr-name'], style: { color: tint(ramp(78), s * 0.7), fontStyle: 'italic' } },
+            { types: ['number', 'boolean', 'constant', 'symbol', 'deleted'], style: { color: tint(ramp(70)) } },
+            { types: ['class-name', 'maybe-class-name', 'builtin'], style: { color: tint(ramp(93), s * 0.35) } },
+            { types: ['property', 'variable', 'parameter'], style: { color: tint(ramp(97), s * 0.15) } },
+            { types: ['regex'], style: { color: tint(ramp(72), s * 0.6) } },
         ],
     }
 
@@ -177,11 +241,11 @@ function CopyButton({ code, floating }: { code: string; floating?: boolean }) {
             whileTap={reduceMotion ? undefined : { scale: 0.9 }}
             transition={TAP_SPRING}
             className={cn(
-                'relative grid size-7 place-items-center rounded-lg text-(--cb-gutter) outline-none transition-[background-color,color] duration-150 ease-out hover:bg-white/8 hover:text-(--cb-plain) focus-visible:ring-2 focus-visible:ring-(--cb-accent)/60',
+                'relative grid size-7 place-items-center rounded-lg text-(--cb-gutter) outline-none transition-[background-color,color] duration-150 ease-out hover:bg-(--cb-hover-wash) hover:text-(--cb-plain) focus-visible:ring-2 focus-visible:ring-(--cb-accent)/60',
                 copied &&
                     'bg-(--cb-accent)/12 text-(--cb-accent) hover:bg-(--cb-accent)/12 hover:text-(--cb-accent)',
                 floating &&
-                    'absolute top-2.5 right-2.5 z-10 border border-(--cb-border) bg-white/5 backdrop-blur-md',
+                    'absolute top-2.5 right-2.5 z-10 border border-(--cb-border) bg-(--cb-float-bg) backdrop-blur-md',
             )}
         >
             <AnimatePresence initial={false}>
@@ -231,6 +295,7 @@ export function CodeBlock({
     code,
     language = 'tsx',
     accent = '#F75001',
+    mode = 'auto',
     filename,
     showFrame = true,
     showHeader = true,
@@ -241,10 +306,11 @@ export function CodeBlock({
     style,
     ...props
 }: CodeBlockProps) {
-    // Coerce props defensively so bad runtime values (a fetch that returned
-    // undefined, a bare number for highlightLines) degrade instead of throwing.
+    // Coerce bad runtime values so misuse degrades instead of throwing.
     const safeLanguage = typeof language === 'string' ? language : 'tsx'
-    const { colors, theme } = useMemo(() => buildTheme(accent), [accent])
+    const pageMode = useSyncExternalStore(subscribeToPageMode, resolvePageMode, serverMode)
+    const safeMode = mode === 'light' || mode === 'dark' ? mode : pageMode
+    const { colors, theme } = useMemo(() => buildTheme(accent, safeMode), [accent, safeMode])
     const trimmed = useMemo(() => {
         const source = typeof code === 'string' ? code : String(code ?? '')
         return source.replace(/^\n+/, '').trimEnd()
@@ -260,7 +326,10 @@ export function CodeBlock({
         '--cb-border': colors.border,
         '--cb-header-bg': colors.headerBg,
         '--cb-plain': colors.plain,
+        '--cb-muted': colors.muted,
         '--cb-gutter': colors.gutter,
+        '--cb-hover-wash': colors.hoverWash,
+        '--cb-float-bg': colors.floatBg,
         '--cb-selection': colors.selection,
         '--cb-line-wash': colors.lineWash,
     } as React.CSSProperties
@@ -281,7 +350,7 @@ export function CodeBlock({
                     data-slot='code-block-header'
                     className='flex h-10 shrink-0 items-center gap-3 border-b border-(--cb-border) bg-(--cb-header-bg) px-3.5 backdrop-blur-md'
                 >
-                    <span className='min-w-0 flex-1 truncate font-mono text-xs text-white/60'>
+                    <span className='min-w-0 flex-1 truncate font-mono text-xs text-(--cb-muted)'>
                         {filename ?? safeLanguage}
                     </span>
                     {showCopyButton && <CopyButton code={trimmed} />}

@@ -486,6 +486,13 @@ export function Demo() {
           "Any hex color. The whole theme is shades of it: the darkest shade is the background, tokens are tints of the accent, and the lightest text is always white.",
       },
       {
+        name: "mode",
+        type: '"auto" | "dark" | "light"',
+        default: '"auto"',
+        description:
+          "Color scheme. Auto follows the page theme (html dark/light class, data-theme, or OS preference). Pass dark or light to pin a palette: dark puts light tints of the accent on a dark surface, light flips the ramp.",
+      },
+      {
         name: "filename",
         type: "string",
         description:

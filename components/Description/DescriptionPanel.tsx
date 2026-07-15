@@ -7,6 +7,7 @@ import { CodeXml, Maximize, Minimize } from "lucide-react";
 import { activeComponent, PANEL_INFO } from "@/lib/components";
 import CopyButton from "../CopyButton";
 import CodeDrawer from "./CodeDrawer";
+import PanelCode from "./PanelCode";
 import InstallCommand from "./InstallCommand";
 import DependencyPill from "./DependencyPill";
 import PropsTable from "./PropsTable";
@@ -137,14 +138,7 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
           {item?.usage && (
             <div className="flex flex-col gap-3">
               <SectionLabel>How to use</SectionLabel>
-              <div className="relative rounded-lg bg-muted p-4">
-                <div className="absolute right-2 top-2">
-                  <CopyButton value={item.usage} />
-                </div>
-                <pre className="overflow-x-auto text-xs leading-relaxed text-foreground/80">
-                  <code>{item.usage}</code>
-                </pre>
-              </div>
+              <PanelCode code={item.usage} className="rounded-lg p-4" />
             </div>
           )}
 
