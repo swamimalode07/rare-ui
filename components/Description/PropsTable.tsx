@@ -1,32 +1,41 @@
+import { Fragment } from "react";
 import type { ComponentProp } from "@/lib/components";
 
 type PropsTableProps = {
   props: ComponentProp[];
 };
 
+// "a" | "b" unions read better as one option per line,
+// but leave object/generic types alone — their | isn't top-level
+function typeLines(prop: ComponentProp) {
+  if (prop.options) return prop.options;
+  if (/[{<(]/.test(prop.type)) return [prop.type];
+  return prop.type.split(/\s\|\s/);
+}
+
 export default function PropsTable({ props }: PropsTableProps) {
   return (
-    <div className="flex flex-col">
-      <div className="flex gap-4 border-b border-border/50 px-1 pb-2.5 text-[10px] font-medium uppercase tracking-wider text-foreground/45">
-        <div className="w-24 shrink-0">Prop</div>
-        <div className="w-28 shrink-0">Type</div>
-        <div className="flex-1">Description</div>
-      </div>
+    <div className="grid grid-cols-[max-content_fit-content(10rem)_1fr]">
+      {["Prop", "Type", "Description"].map((label) => (
+        <div
+          key={label}
+          className="border-b border-border/50 px-1 pb-2.5 pr-4 text-[10px] font-medium uppercase tracking-wider text-foreground/45"
+        >
+          {label}
+        </div>
+      ))}
 
       {props.map((prop) => (
-        <div
-          key={prop.name}
-          className="flex items-start gap-4 border-b border-border/40 px-1 py-4"
-        >
-          <div className="w-24 shrink-0">
+        <Fragment key={prop.name}>
+          <div className="border-b border-border/40 py-4 pl-1 pr-4">
             <code className="inline-flex items-center whitespace-nowrap rounded-md bg-muted px-2 py-1 font-mono text-xs text-foreground/75">
               {prop.name}
               {prop.required && <span className="text-[#FC4C01]">*</span>}
             </code>
           </div>
 
-          <div className="flex w-28 shrink-0 flex-col gap-1 pt-1">
-            {(prop.options ?? [prop.type]).map((value) => (
+          <div className="flex flex-col gap-1 border-b border-border/40 py-4 pt-5 pr-4">
+            {typeLines(prop).map((value) => (
               <code
                 key={value}
                 className="font-mono text-xs leading-relaxed text-foreground/55"
@@ -36,12 +45,12 @@ export default function PropsTable({ props }: PropsTableProps) {
             ))}
           </div>
 
-          <div className="flex-1 pt-0.5">
-            <p className="text-sm leading-relaxed text-foreground/90">
+          <div className="border-b border-border/40 px-1 py-4">
+            <p className="pt-0.5 text-sm leading-relaxed text-foreground/90">
               {prop.description}
             </p>
           </div>
-        </div>
+        </Fragment>
       ))}
     </div>
   );
