@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import FlowerShader from "@/components/FlowerShader";
+import AuroraRibbon from "@/components/AuroraRibbon";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import HeroCta from "@/components/HeroCta";
 
@@ -17,8 +17,7 @@ export default function Home() {
           className="relative flex min-h-[calc(100svh-1.25rem)] w-full items-center justify-center overflow-hidden rounded-[45px]"
           style={{ cornerShape: "squircle" } as React.CSSProperties}
         >
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[60svh] bg-[radial-gradient(62%_95%_at_50%_100%,rgba(252,76,1,0.16),transparent_70%)]" />
-          <FlowerShader className="pointer-events-none absolute bottom-0 left-1/2 w-[min(170svh,112vw)] -translate-x-1/2 translate-y-[52%]" />
+          <AuroraRibbon className="pointer-events-none absolute inset-0" />
           <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-44 pt-24 text-center sm:gap-4 sm:px-6">
             <div>
               <GooeyNavbar />
