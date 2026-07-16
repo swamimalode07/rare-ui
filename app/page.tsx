@@ -18,7 +18,7 @@ export default function Home() {
           style={{ cornerShape: "squircle" } as React.CSSProperties}
         >
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[60svh] bg-[radial-gradient(62%_95%_at_50%_100%,rgba(252,76,1,0.16),transparent_70%)]" />
-          <FlowerShader className="pointer-events-none absolute bottom-0 left-1/2 w-[min(150svh,100vw)] -translate-x-1/2 translate-y-[52%]" />
+          <FlowerShader className="pointer-events-none absolute bottom-0 left-1/2 w-[min(170svh,112vw)] -translate-x-1/2 translate-y-[52%]" />
           <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-44 pt-24 text-center sm:gap-4 sm:px-6">
             <div>
               <GooeyNavbar />
@@ -45,7 +45,7 @@ export default function Home() {
                 />
               </a>
             </div>
-            <h1 className="max-w-4xl text-balance dark:text-white font-runde text-black text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl [text-shadow:0_1px_3px_rgba(255,255,255,0.55),0_0_30px_rgba(255,255,255,0.45)] dark:[text-shadow:0_2px_10px_rgba(0,0,0,0.55),0_0_32px_rgba(0,0,0,0.4)]">
+            <h1 className="max-w-4xl text-balance dark:text-white font-runde text-black text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
               Tasteful Components, Made to Stand Out.
             </h1>
             <p className="max-w-xl font-medium text-muted-foreground sm:text-lg [text-shadow:0_1px_2px_rgba(255,255,255,0.5)] dark:[text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
