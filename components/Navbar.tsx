@@ -71,9 +71,7 @@ export default function Navbar() {
             "gap-2 px-4 font-[family-name:var(--font-open-runde)] text-sm font-semibold text-foreground",
           )}
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[11px] font-bold leading-none text-background">
-            R
-          </span>
+          <img src="/logos/Rareui.svg" alt="" className="h-5 w-5" />
           Rare UI
         </Link>
 
