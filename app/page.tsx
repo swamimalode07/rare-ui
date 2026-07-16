@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import FlowerShader from "@/components/FlowerShader";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import HeroCta from "@/components/HeroCta";
 
@@ -16,14 +17,9 @@ export default function Home() {
           className="relative flex min-h-[calc(100svh-1.25rem)] w-full items-center justify-center overflow-hidden rounded-[45px]"
           style={{ cornerShape: "squircle" } as React.CSSProperties}
         >
-          <img
-            src="/assets/landing/herobg.webp"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 size-full rounded-[inherit] object-cover"
-          />
-          <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-linear-to-t from-background from-6% to-transparent" />
-          <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-32 pt-24 text-center sm:gap-4 sm:px-6">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[60svh] bg-[radial-gradient(62%_95%_at_50%_100%,rgba(252,76,1,0.16),transparent_70%)]" />
+          <FlowerShader className="pointer-events-none absolute bottom-0 left-1/2 w-[min(150svh,100vw)] -translate-x-1/2 translate-y-[52%]" />
+          <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-44 pt-24 text-center sm:gap-4 sm:px-6">
             <div>
               <GooeyNavbar />
             </div>
@@ -49,10 +45,10 @@ export default function Home() {
                 />
               </a>
             </div>
-            <h1 className="max-w-4xl text-balance dark:text-white font-runde text-black text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="max-w-4xl text-balance dark:text-white font-runde text-black text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl [text-shadow:0_1px_3px_rgba(255,255,255,0.55),0_0_30px_rgba(255,255,255,0.45)] dark:[text-shadow:0_2px_10px_rgba(0,0,0,0.55),0_0_32px_rgba(0,0,0,0.4)]">
               Tasteful Components, Made to Stand Out.
             </h1>
-            <p className="max-w-xl font-medium text-muted-foreground sm:text-lg">
+            <p className="max-w-xl font-medium text-muted-foreground sm:text-lg [text-shadow:0_1px_2px_rgba(255,255,255,0.5)] dark:[text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
               A collection of rare, animated components. Browse them in action
               below and install any component with shadcn CLI.
             </p>

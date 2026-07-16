@@ -60,7 +60,7 @@ export default function HeroCta() {
         transition={spring}
         onHoverStart={() => setHovered("pill")}
         onHoverEnd={() => setHovered((h) => (h === "pill" ? null : h))}
-        className="relative max-w-full"
+        className="relative max-w-full drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
       >
         <StretchSquircleBg
           hovered={hovered === "pill"}
@@ -84,7 +84,7 @@ export default function HeroCta() {
         transition={spring}
         onHoverStart={() => setHovered("cta")}
         onHoverEnd={() => setHovered((h) => (h === "cta" ? null : h))}
-        className="group relative"
+        className="group relative drop-shadow-[0_2px_10px_rgba(0,0,0,0.15)]"
       >
         <StretchSquircleBg
           hovered={hovered === "cta"}
