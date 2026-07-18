@@ -1,6 +1,6 @@
-<a href="https://rareui.com">
+<!-- <a href="https://rareui.com">
   <img src="public/assets/landing/readme-hero.png" alt="Rare UI" width="100%" />
-</a>
+</a> -->
 
 <div align="center">
 
@@ -55,5 +55,5 @@ Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) fo
 <div align="center">
   <br />
   <img src="public/logos/Rareui.svg" alt="" width="28" />
-  <p><sub>Built in the open by <a href="https://x.com/swamimalode">@swamimalode</a></sub></p>
+  <p><sub>Built by <a href="https://x.com/swamimalode">@swamimalode</a></sub></p>
 </div>
