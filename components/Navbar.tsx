@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const LINKS = [
   { label: "Components", href: "/components" },
-  { label: "Sponsors", href: "/sponsors" },
+  { label: "Sponsors", href: "/#sponsors" },
 ];
 
 const GITHUB_URL = "https://github.com/swamimalode07/rare-ui";

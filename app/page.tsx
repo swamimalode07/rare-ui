@@ -112,7 +112,10 @@ function SponsorSlot() {
 
 function BackersSection() {
   return (
-    <section className="mx-auto flex w-full max-w-7xl flex-col items-center gap-12 px-6 py-24 text-center">
+    <section
+      id="sponsors"
+      className="mx-auto flex w-full max-w-7xl scroll-mt-24 flex-col items-center gap-12 px-6 py-24 text-center"
+    >
       <h2 className="max-w-2xl text-balance font-runde text-3xl font-bold tracking-tight sm:text-4xl">
         Rare UI is backed and supported by the finest
       </h2>

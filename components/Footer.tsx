@@ -10,7 +10,7 @@ const SOCIALS = [
 
 const EXPLORE = [
   { label: "Components", href: "/components" },
-  { label: "Sponsors", href: "/sponsors" },
+  // { label: "Sponsors", href: "/#sponsors" },
 ];
 
 const ArrowIcon = () => (
