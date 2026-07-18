@@ -448,10 +448,10 @@ export function Demo() {
     href: "/components/gravityletters",
     registry: "gravity-letters",
     description:
-      "A click-to-drop field where each click releases a random letter or number that falls, lands with a squash, and piles up into rolling hills.",
+      "A click-to-drop field where each click releases a random glyph — a letter, a number, an emoji, or any component you pass — that falls, lands with a squash, and piles up into rolling hills.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/gravity-letters.tsx`,
     interaction:
-      "Click or tap anywhere to drop a random glyph from that point. It falls with gravity, glides off steep spots toward lower ground, and lands with a soft squash — so repeated clicks grow rounded hills instead of towers. Set maxGlyphs to recycle old glyphs; when they fade out, anything left floating falls back down. Honors prefers-reduced-motion by placing glyphs directly on the pile.",
+      "Click or tap anywhere to drop a random glyph from that point. It falls with gravity, glides off steep spots toward lower ground, and lands with a soft squash — so repeated clicks grow rounded hills instead of towers. Pass items to drop your own content (emoji, icons, any React node); each glyph is measured from its real rendered size, so the pile stays physically correct. Set maxGlyphs to recycle old glyphs; when they fade out, anything left floating falls back down. Honors prefers-reduced-motion by placing glyphs directly on the pile.",
     props: [
       {
         name: "type",
@@ -459,7 +459,13 @@ export function Demo() {
         default: '"letters"',
         options: ["letters", "numbers", "both"],
         description:
-          "What falls on click — a random letter, a random digit, or a random pick from both pools.",
+          "What falls on click — a random letter, a random digit, or a random pick from both pools. Ignored when items is set.",
+      },
+      {
+        name: "items",
+        type: "React.ReactNode[]",
+        description:
+          "Custom drop pool — each click picks a random entry. Takes anything renderable: emoji strings, icons, or full components. Overrides type. Size custom nodes in em units to follow the size randomization, or leave them fixed — physics measures their real rendered box either way.",
       },
       {
         name: "gravity",
@@ -518,7 +524,10 @@ export function Demo() {
 }
 
 // Digits instead:
-// <GravityLetters type="numbers" />`,
+// <GravityLetters type="numbers" />
+
+// Or drop your own content — emoji, icons, any component:
+// <GravityLetters items={["🍎", "🍊", "🍇", <Sparkles key="s" className="size-7" />]} />`,
   },
   {
     name: "Code Block",

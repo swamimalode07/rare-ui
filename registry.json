@@ -117,7 +117,7 @@
       "name": "gravity-letters",
       "type": "registry:ui",
       "title": "Gravity Letters",
-      "description": "A click-to-drop field where each click releases a random letter or number that falls, lands with a squash, and piles up into rolling hills.",
+      "description": "A click-to-drop field where each click releases a random glyph — a letter, a number, an emoji, or any component you pass — that falls, lands with a squash, and piles up into rolling hills.",
       "registryDependencies": ["utils"],
       "files": [
         {

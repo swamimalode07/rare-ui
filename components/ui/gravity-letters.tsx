@@ -8,6 +8,8 @@ export type GlyphType = "letters" | "numbers" | "both";
 
 export type GravityLettersProps = React.ComponentProps<"div"> & {
   type?: GlyphType;
+  // custom drop pool — emoji, strings, or any react node; wins over `type`
+  items?: React.ReactNode[];
   gravity?: number;
   size?: number;
   color?: string;
@@ -31,6 +33,11 @@ const randomChar = (type: GlyphType) => {
   const pool = POOLS[type];
   return pool[Math.floor(Math.random() * pool.length)];
 };
+
+const pickContent = (items: React.ReactNode[] | undefined, type: GlyphType) =>
+  items && items.length > 0
+    ? items[Math.floor(Math.random() * items.length)]
+    : randomChar(type);
 
 /* --------------------------- heightmap helpers --------------------------- */
 
@@ -99,7 +106,7 @@ const findRestX = (
 // render data + click snapshot, lives in state
 type Glyph = {
   id: number;
-  char: string;
+  content: React.ReactNode;
   fontSize: number;
   x: number;
   y: number;
@@ -378,6 +385,7 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
 
 const GravityLetters = ({
   type = "letters",
+  items,
   gravity = 800,
   size = 28,
   color,
@@ -402,7 +410,7 @@ const GravityLetters = ({
     ).matches;
 
     addGlyph({
-      char: randomChar(type),
+      content: pickContent(items, type),
       fontSize: Math.round(size * rand(0.8, 1.2)),
       x: event.clientX - rect.left,
       y: event.clientY - rect.top,
@@ -438,7 +446,7 @@ const GravityLetters = ({
               opacity: glyph.leaving ? 0 : 1,
             }}
           >
-            <span className="inline-block origin-bottom">{glyph.char}</span>
+            <span className="inline-block origin-bottom">{glyph.content}</span>
           </span>
         ))}
       </div>
