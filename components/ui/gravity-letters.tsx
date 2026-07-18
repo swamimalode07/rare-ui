@@ -8,12 +8,12 @@ export type GlyphType = "letters" | "numbers" | "both";
 
 export type GravityLettersProps = React.ComponentProps<"div"> & {
   type?: GlyphType;
-  // custom drop pool — emoji, strings, or any react node; wins over `type`
   items?: React.ReactNode[];
   gravity?: number;
   size?: number;
   color?: string;
   maxGlyphs?: number;
+  deviceTilt?: boolean;
 };
 
 const POOLS: Record<GlyphType, string> = {
@@ -26,8 +26,18 @@ const COL = 8; // heightmap column width, px
 const CLEARANCE = 24; // min air above the landing spot at spawn
 const SLOPE = 0.35; // slide on when a neighbor sits this fraction of a glyph lower
 const LEAVE_MS = 350;
+const TILT = 26; // max rest tilt, deg
+const BOUNCE = 0.22; // restitution of the first touch
+const HOLD_MS = 300; // hold this long to start pouring
+const POUR_MS = 120; // pour cadence while held
+const TILT_ON = 10; // device tilt (deg) that starts an avalanche
+const SHAKE_MS = 350; // min gap between tilt avalanches
+const EAGER = 0.45; // slide-threshold factor while tilted
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
+
+const clamp = (v: number, min: number, max: number) =>
+  Math.min(Math.max(v, min), max);
 
 const randomChar = (type: GlyphType) => {
   const pool = POOLS[type];
@@ -39,29 +49,49 @@ const pickContent = (items: React.ReactNode[] | undefined, type: GlyphType) =>
     ? items[Math.floor(Math.random() * items.length)]
     : randomChar(type);
 
-/* --------------------------- heightmap helpers --------------------------- */
-
 const spanOf = (x: number, w: number, cols: number) => {
   const from = Math.max(0, Math.floor(x / COL));
   const to = Math.min(cols - 1, Math.max(from, Math.ceil((x + w) / COL) - 1));
   return [from, to] as const;
 };
 
-// pile height under [x, x + w]
-const topAt = (heights: number[], x: number, w: number) => {
+const restY = (
+  heights: number[],
+  x: number,
+  w: number,
+  h: number,
+  rot: number,
+  height: number,
+) => {
   const [from, to] = spanOf(x, w, heights.length);
-  if (to < from) return Number.POSITIVE_INFINITY;
-  let top = 0;
-  for (let i = from; i <= to; i++) top = Math.max(top, heights[i]);
-  return top;
+  const tan = Math.tan((Math.abs(rot) * Math.PI) / 180);
+  let y = Number.POSITIVE_INFINITY;
+  for (let i = from; i <= to; i++) {
+    const cx = clamp((i + 0.5) * COL - x, 0, w);
+    const edge = Math.min((rot >= 0 ? w - cx : cx) * tan, h - 1);
+    y = Math.min(y, height - heights[i] - h + edge);
+  }
+  return y;
 };
 
-const raise = (heights: number[], x: number, w: number, top: number) => {
+const deposit = (
+  heights: number[],
+  x: number,
+  w: number,
+  h: number,
+  rot: number,
+  y: number,
+  height: number,
+) => {
   const [from, to] = spanOf(x, w, heights.length);
-  for (let i = from; i <= to; i++) heights[i] = Math.max(heights[i], top);
+  const tan = Math.tan((Math.abs(rot) * Math.PI) / 180);
+  for (let i = from; i <= to; i++) {
+    const cx = clamp((i + 0.5) * COL - x, 0, w);
+    const edge = Math.min((rot >= 0 ? cx : w - cx) * tan, h - 1);
+    heights[i] = Math.max(heights[i], height - y - edge);
+  }
 };
 
-// tallest column in [from, to]; out of bounds reads as an infinite wall
 const windowTop = (heights: number[], from: number, to: number) => {
   if (from < 0 || to >= heights.length) return Number.POSITIVE_INFINITY;
   let top = 0;
@@ -69,7 +99,17 @@ const windowTop = (heights: number[], from: number, to: number) => {
   return top;
 };
 
-// walk downhill until no neighbor sits clearly lower — hills, not towers
+const groundTilt = (heights: number[], x: number, w: number) => {
+  const [from, to] = spanOf(x, w, heights.length);
+  if (to <= from) return 0;
+  const mid = Math.ceil((from + to) / 2);
+  const hl = windowTop(heights, from, mid - 1);
+  const hr = windowTop(heights, mid, to);
+  if (!Number.isFinite(hl) || !Number.isFinite(hr)) return 0;
+  const run = Math.max(((to - from + 1) / 2) * COL, 1);
+  return (Math.atan2(hl - hr, run) * 180) / Math.PI;
+};
+
 const findRestX = (
   heights: number[],
   x: number,
@@ -77,9 +117,11 @@ const findRestX = (
   h: number,
   maxX: number,
   bias: -1 | 1,
+  eager = 1,
 ) => {
   let cur = Math.min(Math.max(x, 0), maxX);
-  const drop = h * SLOPE;
+  const drop = h * SLOPE * eager;
+  const step = Math.max(COL, Math.round(w / 3));
   for (let i = 0; i < 64; i++) {
     const [from, to] = spanOf(cur, w, heights.length);
     const span = to - from + 1;
@@ -89,11 +131,11 @@ const findRestX = (
 
     let next = cur;
     if (dl > drop && dr > drop && Math.abs(dl - dr) <= 1) {
-      next = bias < 0 ? Math.max(cur - w, 0) : Math.min(cur + w, maxX);
+      next = bias < 0 ? Math.max(cur - step, 0) : Math.min(cur + step, maxX);
     } else if (dl > drop && dl >= dr) {
-      next = Math.max(cur - w, 0);
+      next = Math.max(cur - step, 0);
     } else if (dr > drop) {
-      next = Math.min(cur + w, maxX);
+      next = Math.min(cur + step, maxX);
     }
     if (next === cur) break;
     cur = next;
@@ -101,9 +143,6 @@ const findRestX = (
   return cur;
 };
 
-/* ------------------------------- animation ------------------------------- */
-
-// render data + click snapshot, lives in state
 type Glyph = {
   id: number;
   content: React.ReactNode;
@@ -114,12 +153,14 @@ type Glyph = {
   leaving?: boolean;
 };
 
-// flight data, lives in refs — the rest spot is reserved at spawn so glyphs
-// can never collide mid-air
 type Body = {
   el: HTMLSpanElement;
+  ew: number;
+  eh: number;
   w: number;
   h: number;
+  dx: number;
+  dy: number;
   x0: number;
   y0: number;
   x: number;
@@ -127,13 +168,17 @@ type Body = {
   targetX: number;
   targetY: number;
   vy: number;
+  spin: number;
   rot: number;
   vr: number;
+  restRot: number;
+  sway: number;
+  bounced: boolean;
   done: boolean;
 };
 
 const paint = (body: Body) => {
-  body.el.style.transform = `translate3d(${body.x}px, ${body.y}px, 0) rotate(${body.rot}deg)`;
+  body.el.style.transform = `translate3d(${body.x + body.dx}px, ${body.y + body.dy}px, 0) rotate(${body.rot}deg)`;
 };
 
 const squash = (body: Body) => {
@@ -143,19 +188,25 @@ const squash = (body: Body) => {
   );
 };
 
-function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
+function useFallingGlyphs(opts: {
+  gravity: number;
+  maxGlyphs: number;
+  deviceTilt: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const bodiesRef = useRef(new Map<number, Body>());
   const refsRef = useRef(
     new Map<number, (el: HTMLSpanElement | null) => void>(),
   );
-  // settled glyphs plus the reserved slots of in-flight ones
   const heightsRef = useRef<number[]>([]);
   const rafRef = useRef(0);
   const lastRef = useRef(0);
   const timeoutsRef = useRef(new Set<ReturnType<typeof setTimeout>>());
-  // instance-scoped so fast refresh can't reset it under live state
   const idRef = useRef(0);
+  const windRef = useRef<0 | -1 | 1>(0);
+  const lastShakeRef = useRef(0);
+  const armedRef = useRef(false);
+  const [tiltReady, setTiltReady] = useState(false);
   const [glyphs, setGlyphs] = useState<Glyph[]>([]);
 
   const optsRef = useRef(opts);
@@ -163,23 +214,47 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
     optsRef.current = opts;
   }, [opts]);
 
-  // pick and reserve a rest spot, then aim the body's flight at it
   const retarget = (body: Body, width: number, height: number) => {
     const heights = heightsRef.current;
-    const maxX = Math.max(width - body.w, 0);
-    const bias = Math.random() < 0.5 ? -1 : (1 as const);
-    const targetX = findRestX(heights, body.x, body.w, body.h, maxX, bias);
-    const targetY = height - topAt(heights, targetX, body.w) - body.h;
-    raise(heights, targetX, body.w, height - targetY);
+    const wind = windRef.current;
+    const bias = wind !== 0 ? wind : Math.random() < 0.5 ? -1 : (1 as const);
+    const seekX = findRestX(
+      heights,
+      body.x,
+      body.ew,
+      body.eh,
+      Math.max(width - body.ew, 0),
+      bias,
+      wind !== 0 ? EAGER : 1,
+    );
+
+    const squareness = Math.min(1, body.eh / body.ew);
+    const jitter = rand(-1, 1) * (2 + 8 * squareness);
+    const restRot = clamp(
+      groundTilt(heights, seekX, body.ew) + jitter,
+      -TILT,
+      TILT,
+    );
+    const rad = (Math.abs(restRot) * Math.PI) / 180;
+    body.restRot = restRot;
+    body.w = body.ew * Math.cos(rad) + body.eh * Math.sin(rad);
+    body.h = body.ew * Math.sin(rad) + body.eh * Math.cos(rad);
+    body.dx = (body.w - body.ew) / 2;
+    body.dy = (body.h - body.eh) / 2;
+
+    const targetX = clamp(seekX - body.dx, 0, Math.max(width - body.w, 0));
+    const targetY = restY(heights, targetX, body.w, body.h, restRot, height);
+    deposit(heights, targetX, body.w, body.h, restRot, targetY, height);
     body.x0 = body.x;
     body.y0 = Math.min(body.y, targetY);
     body.targetX = targetX;
     body.targetY = targetY;
+    body.sway = rand(-1, 1) * Math.min(12, (targetY - body.y0) * 0.05);
+    body.bounced = false;
     body.done = false;
   };
 
-  // re-reserve everything bottom-up; anything left floating falls again
-  const rebuild = useCallback(() => {
+  const rebuild = useCallback((slide = false) => {
     const container = containerRef.current;
     if (!container) return;
     const width = container.clientWidth;
@@ -189,16 +264,34 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
 
     const bodies = [...bodiesRef.current.values()].sort((a, b) => b.y - a.y);
     for (const body of bodies) {
-      if (body.done) {
-        const rest = height - topAt(heights, body.x, body.w) - body.h;
-        if (body.y < rest - 1) {
-          body.vy = 0;
-          retarget(body, width, height);
-        } else {
-          raise(heights, body.x, body.w, height - body.y);
-        }
-      } else {
+      body.spin = body.rot;
+      if (!body.done) {
         retarget(body, width, height);
+        continue;
+      }
+      const rest = restY(heights, body.x, body.w, body.h, body.restRot, height);
+      let falls = body.y < rest - 1;
+      if (!falls && slide) {
+        const dir = windRef.current || 1;
+        const probe = findRestX(
+          heights,
+          body.x,
+          body.ew,
+          body.eh,
+          Math.max(width - body.ew, 0),
+          dir,
+          EAGER,
+        );
+        const candX = clamp(probe - body.dx, 0, Math.max(width - body.w, 0));
+        const candY = restY(heights, candX, body.w, body.h, body.restRot, height);
+        falls = candY > body.y + 2;
+        if (falls) body.vr = rand(-40, 40);
+      }
+      if (falls) {
+        body.vy = 0;
+        retarget(body, width, height);
+      } else {
+        deposit(heights, body.x, body.w, body.h, body.restRot, body.y, height);
       }
     }
   }, []);
@@ -214,19 +307,40 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
 
       body.vy += gravity * dt;
       body.y += body.vy * dt;
-      body.rot += body.vr * dt;
+      body.spin += body.vr * dt;
 
-      // x eases into the reserved spot as the fall progresses
       const total = body.targetY - body.y0;
       const p = total > 0 ? Math.min((body.y - body.y0) / total, 1) : 1;
-      body.x = body.x0 + (body.targetX - body.x0) * p * (2 - p);
+      body.x =
+        body.x0 +
+        (body.targetX - body.x0) * p * (2 - p) +
+        Math.sin(p * Math.PI) * body.sway;
+      const blend = p * p * p;
+      body.rot = body.spin * (1 - blend) + body.restRot * blend;
 
       if (body.y >= body.targetY) {
         body.x = body.targetX;
         body.y = body.targetY;
+        body.rot = body.restRot;
+
+        const rebound = body.vy * BOUNCE;
+        if (!body.bounced && rebound * rebound > gravity * 6) {
+          body.bounced = true;
+          body.vy = -rebound;
+          body.x0 = body.targetX;
+          body.y0 = body.targetY;
+          body.sway = 0;
+          body.vr = 0;
+          body.spin = body.restRot;
+          paint(body);
+          squash(body);
+          active = true;
+          continue;
+        }
+
         body.done = true;
         paint(body);
-        squash(body);
+        if (!body.bounced) squash(body);
         continue;
       }
 
@@ -243,7 +357,49 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
     rafRef.current = requestAnimationFrame(step);
   }, [step]);
 
-  // build (or re-bind) a glyph's body — safe to run repeatedly
+  const armTilt = useCallback(() => {
+    if (armedRef.current) return;
+    armedRef.current = true;
+    const DOE = window.DeviceOrientationEvent as unknown as
+      | { requestPermission?: () => Promise<string> }
+      | undefined;
+    if (typeof DOE?.requestPermission !== "function") return;
+    DOE.requestPermission()
+      .then((state) => state === "granted" && setTiltReady(true))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const DOE = window.DeviceOrientationEvent as unknown as
+      | { requestPermission?: () => Promise<string> }
+      | undefined;
+    if (DOE && typeof DOE.requestPermission !== "function") setTiltReady(true);
+  }, []);
+
+  const tiltEnabled = opts.deviceTilt;
+  useEffect(() => {
+    if (!tiltEnabled || !tiltReady) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const onTilt = (event: DeviceOrientationEvent) => {
+      const gamma = event.gamma ?? 0;
+      windRef.current = gamma > TILT_ON ? 1 : gamma < -TILT_ON ? -1 : 0;
+      if (
+        windRef.current !== 0 &&
+        performance.now() - lastShakeRef.current > SHAKE_MS
+      ) {
+        lastShakeRef.current = performance.now();
+        rebuild(true);
+        wake();
+      }
+    };
+    window.addEventListener("deviceorientation", onTilt);
+    return () => {
+      windRef.current = 0;
+      window.removeEventListener("deviceorientation", onTilt);
+    };
+  }, [tiltEnabled, tiltReady, rebuild, wake]);
+
   const attach = useCallback(
     (glyph: Glyph, el: HTMLSpanElement) => {
       const existing = bodiesRef.current.get(glyph.id);
@@ -260,21 +416,30 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
         rebuild();
       }
 
-      const w = el.offsetWidth || 1;
-      const h = el.offsetHeight || 1;
+      const ew = el.offsetWidth || 1;
+      const eh = el.offsetHeight || 1;
+      const squareness = Math.min(1, eh / ew);
       const body: Body = {
         el,
-        w,
-        h,
+        ew,
+        eh,
+        w: ew,
+        h: eh,
+        dx: 0,
+        dy: 0,
         x0: 0,
         y0: 0,
-        x: Math.min(Math.max(glyph.x - w / 2, 0), Math.max(width - w, 0)),
-        y: glyph.y - h / 2,
+        x: Math.min(Math.max(glyph.x - ew / 2, 0), Math.max(width - ew, 0)),
+        y: glyph.y - eh / 2,
         targetX: 0,
         targetY: 0,
         vy: 0,
+        spin: glyph.still ? 0 : rand(-1, 1) * (4 + 10 * squareness),
         rot: 0,
-        vr: glyph.still ? 0 : rand(-70, 70),
+        vr: glyph.still ? 0 : rand(-1, 1) * (50 + 130 * squareness),
+        restRot: 0,
+        sway: 0,
+        bounced: false,
         done: false,
       };
       retarget(body, width, height);
@@ -282,16 +447,17 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
       if (glyph.still) {
         body.x = body.x0 = body.targetX;
         body.y = body.y0 = body.targetY;
+        body.rot = body.restRot;
         body.done = true;
       } else {
-        // spawn above anything landing beneath so arrivals stay bottom-first
+        body.rot = body.spin;
         let startY = Math.min(body.y, body.targetY - CLEARANCE);
         for (const other of bodiesRef.current.values()) {
           const overlaps =
-            other.targetX < body.targetX + w &&
+            other.targetX < body.targetX + body.w &&
             body.targetX < other.targetX + other.w;
           if (!other.done && overlaps) {
-            startY = Math.min(startY, other.y - h - 8);
+            startY = Math.min(startY, other.y - body.h - 8);
           }
         }
         body.y = body.y0 = startY;
@@ -331,7 +497,6 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
       const overflow = next.filter((g) => !g.leaving).length - opts.maxGlyphs;
       if (overflow <= 0) return next;
 
-      // past the cap, fade out the oldest before removing them
       let marked = 0;
       return next.map((g) => {
         if (marked < overflow && !g.leaving) {
@@ -343,7 +508,6 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
     });
   };
 
-  // after each commit: prune removed glyphs, fade the leaving, keep the loop alive
   useEffect(() => {
     const alive = new Set(glyphs.map((g) => g.id));
     let removed = false;
@@ -378,10 +542,16 @@ function useFallingGlyphs(opts: { gravity: number; maxGlyphs: number }) {
     };
   }, []);
 
-  return { containerRef, glyphs, glyphRef, addGlyph };
+  return { containerRef, glyphs, glyphRef, addGlyph, armTilt };
 }
 
-/* ------------------------------- component ------------------------------- */
+type Pour = {
+  id: number;
+  x: number;
+  y: number;
+  hold: ReturnType<typeof setTimeout> | null;
+  timer: ReturnType<typeof setInterval> | null;
+};
 
 const GravityLetters = ({
   type = "letters",
@@ -390,17 +560,20 @@ const GravityLetters = ({
   size = 28,
   color,
   maxGlyphs = Infinity,
+  deviceTilt = true,
   className,
   children,
   onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onPointerCancel,
   ...props
 }: GravityLettersProps) => {
-  const { containerRef, glyphs, glyphRef, addGlyph } = useFallingGlyphs({
-    gravity,
-    maxGlyphs,
-  });
+  const { containerRef, glyphs, glyphRef, addGlyph, armTilt } =
+    useFallingGlyphs({ gravity, maxGlyphs, deviceTilt });
+  const pourRef = useRef<Pour | null>(null);
 
-  const drop = (event: React.PointerEvent<HTMLDivElement>) => {
+  const dropAt = (clientX: number, clientY: number) => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -412,11 +585,44 @@ const GravityLetters = ({
     addGlyph({
       content: pickContent(items, type),
       fontSize: Math.round(size * rand(0.8, 1.2)),
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
+      x: clamp(clientX - rect.left, 0, rect.width),
+      y: clamp(clientY - rect.top, 0, rect.height),
       still: reduce,
     });
   };
+
+  const stopPour = () => {
+    const pour = pourRef.current;
+    if (!pour) return;
+    if (pour.hold) clearTimeout(pour.hold);
+    if (pour.timer) clearInterval(pour.timer);
+    pourRef.current = null;
+  };
+
+  const startPour = (event: React.PointerEvent<HTMLDivElement>) => {
+    stopPour();
+    const pour: Pour = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      hold: null,
+      timer: null,
+    };
+    pour.hold = setTimeout(() => {
+      pour.timer = setInterval(() => {
+        dropAt(pour.x + rand(-8, 8), pour.y);
+      }, POUR_MS);
+    }, HOLD_MS);
+    pourRef.current = pour;
+  };
+
+  useEffect(() => {
+    return () => {
+      const pour = pourRef.current;
+      if (pour?.hold) clearTimeout(pour.hold);
+      if (pour?.timer) clearInterval(pour.timer);
+    };
+  }, []);
 
   return (
     <div
@@ -428,7 +634,31 @@ const GravityLetters = ({
       )}
       onPointerDown={(event) => {
         onPointerDown?.(event);
-        if (event.button === 0 && !event.defaultPrevented) drop(event);
+        if (event.button !== 0 || event.defaultPrevented) return;
+        armTilt();
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {
+          // capture is optional
+        }
+        dropAt(event.clientX, event.clientY);
+        startPour(event);
+      }}
+      onPointerMove={(event) => {
+        onPointerMove?.(event);
+        const pour = pourRef.current;
+        if (pour && event.pointerId === pour.id) {
+          pour.x = event.clientX;
+          pour.y = event.clientY;
+        }
+      }}
+      onPointerUp={(event) => {
+        onPointerUp?.(event);
+        if (pourRef.current?.id === event.pointerId) stopPour();
+      }}
+      onPointerCancel={(event) => {
+        onPointerCancel?.(event);
+        if (pourRef.current?.id === event.pointerId) stopPour();
       }}
       {...props}
     >

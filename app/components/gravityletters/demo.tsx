@@ -16,8 +16,8 @@ export default function GravityLettersPage() {
     >
       <GravityLetters
         color={color}
-        type="numbers"
-        className="h-[26rem] w-full max-w-xl rounded-3xl border border-foreground/10"
+        type="both"
+        className="h-[26rem] w-full max-w-xl rounded-3xl border border-foreground/20 dark:border-foreground/10"
       >
         <div className="pointer-events-none flex h-full items-center justify-center">
           <span className="text-sm font-medium text-foreground/40">

@@ -114,19 +114,6 @@
       ]
     },
     {
-      "name": "gravity-letters",
-      "type": "registry:ui",
-      "title": "Gravity Letters",
-      "description": "A click-to-drop field where each click releases a random glyph — a letter, a number, an emoji, or any component you pass — that falls, lands with a squash, and piles up into rolling hills.",
-      "registryDependencies": ["utils"],
-      "files": [
-        {
-          "path": "components/ui/gravity-letters.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
       "name": "code-block",
       "type": "registry:ui",
       "title": "Code Block",
@@ -136,6 +123,19 @@
       "files": [
         {
           "path": "components/ui/code-block.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "gravity-letters",
+      "type": "registry:ui",
+      "title": "Gravity Letters",
+      "description": "A playful gravity field where letters, numbers, emoji, or any components you pass fall and pile up like real objects.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/gravity-letters.tsx",
           "type": "registry:ui"
         }
       ]
