@@ -126,6 +126,33 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "spring-stack",
+      "type": "registry:ui",
+      "title": "Spring Stack",
+      "description": "A compressible stack of cards with four-directional spring control.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/spring-stack.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "matrix-loader",
+      "type": "registry:ui",
+      "title": "Matrix Loader",
+      "description": "An animated SVG grid with a diagonal wave of glowing cells.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/matrix-loader.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

@@ -549,7 +549,75 @@ export function Demo() {
     />
   )
 }`,
-  }
+  },
+  {
+    name: "Spring Stack",
+    href: "/components/springstack",
+    registry: "spring-stack",
+    description:
+      "A compressible stack of cards with four-directional spring control.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/spring-stack.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Pull the top card in the selected direction and release to snap it back or send it flying.",
+    usage: `import { SpringStack } from "@/components/ui/spring-stack"
+
+export function Demo() {
+  return <SpringStack cardCount={5} />
+}`,
+  },
+  {
+    name: "Matrix Loader",
+    href: "/components/matrixloader",
+    registry: "matrix-loader",
+    description: "An animated SVG grid with a diagonal wave of glowing cells.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/matrix-loader.tsx`,
+    props: [
+      {
+        name: "color",
+        type: "string",
+        default: '"#6cb4ff"',
+        options: [
+          "#6cb4ff",
+          "#ff6cb4",
+          "#6cffb4",
+          "#ffb46c",
+          "#b46cff",
+          "#ff6c6c",
+          "#6cfffc",
+          "#fffc6c",
+        ],
+        control: "swatch",
+        optionColors: {
+          "#6cb4ff": "#6cb4ff",
+          "#ff6cb4": "#ff6cb4",
+          "#6cffb4": "#6cffb4",
+          "#ffb46c": "#ffb46c",
+          "#b46cff": "#b46cff",
+          "#ff6c6c": "#ff6c6c",
+          "#6cfffc": "#6cfffc",
+          "#fffc6c": "#fffc6c",
+        },
+        description: "Glow colour of the active cells.",
+      },
+      {
+        name: "scale",
+        type: "number",
+        default: "0.25",
+        description: "Display scale of the loader.",
+      },
+    ],
+    usage: `import { MatrixLoader } from "@/components/ui/matrix-loader"
+
+export function Demo() {
+  return <MatrixLoader gridSize={5} color="#6cb4ff" />
+}`,
+  },
   // {
   //   name: "Family drawer",
   //   href: "/components/familydrawer",
