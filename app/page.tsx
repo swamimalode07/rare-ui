@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import HeroCta from "@/components/HeroCta";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   alternates: {
@@ -62,6 +63,7 @@ export default function Home() {
       </section>
       <BackersSection />
       <DemoSection />
+      <Footer />
     </>
   );
 }
