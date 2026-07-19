@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AuroraRibbon from "@/components/AuroraRibbon";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import HeroCta from "@/components/HeroCta";
 import Footer from "@/components/Footer";
@@ -17,14 +18,8 @@ export default function Home() {
           className="relative flex min-h-[calc(100svh-1.25rem)] w-full items-center justify-center overflow-hidden rounded-[45px]"
           style={{ cornerShape: "squircle" } as React.CSSProperties}
         >
-          <img
-            src="/assets/landing/herobg.webp"
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 size-full rounded-[inherit] object-cover"
-          />
-          <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-linear-to-t from-background from-6% to-transparent" />
-          <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-32 pt-24 text-center sm:gap-4 sm:px-6">
+          <AuroraRibbon className="pointer-events-none absolute inset-0" />
+          <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-44 pt-24 text-center sm:gap-4 sm:px-6">
             <div>
               <GooeyNavbar />
             </div>
@@ -53,7 +48,7 @@ export default function Home() {
             <h1 className="max-w-4xl text-balance dark:text-white font-runde text-black text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
               Tasteful Components, Made to Stand Out.
             </h1>
-            <p className="max-w-xl font-medium text-muted-foreground sm:text-lg">
+            <p className="max-w-xl font-medium text-muted-foreground sm:text-lg [text-shadow:0_1px_2px_rgba(255,255,255,0.5)] dark:[text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
               A collection of rare, animated components. Browse them in action
               below and install any component with shadcn CLI.
             </p>
