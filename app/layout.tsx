@@ -57,6 +57,9 @@ export const metadata: Metadata = {
   },
   description: "A shadcn registry of rare components.",
   keywords: SITE_KEYWORDS,
+  icons: {
+    icon: [{ url: "/logos/Rareui.svg", type: "image/svg+xml" }],
+  },
   openGraph: {
     title: "Rare UI",
     description: "A shadcn registry of rare components.",

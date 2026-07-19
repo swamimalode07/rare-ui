@@ -551,6 +551,111 @@ export function Demo() {
 }`,
   },
   {
+    name: "Gravity Letters",
+    href: "/components/gravityletters",
+    registry: "gravity-letters",
+    description:
+      "A playful gravity field where letters, numbers, emoji, or any components you pass fall and pile up like real objects.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/gravity-letters.tsx`,
+    interaction:
+      "Click or tap anywhere to drop a glyph, or press and hold to pour a steady stream. Glyphs tumble as they fall, bounce softly when they land, and pile up into rounded hills. On phones, tilt the device to spill the pile toward the low side. Honors prefers-reduced-motion.",
+    props: [
+      {
+        name: "type",
+        type: '"letters" | "numbers" | "both"',
+        default: '"letters"',
+        options: ["letters", "numbers", "both"],
+        description:
+          "Which pool to draw from: letters, digits, or both. Ignored when items is set.",
+      },
+      {
+        name: "items",
+        type: "React.ReactNode[]",
+        description:
+          "Your own drop pool: emoji, icons, or any components. Each drop picks a random entry. Overrides type.",
+      },
+      {
+        name: "gravity",
+        type: "number",
+        default: "800",
+        description:
+          "Downward acceleration in px/s². Lower is floatier, higher is heavier.",
+      },
+      {
+        name: "size",
+        type: "number",
+        default: "28",
+        description:
+          "Base glyph size in pixels. Each drop varies slightly around it.",
+      },
+      {
+        name: "color",
+        type: "string",
+        default: '"currentColor"',
+        options: [
+          "#1A73F2",
+          "#5856D6",
+          "#AF52DE",
+          "#FF2D92",
+          "#FF3B30",
+          "#F75001",
+          "#FFB800",
+          "#34C759",
+        ],
+        control: "swatch",
+        optionColors: {
+          "#1A73F2": "#1A73F2",
+          "#5856D6": "#5856D6",
+          "#AF52DE": "#AF52DE",
+          "#FF2D92": "#FF2D92",
+          "#FF3B30": "#FF3B30",
+          "#F75001": "#F75001",
+          "#FFB800": "#FFB800",
+          "#34C759": "#34C759",
+        },
+        description:
+          "Glyph color. Defaults to currentColor so it follows your theme.",
+      },
+      {
+        name: "maxGlyphs",
+        type: "number",
+        default: "Infinity",
+        description:
+          "Max glyphs kept in the field; past the cap the oldest fade out. Unlimited by default.",
+      },
+      {
+        name: "deviceTilt",
+        type: "boolean",
+        default: "true",
+        description:
+          "Tilting a phone spills the pile toward the low side. iOS asks for motion permission on the first tap.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description: "Extra classes for the root element. Use it to size the field.",
+      },
+    ],
+    usage: `import GravityLetters from "@/components/ui/gravity-letters"
+
+export function Demo() {
+  return (
+    <GravityLetters type="letters" className="h-96 w-full rounded-3xl border">
+      {/* anything you render inside stays clickable-through */}
+      <p className="absolute inset-0 grid place-items-center text-sm text-muted-foreground">
+        Click anywhere
+      </p>
+    </GravityLetters>
+  )
+}
+
+// Digits instead:
+// <GravityLetters type="numbers" />
+
+// Or drop your own content: emoji, icons, any component:
+// <GravityLetters items={["🍎", "🍊", "🍇", <Sparkles key="s" className="size-7" />]} />`,
+  },
+  {
     name: "Spring Stack",
     href: "/components/springstack",
     registry: "spring-stack",

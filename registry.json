@@ -128,6 +128,19 @@
       ]
     },
     {
+      "name": "gravity-letters",
+      "type": "registry:ui",
+      "title": "Gravity Letters",
+      "description": "A playful gravity field where letters, numbers, emoji, or any components you pass fall and pile up like real objects.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/gravity-letters.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "spring-stack",
       "type": "registry:ui",
       "title": "Spring Stack",
