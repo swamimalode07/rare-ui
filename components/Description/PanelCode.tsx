@@ -1,6 +1,7 @@
 "use client";
 
 import CodeBlock from "@/components/ui/code-block";
+import { useIsMobile } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 
 type PanelCodeProps = {
@@ -17,17 +18,21 @@ export default function PanelCode({
   showLineNumbers = false,
   className,
 }: PanelCodeProps) {
+  const isMobile = useIsMobile();
+
   return (
     <div
       className={cn(
-        "flex overflow-hidden rounded-xl bg-muted p-3",
+        "flex overflow-hidden",
+        !isMobile && "rounded-xl bg-muted p-3",
         className,
+        isMobile && "p-0",
       )}
     >
       <CodeBlock
         code={code}
         language={language}
-        showFrame={false}
+        showFrame={isMobile}
         showLineNumbers={showLineNumbers}
         className="min-h-0 w-full flex-1"
       />
