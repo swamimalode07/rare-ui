@@ -101,13 +101,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex min-h-dvh items-center justify-center bg-background px-8 text-center md:hidden">
-            <p className="text-base font-medium text-foreground">
-              Rare UI is only available on desktop.
-            </p>
-          </div>
-
-          <div className="hidden flex-1 flex-col md:flex">{children}</div>
+          <div className="flex flex-1 flex-col">{children}</div>
           <Databuddy
             clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID!}
             trackHashChanges={true}
