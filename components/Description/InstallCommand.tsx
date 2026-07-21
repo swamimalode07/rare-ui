@@ -10,6 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LOGOS } from "../logos";
 import CopyButton from "../CopyButton";
+import Tooltip from "../Tooltip";
 
 const ACTIVE_COLOR: Record<PackageManager, string> = {
   npm: "#CB3837", 
@@ -54,7 +55,9 @@ export default function InstallCommand({ item }: { item: ComponentItem }) {
         <code className="flex-1 truncate text-xs text-foreground/80">
           {command}
         </code>
-        <CopyButton value={command} />
+        <Tooltip label="Copy command" align="end">
+          <CopyButton value={command} title="" />
+        </Tooltip>
       </div>
     </div>
   );

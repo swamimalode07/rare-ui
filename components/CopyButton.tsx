@@ -47,6 +47,7 @@ export default function CopyButton({
   iconClassName = "size-3.5",
   className,
   children,
+  title,
   ...props
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
@@ -70,7 +71,7 @@ export default function CopyButton({
       data-slot="copy-button"
       data-copied={copied}
       aria-label={copied ? "Copied" : label}
-      title={label}
+      title={title === undefined ? label : title || undefined}
       className={cn(
         "inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md text-foreground/60 transition-colors hover:text-white",
         children ? "h-7 gap-1.5 px-2" : "size-7",

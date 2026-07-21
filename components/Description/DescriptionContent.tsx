@@ -3,6 +3,7 @@
 import { type ComponentItem, PANEL_INFO } from "@/lib/components";
 import { cn } from "@/lib/utils";
 import CopyButton from "../CopyButton";
+import Tooltip from "../Tooltip";
 import PanelCode from "./PanelCode";
 import InstallCommand from "./InstallCommand";
 import DependencyPill from "./DependencyPill";
@@ -118,23 +119,27 @@ export default function DescriptionContent({
           {PANEL_INFO.contactNote}
         </p>
         <div className="flex items-center gap-2">
-          <CopyButton
-            value={PANEL_INFO.contactEmail}
-            label={`Copy email (${PANEL_INFO.contactEmail})`}
-            idleIcon={<MailIcon />}
-            iconClassName="size-5"
-            className="size-8 hover:text-foreground"
-          />
-          <a
-            href="https://x.com/swamimalode"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="X — @swamimalode"
-            title="@swamimalode"
-            className="inline-flex size-8 items-center justify-center text-foreground/60 transition-colors hover:text-foreground"
-          >
-            <XIcon className="size-5" />
-          </a>
+          <Tooltip label={PANEL_INFO.contactEmail} align="start">
+            <CopyButton
+              value={PANEL_INFO.contactEmail}
+              label={`Copy email (${PANEL_INFO.contactEmail})`}
+              title=""
+              idleIcon={<MailIcon />}
+              iconClassName="size-5"
+              className="size-8 hover:text-foreground"
+            />
+          </Tooltip>
+          <Tooltip label="@swamimalode">
+            <a
+              href="https://x.com/swamimalode"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="X — @swamimalode"
+              className="inline-flex size-8 items-center justify-center text-foreground/60 transition-colors hover:text-foreground"
+            >
+              <XIcon className="size-5" />
+            </a>
+          </Tooltip>
         </div>
       </div>
 

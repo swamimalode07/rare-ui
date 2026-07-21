@@ -8,6 +8,7 @@ import { activeComponent } from "@/lib/components";
 import CodeDrawer from "./CodeDrawer";
 import DescriptionContent from "./DescriptionContent";
 import ThemeToggle from "../ThemeToggle";
+import Tooltip from "../Tooltip";
 
 const PANEL_SHIFT = 600;
 
@@ -37,31 +38,37 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
   return (
     <div className="pointer-events-none absolute right-0 top-0 z-40 h-full">
       <div className="pointer-events-auto absolute top-4 right-4 z-50 flex items-center gap-2 rounded-2xl border-apple bg-muted p-2 shadow-sm">
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close description" : "Open description"}
-          className="cursor-pointer rounded-full bg-popover p-1"
-        >
-          {open ? (
-            <Maximize className="h-5 w-5" />
-          ) : (
-            <Minimize className="h-5 w-5" />
-          )}
-        </button>
-
-        {item?.registry && (
+        <Tooltip label={open ? "Close description" : "Open description"}>
           <button
             type="button"
-            onClick={toggleCode}
-            aria-label={codeOpen ? "Hide code" : "Get code"}
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close description" : "Open description"}
             className="cursor-pointer rounded-full bg-popover p-1"
           >
-            <CodeXml className="h-5 w-5" />
+            {open ? (
+              <Maximize className="h-5 w-5" />
+            ) : (
+              <Minimize className="h-5 w-5" />
+            )}
           </button>
+        </Tooltip>
+
+        {item?.registry && (
+          <Tooltip label={codeOpen ? "Hide code" : "Get code"}>
+            <button
+              type="button"
+              onClick={toggleCode}
+              aria-label={codeOpen ? "Hide code" : "Get code"}
+              className="cursor-pointer rounded-full bg-popover p-1"
+            >
+              <CodeXml className="h-5 w-5" />
+            </button>
+          </Tooltip>
         )}
 
-        <ThemeToggle className="rounded-full p-1 bg-popover" />
+        <Tooltip label="Toggle theme" align="end">
+          <ThemeToggle className="rounded-full p-1 bg-popover" />
+        </Tooltip>
       </div>
 
       <motion.div
