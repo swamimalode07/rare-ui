@@ -49,7 +49,7 @@ const SparkleIcon = ({ className }: { className?: string }) => (
 
 const pill = "rounded-full border-apple bg-neutral-900";
 
-export default function GooeyNavbar() {
+export default function GooeyNavbar({ stars }: { stars?: number | null }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [starHovered, setStarHovered] = useState(false);
@@ -108,7 +108,11 @@ export default function GooeyNavbar() {
             : "w-full max-w-3xl justify-between",
         )}
       >
-        <motion.div layout={animateLayout} transition={spring} className="pointer-events-auto">
+        <motion.div
+          layout={animateLayout}
+          transition={spring}
+          className="pointer-events-auto"
+        >
           <Link
             href="/"
             className={cn(pill, "flex h-12 items-center gap-2 px-4")}
@@ -162,85 +166,93 @@ export default function GooeyNavbar() {
             onBlur={() => setStarHovered(false)}
             className={cn(
               pill,
-              "relative flex h-12 w-12 items-center justify-center transition-colors duration-200 ease-out hover:bg-neutral-800",
+              "flex h-12 items-center transition-colors duration-200 ease-out hover:bg-neutral-800",
             )}
           >
-            <motion.span
-              initial={false}
-              animate={{
-                scale: starHovered ? 0.25 : 1,
-                opacity: starHovered ? 0 : 1,
-                rotate: reduceMotion ? 0 : starHovered ? -60 : 0,
-                filter: starHovered ? "blur(4px)" : "blur(0px)",
-              }}
-              transition={reduceMotion ? { duration: 0 } : morphTransition}
-              className="flex items-center justify-center"
-            >
-              <GithubIcon className="h-6 w-6 text-white" />
-            </motion.span>
-            <motion.span
-              initial={false}
-              animate={{
-                scale: starHovered ? 1 : 0.25,
-                opacity: starHovered ? 1 : 0,
-                rotate: reduceMotion ? 0 : starHovered ? 0 : -150,
-                filter: starHovered ? "blur(0px)" : "blur(4px)",
-              }}
-              transition={
-                reduceMotion
-                  ? { duration: 0 }
-                  : starHovered
-                    ? popTransition
-                    : morphTransition
-              }
-              className="absolute inset-0 flex items-center justify-center text-[#FFC83D]"
-            >
-              <StarIcon className="h-7 w-7" />
-            </motion.span>
-            <motion.span
-              initial={false}
-              animate={{
-                scale: starHovered && !reduceMotion ? 1 : 0,
-                opacity: starHovered ? 1 : 0,
-                rotate: reduceMotion ? 0 : starHovered ? 0 : -90,
-              }}
-              transition={
-                reduceMotion
-                  ? { duration: 0 }
-                  : starHovered
-                    ? {
-                        scale: { ...popSpring, delay: 0.1 },
-                        rotate: { ...popSpring, delay: 0.1 },
-                        opacity: { ...fade, delay: 0.1 },
-                      }
-                    : { duration: 0.15 }
-              }
-              className="absolute right-2 top-2 text-[#FFE9A8]"
-            >
-              <SparkleIcon className="h-2 w-2" />
-            </motion.span>
-            <motion.span
-              initial={false}
-              animate={{
-                scale: starHovered && !reduceMotion ? 1 : 0,
-                opacity: starHovered ? 1 : 0,
-                rotate: reduceMotion ? 0 : starHovered ? 0 : 90,
-              }}
-              transition={
-                reduceMotion
-                  ? { duration: 0 }
-                  : starHovered
-                    ? {
-                        scale: { ...popSpring, delay: 0.18 },
-                        rotate: { ...popSpring, delay: 0.18 },
-                        opacity: { ...fade, delay: 0.18 },
-                      }
-                    : { duration: 0.15 }
-              }
-              className="absolute bottom-2.5 left-2 text-[#FFE9A8]"
-            >
-              <SparkleIcon className="h-1.5 w-1.5" />
-            </motion.span>
+            <span className="relative flex h-12 w-12 items-center justify-center">
+              <motion.span
+                initial={false}
+                animate={{
+                  scale: starHovered ? 0.25 : 1,
+                  opacity: starHovered ? 0 : 1,
+                  rotate: reduceMotion ? 0 : starHovered ? -60 : 0,
+                  filter: starHovered ? "blur(4px)" : "blur(0px)",
+                }}
+                transition={reduceMotion ? { duration: 0 } : morphTransition}
+                className="flex items-center justify-center"
+              >
+                <GithubIcon className="h-6 w-6 text-white" />
+              </motion.span>
+              <motion.span
+                initial={false}
+                animate={{
+                  scale: starHovered ? 1 : 0.25,
+                  opacity: starHovered ? 1 : 0,
+                  rotate: reduceMotion ? 0 : starHovered ? 0 : -150,
+                  filter: starHovered ? "blur(0px)" : "blur(4px)",
+                }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : starHovered
+                      ? popTransition
+                      : morphTransition
+                }
+                className="absolute inset-0 flex items-center justify-center text-[#FFC83D]"
+              >
+                <StarIcon className="h-7 w-7" />
+              </motion.span>
+              <motion.span
+                initial={false}
+                animate={{
+                  scale: starHovered && !reduceMotion ? 1 : 0,
+                  opacity: starHovered ? 1 : 0,
+                  rotate: reduceMotion ? 0 : starHovered ? 0 : -90,
+                }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : starHovered
+                      ? {
+                          scale: { ...popSpring, delay: 0.1 },
+                          rotate: { ...popSpring, delay: 0.1 },
+                          opacity: { ...fade, delay: 0.1 },
+                        }
+                      : { duration: 0.15 }
+                }
+                className="absolute right-2 top-2 text-[#FFE9A8]"
+              >
+                <SparkleIcon className="h-2 w-2" />
+              </motion.span>
+              <motion.span
+                initial={false}
+                animate={{
+                  scale: starHovered && !reduceMotion ? 1 : 0,
+                  opacity: starHovered ? 1 : 0,
+                  rotate: reduceMotion ? 0 : starHovered ? 0 : 90,
+                }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : starHovered
+                      ? {
+                          scale: { ...popSpring, delay: 0.18 },
+                          rotate: { ...popSpring, delay: 0.18 },
+                          opacity: { ...fade, delay: 0.18 },
+                        }
+                      : { duration: 0.15 }
+                }
+                className="absolute bottom-2.5 left-2 text-[#FFE9A8]"
+              >
+                <SparkleIcon className="h-1.5 w-1.5" />
+              </motion.span>
+            </span>
+
+            {stars != null && (
+              <span className="pr-4 font-runde text-sm font-medium tabular-nums text-white/80">
+                {stars}
+              </span>
+            )}
           </a>
 
           <ThemeToggle

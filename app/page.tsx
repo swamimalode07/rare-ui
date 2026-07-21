@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import GooeyNavbar from "@/components/GooeyNavbar";
+import { fetchStarCount } from "@/lib/github";
 import HeroCta from "@/components/HeroCta";
 import Footer from "@/components/Footer";
 
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const stars = await fetchStarCount();
+
   return (
     <>
       <section className="relative w-full p-1.5 md:p-2.5">
@@ -26,7 +29,7 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-linear-to-t from-background from-6% to-transparent" />
           <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-32 pt-24 text-center sm:gap-4 sm:px-6">
             <div>
-              <GooeyNavbar />
+              <GooeyNavbar stars={stars} />
             </div>
             <div className="flex items-center gap-2 rounded-full bg-white/35 py-1.5 pl-4 pr-3.5 backdrop-blur-xl dark:bg-neutral-950/30">
               <span className="font-runde text-sm font-medium text-black dark:text-white">
