@@ -49,7 +49,7 @@ export default function MobileSidebar() {
             >
               <h2 className="mt-18">Components</h2>
               <div className="mt-4">
-                <SidebarList onNavigate={() => setOpen(false)} showDot={false} />
+                <SidebarList onNavigate={() => setOpen(false)} />
               </div>
             </motion.div>
           </>
