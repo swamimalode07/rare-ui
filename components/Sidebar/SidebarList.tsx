@@ -7,7 +7,13 @@ import { useAnimate } from "motion/react";
 import { cn } from "@/lib/utils";
 import { components } from "@/lib/components";
 
-const SidebarList = () => {
+const SidebarList = ({
+  onNavigate,
+  showDot = true,
+}: {
+  onNavigate?: () => void;
+  showDot?: boolean;
+}) => {
   const pathname = usePathname();
   const activeIndex = Math.max(
     0,
@@ -50,11 +56,13 @@ const SidebarList = () => {
 
   return (
     <ul className="relative flex flex-col gap-1 pl-6">
-      <span
-        ref={dot}
-        aria-hidden
-        className="absolute left-2 top-0 h-1.5 w-1.5 rounded-full bg-[#FC4C01]"
-      />
+      {showDot && (
+        <span
+          ref={dot}
+          aria-hidden
+          className="absolute left-2 top-0 h-1.5 w-1.5 rounded-full bg-[#FC4C01]"
+        />
+      )}
 
       {components.map((component, i) => {
         const isActive = i === activeIndex;
@@ -68,6 +76,7 @@ const SidebarList = () => {
           >
             <Link
               href={component.href}
+              onClick={onNavigate}
               className={cn(
                 "flex w-full items-center rounded-lg p-1 text-left text-sm transition-colors duration-200",
                 isActive
