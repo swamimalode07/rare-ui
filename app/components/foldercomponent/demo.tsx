@@ -4,9 +4,11 @@ import { useRef } from "react";
 import FolderComponent from "@/components/ui/folder-component";
 import ColorSwatches from "@/components/preview/ColorSwatches";
 import { usePreviewControl } from "@/components/preview/PreviewControls";
+import { useIsMobile } from "@/lib/use-media-query";
 
 export default function FolderComponentPage() {
   const [color] = usePreviewControl("color", "black");
+  const isMobile = useIsMobile();
   const previewRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -16,7 +18,7 @@ export default function FolderComponentPage() {
     >
       <FolderComponent
         color={color as "black" | "white" | "blue"}
-        size="md"
+        size={isMobile ? "sm" : "md"}
       />
 
       <ColorSwatches

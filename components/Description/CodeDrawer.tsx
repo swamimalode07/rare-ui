@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, useDragControls } from "motion/react";
 import type { ComponentItem } from "@/lib/components";
 import PanelCode from "./PanelCode";
+import { fetchSource, SOURCE_LOADING } from "./fetchSource";
 
 type CodeDrawerProps = {
   open: boolean;
@@ -21,10 +22,8 @@ export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
     let cancelled = false;
     setLoading(true);
     setCode(null);
-    fetch(`/api/source?name=${encodeURIComponent(item.registry)}`)
-      .then((res) => (res.ok ? res.text() : Promise.reject(new Error())))
+    fetchSource(item.registry)
       .then((text) => !cancelled && setCode(text))
-      .catch(() => !cancelled && setCode("// Unable to load source."))
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;
@@ -57,7 +56,7 @@ export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
       </div>
 
       <PanelCode
-        code={loading ? "// Loading…" : code ?? ""}
+        code={loading ? SOURCE_LOADING : code ?? ""}
         showLineNumbers
         className="mx-4 mb-4 min-h-0 flex-1"
       />
