@@ -654,6 +654,118 @@ export function Demo() {
 
 // Or drop your own content: emoji, icons, any component:
 // <GravityLetters items={["🍎", "🍊", "🍇", <Sparkles key="s" className="size-7" />]} />`,
+  },
+  {
+    name: "OTP Input",
+    href: "/components/otpinput",
+    registry: "otp-input",
+    description:
+      "A one-time-code input whose characters roll into place behind a caret that slides from slot to slot.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/otp-input.tsx`,
+    dependencies: [
+      { name: "motion", icon: createElement(MotionIcon, { className: "h-4 w-4" }) },
+    ],
+    interaction:
+      "Type to fill each slot and move to the next one. Backspace clears a slot in place, then steps back on the next press. Arrow keys move between slots, and a caret slides along with you. Pasting a code, or letting the phone autofill one from a text message, drops it straight in. Set the status to turn the slots green, or shake them red on a wrong code.",
+    props: [
+      {
+        name: "length",
+        type: "number",
+        default: "6",
+        description:
+          "How many boxes to render, so a 4 digit code is length={4}. Any count works.",
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        default: '"md"',
+        options: ["sm", "md", "lg"],
+        description:
+          "Overall scale of the boxes. Maps to 40px (sm), 48px (md), and 56px (lg), and carries the text, caret, and gaps with it.",
+      },
+      {
+        name: "value",
+        type: "string",
+        description:
+          "The current code. Pass it to control the input yourself; leave it out to let the component track its own state.",
+      },
+      {
+        name: "defaultValue",
+        type: "string",
+        default: '""',
+        description: "Starting code when the input is uncontrolled.",
+      },
+      {
+        name: "onChange",
+        type: "(value: string) => void",
+        description: "Fires on every edit with the full code so far.",
+      },
+      {
+        name: "onComplete",
+        type: "(value: string) => void",
+        description: "Fires once the last slot is filled.",
+      },
+      {
+        name: "type",
+        type: '"numbers" | "letters" | "both"',
+        default: '"numbers"',
+        options: ["numbers", "letters", "both"],
+        description:
+          "Which characters a slot accepts. Anything else is ignored, including on paste.",
+      },
+      {
+        name: "status",
+        type: '"idle" | "success" | "error"',
+        default: '"idle"',
+        options: ["idle", "success", "error"],
+        description:
+          "Drives the feedback state. Success traces a green ring around each box in turn, error rings them red and shakes the row once.",
+      },
+      {
+        name: "mask",
+        type: "boolean",
+        default: "false",
+        description: "Hides the characters, like a password field.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Blocks input and dims every slot.",
+      },
+      {
+        name: "autoFocus",
+        type: "boolean",
+        default: "false",
+        description: "Focuses the first slot on mount.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description: "Extra classes for the row that wraps the slots.",
+      },
+      {
+        name: "slotClassName",
+        type: "string",
+        description: "Extra classes for each slot, for sizing and colors.",
+      },
+    ],
+    usage: `import { useState } from "react"
+import OtpInput, { type OtpStatus } from "@/components/ui/otp-input"
+
+export function Demo() {
+  const [status, setStatus] = useState<OtpStatus>("idle")
+
+  return (
+    <OtpInput
+      length={6}
+      size="md"
+      status={status}
+      onChange={() => setStatus("idle")}
+      onComplete={(code) => setStatus(checkCode(code) ? "success" : "error")}
+    />
+  )
+}`,
   }
   // {
   //   name: "Family drawer",
