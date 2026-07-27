@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
 import Link from "next/link";
-import { motion, useAnimate } from "motion/react";
+import { motion, useAnimate, useReducedMotion } from "motion/react";
 import { arc } from "motion";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +32,7 @@ export function BounceSidebar({
 }: BounceSidebarProps) {
   const [internalValue, setInternalValue] = useState(defaultValue);
   const activeIndex = value ?? internalValue;
+  const reduceMotion = useReducedMotion();
 
   const [dot, animate] = useAnimate<HTMLSpanElement>();
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -87,6 +88,11 @@ export function BounceSidebar({
     prevY.current = toY;
     if (delta === 0) return;
 
+    if (reduceMotion) {
+      animate(dot.current, { x: 0, y: toY }, { duration: 0 });
+      return;
+    }
+
     const distance = Math.abs(delta);
     const path = arc({
       strength: Math.min(0.8, 14 / distance),
@@ -98,7 +104,7 @@ export function BounceSidebar({
       { x: 0, y: toY },
       { duration: 0.25, ease: "easeOut", path },
     );
-  }, [activeIndex, animate, dot, dotSize]);
+  }, [activeIndex, animate, dot, dotSize, reduceMotion]);
 
   const select = (index: number) => {
     if (value === undefined) setInternalValue(index);
@@ -134,7 +140,7 @@ export function BounceSidebar({
 
         return (
           <li
-            key={label}
+            key={`${index}-${label}`}
             ref={(el) => {
               itemRefs.current[index] = el;
             }}
@@ -144,6 +150,7 @@ export function BounceSidebar({
                 href={href}
                 data-slot="bounce-sidebar-item"
                 data-active={isActive}
+                aria-current={isActive ? "page" : undefined}
                 onClick={() => select(index)}
                 className={itemClassName}
               >
@@ -154,6 +161,7 @@ export function BounceSidebar({
                 type="button"
                 data-slot="bounce-sidebar-item"
                 data-active={isActive}
+                aria-current={isActive ? "true" : undefined}
                 onClick={() => select(index)}
                 className={itemClassName}
               >

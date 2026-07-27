@@ -5,8 +5,11 @@ export async function fetchStarCount() {
     const res = await fetch(`https://api.github.com/repos/${REGISTRY_REPO}`, {
       cache: "no-store",
     });
+    if (!res.ok) return null;
     const data = await res.json();
-    return (data.stargazers_count as number) ?? null;
+    return typeof data.stargazers_count === "number"
+      ? data.stargazers_count
+      : null;
   } catch {
     return null;
   }

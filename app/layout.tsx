@@ -102,15 +102,17 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex flex-1 flex-col">{children}</div>
-          <Databuddy
-            clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID!}
-            trackHashChanges={true}
-            trackAttributes={true}
-            trackOutgoingLinks={true}
-            trackInteractions={true}
-            trackWebVitals={true}
-            trackErrors={true}
-          />
+          {process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID ? (
+            <Databuddy
+              clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID}
+              trackHashChanges={true}
+              trackAttributes={true}
+              trackOutgoingLinks={true}
+              trackInteractions={true}
+              trackWebVitals={true}
+              trackErrors={true}
+            />
+          ) : null}
         </ThemeProvider>
       </body>
     </html>

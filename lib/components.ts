@@ -108,9 +108,10 @@ export function Demo() {
     props: [
       {
         name: "items",
-        type: "string[]",
+        type: "Array<string | { label: string; href?: string }>",
         required: true,
-        description: "Labels rendered as the vertical list of nav items.",
+        description:
+          "Labels rendered as the vertical list of nav items. Pass objects with href to render links instead of buttons.",
       },
       {
         name: "value",
@@ -284,9 +285,9 @@ export function Demo() {
       {
         name: "maxMinutes",
         type: "number",
-        default: "60",
+        default: "59",
         description:
-          "Ceiling for the minutes field. Same clamp-and-shake behavior as maxHours.",
+          "Ceiling for the minutes field. Same clamp-and-shake behavior as maxHours. Defaults to 59 so a minute value stays valid.",
       },
       {
         name: "hoursLabel",

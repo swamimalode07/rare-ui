@@ -104,9 +104,10 @@ type DurationFieldProps = {
     disabled?: boolean
     swayX: MotionValue<number>
     inputRef?: React.RefObject<HTMLInputElement | null>
+    label: string
 }
 
-const DurationField = ({ value, onValueChange, max, isEditing, shouldReduceMotion, disabled, swayX, inputRef }: DurationFieldProps) => {
+const DurationField = ({ value, onValueChange, max, isEditing, shouldReduceMotion, disabled, swayX, inputRef, label }: DurationFieldProps) => {
     const measureRef = useRef<HTMLSpanElement>(null)
     const [textWidth, setTextWidth] = useState(0)
     const errorX = useSpring(0, ERROR_SPRING)
@@ -144,6 +145,9 @@ const DurationField = ({ value, onValueChange, max, isEditing, shouldReduceMotio
                 placeholder={isEditing ? '' : '0'}
                 readOnly={!isEditing}
                 disabled={disabled}
+                aria-label={label}
+                min={0}
+                max={max}
                 style={{ x, width: isEditing ? 44 : collapsedWidth }}
                 animate={{ width: isEditing ? 44 : collapsedWidth }}
                 transition={shouldReduceMotion ? { duration: 0 } : { type: 'spring', ...WIDTH_SPRING }}
@@ -164,7 +168,7 @@ function DurationPicker({
     onEditingChange,
     defaultEditing = false,
     maxHours = 24,
-    maxMinutes = 60,
+    maxMinutes = 59,
     hoursLabel = 'Hr.',
     minutesLabel = 'Min.',
     disabled = false,
@@ -256,11 +260,11 @@ function DurationPicker({
             {...props}
         >
             <SquircleSegment leftRadius={CORNER_RADIUS} rightRadius={innerRadius} style={{ paddingRight: innerPadRight }} className="bg-[#F4F4F9] dark:bg-[#262626] h-12 flex items-center gap-1 pl-2">
-                <DurationField value={hoursText} onValueChange={handleHoursChange} max={maxHours} isEditing={isEditing} shouldReduceMotion={!!shouldReduceMotion} disabled={disabled} swayX={swayX} inputRef={hoursInputRef} />
+                <DurationField value={hoursText} onValueChange={handleHoursChange} max={maxHours} isEditing={isEditing} shouldReduceMotion={!!shouldReduceMotion} disabled={disabled} swayX={swayX} inputRef={hoursInputRef} label={hoursLabel} />
                 <motion.span style={{ x: swayX }} className='text-[#868593]/70 font-semibold font-runde'>{hoursLabel}</motion.span>
             </SquircleSegment>
             <SquircleSegment leftRadius={innerRadius} rightRadius={innerRadius} style={{ marginLeft: segmentSpacing, paddingLeft: innerPadLeft, paddingRight: innerPadRight }} className="bg-[#F4F4F9] dark:bg-[#262626] h-12 flex items-center gap-1">
-                <DurationField value={minutesText} onValueChange={handleMinutesChange} max={maxMinutes} isEditing={isEditing} shouldReduceMotion={!!shouldReduceMotion} disabled={disabled} swayX={swayX} />
+                <DurationField value={minutesText} onValueChange={handleMinutesChange} max={maxMinutes} isEditing={isEditing} shouldReduceMotion={!!shouldReduceMotion} disabled={disabled} swayX={swayX} label={minutesLabel} />
                 <motion.span style={{ x: swayX }} className='text-[#868593]/70 font-medium font-runde'>{minutesLabel}</motion.span>
             </SquircleSegment>
             <SquircleSegment asChild leftRadius={innerRadius} rightRadius={CORNER_RADIUS} style={{ marginLeft: segmentSpacing }}>

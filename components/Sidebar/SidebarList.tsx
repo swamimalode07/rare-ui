@@ -11,15 +11,14 @@ const items = components.map((component) => ({
 
 const SidebarList = ({ onNavigate }: { onNavigate?: () => void }) => {
   const pathname = usePathname();
-  const activeIndex = Math.max(
-    0,
-    components.findIndex((component) => pathname === component.href),
+  const matchedIndex = components.findIndex(
+    (component) => pathname === component.href,
   );
 
   return (
     <BounceSidebar
       items={items}
-      value={activeIndex}
+      value={matchedIndex}
       onChange={() => onNavigate?.()}
     />
   );

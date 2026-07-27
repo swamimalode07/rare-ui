@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactElement,
+} from "react";
 import { cn } from "@/lib/utils";
 
 const OPEN_DELAY_MS = 400;
@@ -73,6 +82,15 @@ export default function Tooltip({
 }: TooltipProps) {
   const { open, show, hide } = useDelayedHover();
   const position = ALIGN[align];
+  const tooltipId = useId();
+
+  const trigger = Children.map(children, (child) => {
+    if (!isValidElement(child)) return child;
+    const element = child as ReactElement<{ "aria-describedby"?: string }>;
+    return cloneElement(element, {
+      "aria-describedby": open ? tooltipId : undefined,
+    });
+  });
 
   return (
     <div
@@ -82,10 +100,10 @@ export default function Tooltip({
       onBlur={hide}
       className={cn("relative flex", className)}
     >
-      {children}
+      {trigger}
 
       {open && (
-        <span role="tooltip" className={cn(PILL, position.pill)}>
+        <span id={tooltipId} role="tooltip" className={cn(PILL, position.pill)}>
           <TooltipArrow className={position.arrow} />
           {label}
         </span>
