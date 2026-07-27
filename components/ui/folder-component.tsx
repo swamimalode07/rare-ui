@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 const themes = {
@@ -73,6 +73,17 @@ const FolderComponent = ({
   const scale = sizeScales[size];
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const spring = reduceMotion
+    ? { duration: 0 }
+    : { type: "spring" as const, stiffness: 120, damping: 13 };
+  const flapSpring = reduceMotion
+    ? { duration: 0 }
+    : { type: "spring" as const, stiffness: 120, damping: 14 };
+  const peeked = !reduceMotion && isHovered;
+  const opened = isOpen;
+
+  const toggle = () => setIsOpen((o) => !o);
 
   return (
     <div
@@ -84,7 +95,11 @@ const FolderComponent = ({
       {...props}
     >
       <div
-        className="relative cursor-pointer select-none"
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        aria-label={isOpen ? "Close folder" : "Open folder"}
+        className="relative cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2"
         style={{
           width: BASE_WIDTH * scale,
           height: BASE_HEIGHT * scale,
@@ -96,7 +111,13 @@ const FolderComponent = ({
           setIsHovered(false);
           setIsOpen(false);
         }}
-        onClick={() => setIsOpen((o) => !o)}
+        onClick={toggle}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggle();
+          }
+        }}
       >
         <div
           className="absolute top-1/2 left-1/2"
@@ -123,15 +144,13 @@ const FolderComponent = ({
             <motion.div
               className="absolute"
               animate={{
-                y: isOpen ? -160 : isHovered ? -30 : -10,
-                x: isOpen ? 70 : 40,
-                rotate: isOpen ? 18 : isHovered ? 14 : 10,
+                y: opened ? -160 : peeked ? -30 : -10,
+                x: opened ? 70 : 40,
+                rotate: opened ? 18 : peeked ? 14 : 10,
               }}
               transition={{
-                type: "spring",
-                stiffness: 120,
-                damping: 13,
-                delay: isOpen ? 0.1 : isHovered ? 0.12 : 0,
+                ...spring,
+                delay: reduceMotion ? 0 : opened ? 0.1 : peeked ? 0.12 : 0,
               }}
             >
               <Card id={1} theme={theme} />
@@ -139,15 +158,13 @@ const FolderComponent = ({
             <motion.div
               className="absolute"
               animate={{
-                y: isOpen ? -180 : isHovered ? -35 : -20,
-                x: isOpen ? 0 : 3,
-                rotate: isOpen ? -3 : isHovered ? -1 : 2,
+                y: opened ? -180 : peeked ? -35 : -20,
+                x: opened ? 0 : 3,
+                rotate: opened ? -3 : peeked ? -1 : 2,
               }}
               transition={{
-                type: "spring",
-                stiffness: 120,
-                damping: 13,
-                delay: isOpen ? 0.05 : isHovered ? 0.06 : 0,
+                ...spring,
+                delay: reduceMotion ? 0 : opened ? 0.05 : peeked ? 0.06 : 0,
               }}
             >
               <Card id={2} theme={theme} />
@@ -155,15 +172,13 @@ const FolderComponent = ({
             <motion.div
               className="absolute"
               animate={{
-                y: isOpen ? -170 : isHovered ? -44 : -22,
-                x: isOpen ? -65 : -40,
-                rotate: isOpen ? -14 : isHovered ? -9 : -5,
+                y: opened ? -170 : peeked ? -44 : -22,
+                x: opened ? -65 : -40,
+                rotate: opened ? -14 : peeked ? -9 : -5,
               }}
               transition={{
-                type: "spring",
-                stiffness: 120,
-                damping: 13,
-                delay: isOpen ? 0 : 0,
+                ...spring,
+                delay: 0,
               }}
             >
               <Card id={3} theme={theme} />
@@ -178,8 +193,8 @@ const FolderComponent = ({
               width: 321,
               height: 241,
             }}
-            animate={{ rotateX: isOpen ? -55 : isHovered ? -45 : -15 }}
-            transition={{ type: "spring", stiffness: 120, damping: 14 }}
+            animate={{ rotateX: opened ? -55 : peeked ? -45 : -15 }}
+            transition={flapSpring}
           >
             <div
               className="absolute inset-0"
