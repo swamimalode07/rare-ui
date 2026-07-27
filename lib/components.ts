@@ -735,7 +735,7 @@ export function Demo() {
         default: '"idle"',
         options: ["idle", "success", "error"],
         description:
-          "Drives the feedback state. Success traces a green ring around each box in turn, error rings them red and shakes the row once.",
+          "Drives the feedback state. Success traces a green ring around each box in turn. Error rings them red, shakes the row once, and marks every slot aria-invalid with an alert for assistive tech.",
       },
       {
         name: "mask",
@@ -754,6 +754,12 @@ export function Demo() {
         type: "boolean",
         default: "false",
         description: "Focuses the first slot on mount.",
+      },
+      {
+        name: "name",
+        type: "string",
+        description:
+          "When set, writes the full code into a hidden input so native form submit includes the value.",
       },
       {
         name: "className",
