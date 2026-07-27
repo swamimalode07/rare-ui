@@ -72,6 +72,8 @@ export default function FamilyDrawer() {
                         <motion.div animate={{ height: bounds.height }}>
                             <Drawer.Close asChild>
                                 <button
+                                    type="button"
+                                    aria-label="Close"
                                     data-vaul-no-drag=""
                                     className="focus-visible:shadow-focus-ring-button absolute top-7 right-8 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[#F7F8F9] text-[#949595] transition-transform focus:scale-95 active:scale-75 dark:bg-secondary dark:text-muted-foreground"
                                 >
@@ -157,13 +159,13 @@ export function Header({
     return (
         <header className="mt-[21px]">
             {icon}
-            <h2 className="mt-2.5 text-[22px] font-semibold text-[#222222] md:font-medium dark:text-foreground">
+            <Drawer.Title className="mt-2.5 text-[22px] font-semibold text-[#222222] md:font-medium dark:text-foreground">
                 {title}
-            </h2>
+            </Drawer.Title>
 
-            <p className="mt-3 text-[17px] leading-[24px] font-medium text-[#999999] md:font-normal">
+            <Drawer.Description className="mt-3 text-[17px] leading-[24px] font-medium text-[#999999] md:font-normal">
                 {description}
-            </p>
+            </Drawer.Description>
         </header>
     );
 }
@@ -287,9 +289,12 @@ export function DefaultView({ setView }: { setView: SetView }) {
     return (
         <>
             <header className="mb-4 flex h-[72px] items-center border-b border-[#F7F7F7] pl-2 dark:border-border">
-                <h2 className="text-[19px] font-semibold text-[#222222] md:font-medium dark:text-foreground">
+                <Drawer.Title className="text-[19px] font-semibold text-[#222222] md:font-medium dark:text-foreground">
                     Options
-                </h2>
+                </Drawer.Title>
+                <Drawer.Description className="sr-only">
+                    Choose a wallet action.
+                </Drawer.Description>
             </header>
             <div className="space-y-3">
                 <Button
@@ -306,7 +311,7 @@ export function DefaultView({ setView }: { setView: SetView }) {
                     }}
                 >
                     <PhraseIcon />
-                    View Recovery Phase
+                    View Recovery Phrase
                 </Button>
                 <button
                     className="focus-visible:shadow-focus-ring-button flex h-12 w-full items-center gap-[15px] rounded-[16px] bg-[#FFF0F0] px-4 text-[17px] font-semibold text-[#FF3F40] transition-transform focus:scale-95 active:scale-95 md:font-medium dark:bg-destructive/15"

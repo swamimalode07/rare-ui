@@ -45,11 +45,11 @@
       ]
     },
     {
-      "name": "family drawer",
+      "name": "family-drawer",
       "type": "registry:ui",
       "title": "Family Drawer",
-      "description": "A drawer that opens from the right side of the screen, with a family tree structure inside. It supports color and size (sm/md/lg) props.",
-      "dependencies": ["motion", "vaul"],
+      "description": "A bottom drawer with smooth, morphing transitions between stacked views, inspired by the Family app. Built on Vaul.",
+      "dependencies": ["motion", "vaul", "clsx", "react-use-measure"],
       "registryDependencies": ["utils"],
       "files": [
         {
