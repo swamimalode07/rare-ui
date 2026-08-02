@@ -214,6 +214,8 @@ const ScrollProgress = ({
             {open ? (
               <motion.ul
                 key="list"
+                role="listbox"
+                aria-label="Sections"
                 className="absolute inset-0 flex flex-col p-1.5"
                 initial={{
                   opacity: 0,
@@ -232,6 +234,8 @@ const ScrollProgress = ({
                     <li key={s.id}>
                       <button
                         type="button"
+                        role="option"
+                        aria-selected={isActive}
                         onClick={() => selectSection(s.id)}
                         className={cn(
                           "relative flex w-full items-center gap-3 rounded-[14px] px-3 py-2 text-left text-sm font-medium leading-none transition-colors",
@@ -297,6 +301,8 @@ const ScrollProgress = ({
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-label="Show sections"
+                aria-expanded={false}
+                aria-haspopup="listbox"
                 className="absolute inset-0 flex items-center gap-2.5 py-1.5 pl-2 pr-4"
                 initial={{
                   opacity: 0,
