@@ -890,11 +890,11 @@ export function Demo() {
   // {
   //   name: "Family drawer",
   //   href: "/components/familydrawer",
-  //   registry: "family drawer",
+  //   registry: "family-drawer",
   //   description:
   //     "A bottom drawer with smooth, morphing transitions between stacked views, inspired by the Family app. Built on Vaul.",
   //   source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/family-drawer.tsx`,
-  //   dependencies: [{ name: "motion" }, { name: "vaul" }],
+  //   dependencies: [{ name: "motion" }, { name: "vaul" }, { name: "clsx" }, { name: "react-use-measure" }],
   //   interaction: "Click the trigger to open the drawer and step between views.",
   //   usage: `import FamilyDrawer from "@/components/ui/family-drawer"
 
