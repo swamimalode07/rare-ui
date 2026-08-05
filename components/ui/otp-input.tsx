@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ComponentProps } from "react";
+import { useId, useRef, useState, type ComponentProps } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -85,6 +85,7 @@ export type OtpInputProps = Omit<
   mask?: boolean;
   disabled?: boolean;
   autoFocus?: boolean;
+  name?: string;
   slotClassName?: string;
 };
 
@@ -102,6 +103,7 @@ export function OtpInput({
   autoFocus,
   className,
   slotClassName,
+  name,
   ...props
 }: OtpInputProps) {
   const [uncontrolled, setUncontrolled] = useState(() =>
@@ -115,6 +117,7 @@ export function OtpInput({
   // the slot the user deliberately moved to, so a full code only changes on purpose
   const editingAt = useRef<number | null>(null);
   const reduceMotion = useReducedMotion();
+  const errorMessageId = useId();
 
   // padded, not joined: joining would close a gap left by a mid-code backspace
   const slots =
@@ -241,6 +244,14 @@ export function OtpInput({
       className={cn("relative inline-flex", className)}
       {...props}
     >
+      {name ? (
+        <input type="hidden" name={name} value={slots.join("")} readOnly />
+      ) : null}
+      {status === "error" ? (
+        <span id={errorMessageId} role="alert" className="sr-only">
+          Invalid code
+        </span>
+      ) : null}
       <motion.div
         onFocus={(event) => {
           const index = inputs.current.indexOf(
@@ -290,6 +301,10 @@ export function OtpInput({
               autoComplete={index === 0 ? "one-time-code" : "off"}
               autoFocus={autoFocus && index === 0}
               disabled={disabled}
+              aria-invalid={status === "error" || undefined}
+              aria-describedby={
+                status === "error" ? errorMessageId : undefined
+              }
               aria-label={`${numeric ? "Digit" : "Character"} ${index + 1} of ${length}`}
               className={cn(
                 SLOT_CLASS,
