@@ -53,14 +53,14 @@ export default function HeroCta() {
   const shift = (px: number) => (reduceMotion ? 0 : px);
 
   return (
-    <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+    <div className="mt-4 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
       <motion.div
         initial={false}
         animate={{ x: hovered === "cta" ? shift(-SIDE_SHIFT) : 0 }}
         transition={spring}
         onHoverStart={() => setHovered("pill")}
         onHoverEnd={() => setHovered((h) => (h === "pill" ? null : h))}
-        className="relative max-w-full"
+        className="relative min-w-0 max-w-[75vw] sm:max-w-full"
       >
         <StretchSquircleBg
           hovered={hovered === "pill"}
@@ -69,9 +69,9 @@ export default function HeroCta() {
         <CopyButton
           value={INSTALL_COMMAND}
           label="Copy command"
-          className="relative h-12 max-w-full flex-row-reverse gap-2 pl-4 pr-4 text-white/50 hover:text-white sm:pl-5"
+          className="relative h-12 w-full max-w-full flex-row-reverse gap-2 pl-4 pr-4 text-white/50 hover:text-white sm:w-auto sm:pl-5"
         >
-          <code className="overflow-x-auto whitespace-nowrap font-mono text-xs font-semibold text-white sm:text-sm">
+          <code className="min-w-0 flex-1 truncate font-mono text-xs font-semibold text-white sm:flex-none sm:text-sm">
             npx shadcn@latest add {REGISTRY_REPO}
             <span className="font-normal text-white/50">/fluid-orb</span>
           </code>
@@ -84,7 +84,7 @@ export default function HeroCta() {
         transition={spring}
         onHoverStart={() => setHovered("cta")}
         onHoverEnd={() => setHovered((h) => (h === "cta" ? null : h))}
-        className="group relative"
+        className="group relative shrink-0"
       >
         <StretchSquircleBg
           hovered={hovered === "cta"}

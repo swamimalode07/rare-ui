@@ -78,7 +78,7 @@ export default function CopyButton({
         className,
       )}
     >
-      <span className={cn("grid place-items-center", iconClassName)}>
+      <span className={cn("grid shrink-0 place-items-center", iconClassName)}>
         <motion.span
           className={layer}
           initial={false}
