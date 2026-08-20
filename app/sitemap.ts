@@ -19,6 +19,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${SITE_URL}/sponsors`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     ...components.map((component) => ({
       url: `${SITE_URL}${component.href}`,
       lastModified,
