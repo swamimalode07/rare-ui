@@ -10,6 +10,7 @@ type FooterLink = { label: string; href: string; external?: boolean };
 const LINKS: FooterLink[] = [
   { label: "Home", href: "/" },
   { label: "Components", href: "/components" },
+  { label: "Sponsors", href: "/sponsors" },
   { label: "GitHub", href: GITHUB_URL, external: true },
   { label: "X / Twitter", href: X_URL, external: true },
 ];
