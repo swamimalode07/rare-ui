@@ -995,6 +995,7 @@ export function Demo() {
     registry: "notification-bell",
     description: "An iOS-style notification bell with an unread count badge.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/notification-bell.tsx`,
+    preview: "/componentdemos/notification.mp4",
     dependencies: [
       {
         name: "motion",
