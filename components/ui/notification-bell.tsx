@@ -61,6 +61,10 @@ const CLAPPER_VELOCITY = 450;
 const WINDOW = 3;
 const LAG = 2;
 
+// a taller window would show the next digit at rest, so the fade rides velocity instead
+const ROLL_FADE = 34;
+const ROLL_VELOCITY = 9;
+
 const clamp = (value: number, limit: number) =>
   Math.max(-limit, Math.min(limit, value));
 
@@ -151,6 +155,11 @@ function BellIcon({
 function DigitColumn({ value, reduced }: { value: number; reduced: boolean }) {
   const position = useSpring(value, COLUMN_SPRING);
   const y = useTransform(position, (p) => `${-p * 100}%`);
+  const velocity = useVelocity(position);
+  const mask = useTransform(velocity, (v) => {
+    const fade = Math.min(ROLL_FADE, (Math.abs(v) / ROLL_VELOCITY) * ROLL_FADE);
+    return `linear-gradient(to bottom, transparent 0%, #000 ${fade}%, #000 ${100 - fade}%, transparent 100%)`;
+  });
 
   useEffect(() => {
     const gap = value - position.get();
@@ -161,9 +170,13 @@ function DigitColumn({ value, reduced }: { value: number; reduced: boolean }) {
   }, [value, reduced, position]);
 
   return (
-    <span
+    <motion.span
       className="relative inline-block h-[1em] overflow-hidden"
-      style={{ width: "1ch" }}
+      style={{
+        width: "1ch",
+        maskImage: reduced ? undefined : mask,
+        WebkitMaskImage: reduced ? undefined : mask,
+      }}
     >
       <motion.span className="absolute inset-0" style={{ y }}>
         {Array.from({ length: WINDOW * 2 + 1 }, (_, i) => {
@@ -179,7 +192,7 @@ function DigitColumn({ value, reduced }: { value: number; reduced: boolean }) {
           );
         })}
       </motion.span>
-    </span>
+    </motion.span>
   );
 }
 
