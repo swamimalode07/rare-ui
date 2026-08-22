@@ -1254,7 +1254,7 @@ export function Demo() {
         name: "progress",
         type: "number",
         description:
-          "Position of the run from 0 to 1, driving how far the grid has split. Omit it to self-pace, which eases to 0.9 and waits there for the image.",
+          "Position of the run from 0 to 1, driving how far the grid has split. It holds at 0.72 until the image decodes, so the reveal can never finish early.",
       },
       {
         name: "aspect",
@@ -1274,7 +1274,7 @@ export function Demo() {
         type: "number",
         default: "6000",
         description:
-          "Milliseconds the self-paced ramp takes to reach 0.9. Ignored when progress is passed.",
+          "Roughly how long the work takes, used to pace the grid when no progress is passed. Overrunning it is fine, the grid keeps creeping instead of stopping.",
       },
       {
         name: "onRevealComplete",

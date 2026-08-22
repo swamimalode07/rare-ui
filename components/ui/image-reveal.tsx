@@ -19,7 +19,7 @@ export type ImageRevealProps = Omit<ComponentProps<"div">, "children"> & {
 const CELLS = 180;
 const OPENING_CELLS = 4;
 const HOLD = 0.9;
-const WAIT_CAP = 0.3;
+const WAIT_CAP = 0.72;
 const LAST_SPLIT = 0.92;
 const MORPH = 0.055;
 const OPENING_SPLIT_AT = -MORPH;
@@ -69,8 +69,7 @@ function smoothstep(a: number, b: number, x: number) {
 
 function selfPaced(elapsed: number, duration: number) {
   const span = duration > 0 ? duration : 1;
-  const k = Math.min(elapsed / span, 1);
-  return HOLD * (1 - Math.pow(1 - k, 2.2));
+  return HOLD * (1 - Math.exp(-elapsed / span));
 }
 
 function hash(x: number, y: number, z: number) {
@@ -453,12 +452,16 @@ export function ImageReveal({
       drawScene(scene);
     };
 
+    const settledNow = () =>
+      loadedAt < 0 ? performance.now() : loadedAt + COLOR_MS;
+
     const renderStill = () => {
-      const ready = scene.image !== null;
-      render(
-        ready ? 1 : WAIT_CAP,
-        loadedAt < 0 ? performance.now() : loadedAt + COLOR_MS,
-      );
+      render(scene.image !== null ? 1 : WAIT_CAP, settledNow());
+    };
+
+    const repaint = () => {
+      if (reduce) renderStill();
+      else render(scene.split, settledNow());
     };
 
     const resize = () => {
@@ -472,7 +475,7 @@ export function ImageReveal({
       scene.height = h;
       canvas.width = w;
       canvas.height = h;
-      if (reduce) renderStill();
+      repaint();
     };
 
     resize();
@@ -519,6 +522,8 @@ export function ImageReveal({
     let eased = 0;
     let split = 0;
     let fired = false;
+    let stopped = false;
+    let visible = true;
 
     const tick = (now: number) => {
       frameId = requestAnimationFrame(tick);
@@ -554,16 +559,36 @@ export function ImageReveal({
 
       if (fired && split > 0.9995) {
         render(1, now);
+        stopped = true;
         cancelAnimationFrame(frameId);
       }
     };
 
-    frameId = requestAnimationFrame(tick);
+    const start = () => {
+      if (stopped) return;
+      last = 0;
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(tick);
+    };
+
+    const visibility = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting === visible) return;
+        visible = entry.isIntersecting;
+        if (visible) start();
+        else cancelAnimationFrame(frameId);
+      },
+      { rootMargin: "150px" },
+    );
+    visibility.observe(frame);
+
+    start();
 
     return () => {
       cancelled = true;
       cancelAnimationFrame(frameId);
       observer.disconnect();
+      visibility.disconnect();
     };
   }, [reduce, src, ratio]);
 
