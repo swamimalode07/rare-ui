@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ComponentProps } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-export type ImageRevealProps = Omit<React.ComponentProps<"div">, "children"> & {
+export type ImageRevealProps = Omit<ComponentProps<"div">, "children"> & {
   src?: string | null;
   alt?: string;
   progress?: number;
@@ -12,6 +13,7 @@ export type ImageRevealProps = Omit<React.ComponentProps<"div">, "children"> & {
   caption?: string;
   estimatedDuration?: number;
   onRevealComplete?: () => void;
+  onError?: () => void;
 };
 
 const CELLS = 180;
@@ -232,7 +234,8 @@ type Scene = {
   dark: boolean;
   clock: number;
   split: number;
-  colorMix: number;
+  fade: number;
+  hasColors: boolean;
   image: HTMLImageElement | null;
 };
 
@@ -243,10 +246,11 @@ function greyOf(tone: number, dark: boolean, clock: number) {
 }
 
 function drawScene(s: Scene) {
-  const { ctx, root, width, height, split, colorMix } = s;
+  const { ctx, root, width, height, split } = s;
+  const tint = s.hasColors ? s.fade : 0;
   const base = greyOf(root.tone, s.dark, s.clock);
   const shade = (v: number, target: number) =>
-    Math.round(mix(v, target, colorMix) * 0.92);
+    Math.round(mix(v, target, tint) * 0.92);
 
   ctx.fillStyle = `rgb(${shade(base, root.r)},${shade(base, root.g)},${shade(base, root.b)})`;
   ctx.fillRect(0, 0, width, height);
@@ -282,9 +286,9 @@ function drawScene(s: Scene) {
     if (innerW <= 0 || innerH <= 0) return;
 
     const grey = greyOf(tone, s.dark, s.clock);
-    ctx.fillStyle = `rgb(${Math.round(mix(grey, r, colorMix))},${Math.round(
-      mix(grey, g, colorMix),
-    )},${Math.round(mix(grey, b, colorMix))})`;
+    ctx.fillStyle = `rgb(${Math.round(mix(grey, r, tint))},${Math.round(
+      mix(grey, g, tint),
+    )},${Math.round(mix(grey, b, tint))})`;
 
     if (rounded) {
       const radius = Math.min(innerW, innerH) * 0.12 * soft;
@@ -335,10 +339,9 @@ function drawScene(s: Scene) {
   walk(root, 0, 0, width, height, root.r, root.g, root.b, root.tone);
 
   if (!s.image) return;
-  const photo =
-    colorMix > 0
-      ? smoothstep(PHOTO_FADE[0], PHOTO_FADE[1], split) * colorMix
-      : 0;
+  const photo = s.hasColors
+    ? smoothstep(PHOTO_FADE[0], PHOTO_FADE[1], split) * s.fade
+    : s.fade;
   if (photo <= 0.002) return;
 
   const fit = coverRect(
@@ -384,6 +387,7 @@ export function ImageReveal({
   caption,
   estimatedDuration = 6000,
   onRevealComplete,
+  onError,
   className,
   style,
   ...props
@@ -406,11 +410,13 @@ export function ImageReveal({
   const progressRef = useRef(progress);
   const durationRef = useRef(estimatedDuration);
   const doneRef = useRef(onRevealComplete);
+  const errorRef = useRef(onError);
 
   useEffect(() => {
     progressRef.current = progress;
     durationRef.current = estimatedDuration;
     doneRef.current = onRevealComplete;
+    errorRef.current = onError;
   });
 
   useEffect(() => {
@@ -426,27 +432,24 @@ export function ImageReveal({
     const scene: Scene = {
       ctx,
       root,
-      width: 1,
-      height: 1,
+      width: 0,
+      height: 0,
       scale: 1,
       dark: false,
       clock: 0,
       split: 0,
-      colorMix: 0,
+      fade: 0,
+      hasColors: false,
       image: null,
     };
 
-    let hasColors = false;
     let loadedAt = -1;
     let cancelled = false;
 
     const render = (split: number, now: number) => {
       scene.dark = document.documentElement.classList.contains("dark");
       scene.split = split;
-      scene.colorMix =
-        hasColors && loadedAt >= 0
-          ? smoothstep(0, COLOR_MS, now - loadedAt)
-          : 0;
+      scene.fade = loadedAt < 0 ? 0 : smoothstep(0, COLOR_MS, now - loadedAt);
       drawScene(scene);
     };
 
@@ -482,15 +485,20 @@ export function ImageReveal({
       el.decoding = "async";
       el.onload = () => {
         if (cancelled) return;
-        if (!el.naturalWidth || !el.naturalHeight) return;
+        if (!el.naturalWidth || !el.naturalHeight) {
+          errorRef.current?.();
+          return;
+        }
         scene.image = el;
         loadedAt = performance.now();
-        hasColors = readAverages(el, root, branches, scene.split);
+        scene.hasColors = readAverages(el, root, branches, scene.split);
         setLoaded(true);
         if (reduce) renderStill();
       };
       el.onerror = () => {
-        if (!cancelled && withCors) load(url, false);
+        if (cancelled) return;
+        if (withCors) load(url, false);
+        else errorRef.current?.();
       };
       el.src = url;
     };
@@ -542,6 +550,11 @@ export function ImageReveal({
         fired = true;
         setRevealed(true);
         doneRef.current?.();
+      }
+
+      if (fired && split > 0.9995) {
+        render(1, now);
+        cancelAnimationFrame(frameId);
       }
     };
 

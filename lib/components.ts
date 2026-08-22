@@ -1229,7 +1229,6 @@ export function Demo() {
     description:
       "A loading state for AI images that turns into the real picture when it arrives.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/image-reveal.tsx`,
-    featured: true,
     dependencies: [
       {
         name: "motion",
@@ -1244,6 +1243,12 @@ export function Demo() {
         type: "string | null",
         description:
           "Image to reveal. Leave it null while the image is still being generated, then set it once it is ready.",
+      },
+      {
+        name: "alt",
+        type: "string",
+        description:
+          "Describes the finished image for screen readers. The frame is hidden from assistive tech when omitted.",
       },
       {
         name: "progress",
@@ -1275,6 +1280,12 @@ export function Demo() {
         name: "onRevealComplete",
         type: "() => void",
         description: "Fires once the image has fully resolved.",
+      },
+      {
+        name: "onError",
+        type: "() => void",
+        description:
+          "Fires when the image fails to load. Without it a broken src leaves the grid waiting, so use it to show your own fallback.",
       },
       {
         name: "className",
