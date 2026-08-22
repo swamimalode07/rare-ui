@@ -1076,6 +1076,137 @@ export function Demo() {
   <NotificationBell count={8} />
 </DropdownMenuTrigger>`,
   },
+  {
+    name: "Step player",
+    href: "/components/stepplayer",
+    registry: "step-player",
+    description:
+      "An iOS-style stepped progress track with a play, pause and replay control. The active step stretches into a bar that fills as it plays.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/step-player.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+      { name: "flubber" },
+    ],
+    interaction:
+      "Press play to start the sequence. The current step stretches into a bar and fills as it runs, then shrinks to a filled dot when it hands off to the next one. Press again to pause mid-fill; the play icon splits into the pause bars as it goes. At the end it fades into a replay arrow. Steps can be clicked to jump.",
+    props: [
+      {
+        name: "steps",
+        type: "number | StepPlayerStep[]",
+        default: "4",
+        description:
+          "How many steps to show. Pass an array to give each one its own duration or label.",
+      },
+      {
+        name: "value",
+        type: "number",
+        description:
+          "Active step index, for controlled use. Leave it out and the component tracks its own index.",
+      },
+      {
+        name: "defaultValue",
+        type: "number",
+        default: "0",
+        description:
+          "Step to start on when uncontrolled. Clamped to the last step.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: number) => void",
+        description:
+          "Fires when the step advances, wraps, or is clicked. Also fires on replay.",
+      },
+      {
+        name: "playing",
+        type: "boolean",
+        description:
+          "Play state, for controlled use. Leave it out to let the button drive it.",
+      },
+      {
+        name: "defaultPlaying",
+        type: "boolean",
+        default: "false",
+        description:
+          "Whether the sequence starts running on mount when uncontrolled.",
+      },
+      {
+        name: "onPlayingChange",
+        type: "(playing: boolean) => void",
+        description:
+          "Fires when the button is pressed, and when the last step ends without loop.",
+      },
+      {
+        name: "duration",
+        type: "number",
+        default: "4000",
+        description:
+          "Milliseconds each step runs for. A per-step duration overrides it; 0 stops the timer so you can drive the index yourself.",
+      },
+      {
+        name: "loop",
+        type: "boolean",
+        default: "false",
+        description:
+          "Wraps back to the first step instead of stopping. The replay button never appears when this is on.",
+      },
+      {
+        name: "onComplete",
+        type: "() => void",
+        description:
+          "Fires when the last step finishes, on every pass when looping.",
+      },
+      {
+        name: "size",
+        type: "number",
+        default: "48",
+        description:
+          "Height of the track and button in pixels. Every other dimension is a fixed ratio of it, so the dots, bar, gaps, padding, icon, and tap targets all scale from this one number.",
+      },
+      {
+        name: "showControl",
+        type: "boolean",
+        default: "true",
+        description:
+          "Shows the round play button. Turn it off for a track on its own and drive it with the playing prop.",
+      },
+      {
+        name: "controlPosition",
+        type: '"left" | "right"',
+        default: '"right"',
+        options: ["left", "right"],
+        description: "Which side of the track the button sits on.",
+      },
+      {
+        name: "seekable",
+        type: "boolean",
+        default: "false",
+        description:
+          "Lets a step be clicked to jump to it. The dots keep a finger-sized tap target at every size.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          "Extra classes merged onto the root element. It sizes itself from the size prop, so give it a width only if you want the track wider than its content.",
+      },
+    ],
+    usage: `import { StepPlayer } from "@/components/ui/step-player"
+
+export function Demo() {
+  return <StepPlayer steps={5} duration={3000} />
+}
+
+// drive your own carousel off the index
+<StepPlayer
+  steps={slides.length}
+  value={index}
+  onValueChange={setIndex}
+  loop
+/>`,
+  },
   // {
   //   name: "Family drawer",
   //   href: "/components/familydrawer",
