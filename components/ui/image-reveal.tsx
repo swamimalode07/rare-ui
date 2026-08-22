@@ -1,0 +1,630 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { cn } from "@/lib/utils";
+
+export type ImageRevealProps = Omit<React.ComponentProps<"div">, "children"> & {
+  src?: string | null;
+  alt?: string;
+  progress?: number;
+  aspect?: number;
+  caption?: string;
+  estimatedDuration?: number;
+  onRevealComplete?: () => void;
+};
+
+const CELLS = 180;
+const OPENING_CELLS = 4;
+const HOLD = 0.9;
+const WAIT_CAP = 0.3;
+const LAST_SPLIT = 0.92;
+const MORPH = 0.055;
+const OPENING_SPLIT_AT = -MORPH;
+const SAMPLE = 128;
+const COLOR_MS = 420;
+const GUTTER_FADE = [0.35, 0.75] as const;
+const PHOTO_FADE = [0.93, 1] as const;
+
+const SHIMMER = {
+  backgroundImage:
+    "linear-gradient(90deg, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.98) 50%, rgba(255,255,255,0.5) 60%)",
+  backgroundSize: "250% 100%",
+} as const;
+
+type Cell = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  r: number;
+  g: number;
+  b: number;
+  tone: number;
+  detail: number;
+  splitAt: number;
+  parent: Cell | null;
+  kids: [Cell, Cell] | null;
+};
+
+type Sums = {
+  n: number;
+  r: number;
+  g: number;
+  b: number;
+  l: number;
+  l2: number;
+};
+
+const clamp01 = (n: number) => (n > 0 ? (n < 1 ? n : 1) : 0);
+const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
+function smoothstep(a: number, b: number, x: number) {
+  const t = clamp01((x - a) / (b - a));
+  return t * t * (3 - 2 * t);
+}
+
+function selfPaced(elapsed: number, duration: number) {
+  const span = duration > 0 ? duration : 1;
+  const k = Math.min(elapsed / span, 1);
+  return HOLD * (1 - Math.pow(1 - k, 2.2));
+}
+
+function hash(x: number, y: number, z: number) {
+  const n = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453;
+  return n - Math.floor(n);
+}
+
+function makeCell(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  parent: Cell | null,
+): Cell {
+  return {
+    x,
+    y,
+    w,
+    h,
+    r: 0,
+    g: 0,
+    b: 0,
+    tone: hash(x + 3.1, y + 1.7, w * 31.7),
+    detail: 0,
+    splitAt: 0,
+    parent,
+    kids: null,
+  };
+}
+
+function buildTree(aspect: number) {
+  const root = makeCell(0, 0, 1, 1, null);
+  const leaves: Cell[] = [root];
+  const branches: Cell[] = [];
+
+  while (leaves.length < CELLS) {
+    let pick = 0;
+    let widest = -1;
+    for (let i = 0; i < leaves.length; i++) {
+      const c = leaves[i];
+      const area = c.w * aspect * c.h * (1 + 0.12 * hash(c.x, c.y, 7.3));
+      if (area > widest) {
+        widest = area;
+        pick = i;
+      }
+    }
+
+    const parent = leaves.splice(pick, 1)[0];
+    const wide = parent.w * aspect >= parent.h;
+    const half = wide ? parent.w / 2 : parent.h / 2;
+    const a = wide
+      ? makeCell(parent.x, parent.y, half, parent.h, parent)
+      : makeCell(parent.x, parent.y, parent.w, half, parent);
+    const b = wide
+      ? makeCell(parent.x + half, parent.y, half, parent.h, parent)
+      : makeCell(parent.x, parent.y + half, parent.w, half, parent);
+
+    parent.kids = [a, b];
+    branches.push(parent);
+    leaves.push(a, b);
+  }
+
+  const paced = Math.max(1, branches.length - OPENING_CELLS + 2);
+  branches.forEach((cell, i) => {
+    const step = i - OPENING_CELLS + 2;
+    cell.splitAt =
+      i < OPENING_CELLS - 1 ? OPENING_SPLIT_AT : (LAST_SPLIT * step) / paced;
+  });
+
+  return { root, branches };
+}
+
+function measureTree(root: Cell, pixels: Uint8ClampedArray, size: number) {
+  const store = (cell: Cell, s: Sums) => {
+    const n = s.n || 1;
+    cell.r = s.r / n;
+    cell.g = s.g / n;
+    cell.b = s.b / n;
+    cell.detail = Math.max(0, s.l2 / n - (s.l / n) * (s.l / n));
+  };
+
+  const gather = (cell: Cell): Sums => {
+    if (cell.kids) {
+      const a = gather(cell.kids[0]);
+      const b = gather(cell.kids[1]);
+      const s: Sums = {
+        n: a.n + b.n,
+        r: a.r + b.r,
+        g: a.g + b.g,
+        b: a.b + b.b,
+        l: a.l + b.l,
+        l2: a.l2 + b.l2,
+      };
+      store(cell, s);
+      return s;
+    }
+
+    const x0 = Math.round(cell.x * size);
+    const y0 = Math.round(cell.y * size);
+    const x1 = Math.max(x0 + 1, Math.round((cell.x + cell.w) * size));
+    const y1 = Math.max(y0 + 1, Math.round((cell.y + cell.h) * size));
+    const s: Sums = { n: 0, r: 0, g: 0, b: 0, l: 0, l2: 0 };
+
+    for (let y = y0; y < y1; y++) {
+      for (let x = x0; x < x1; x++) {
+        const i = (y * size + x) * 4;
+        const r = pixels[i];
+        const g = pixels[i + 1];
+        const b = pixels[i + 2];
+        const l = 0.299 * r + 0.587 * g + 0.114 * b;
+        s.n++;
+        s.r += r;
+        s.g += g;
+        s.b += b;
+        s.l += l;
+        s.l2 += l * l;
+      }
+    }
+
+    store(cell, s);
+    return s;
+  };
+
+  gather(root);
+}
+
+function orderByDetail(branches: Cell[], openedBefore: number) {
+  const pending = branches.filter((c) => c.splitAt > openedBefore);
+  if (pending.length < 2) return;
+
+  const slots = pending.map((c) => c.splitAt).sort((a, b) => a - b);
+  const queue = pending.filter(
+    (c) => !c.parent || c.parent.splitAt <= openedBefore,
+  );
+
+  let next = 0;
+  while (queue.length && next < slots.length) {
+    let pick = 0;
+    for (let i = 1; i < queue.length; i++) {
+      if (queue[i].detail > queue[pick].detail) pick = i;
+    }
+    const cell = queue.splice(pick, 1)[0];
+    cell.splitAt = slots[next++];
+    for (const kid of cell.kids ?? []) {
+      if (kid.kids) queue.push(kid);
+    }
+  }
+}
+
+function coverRect(iw: number, ih: number, w: number, h: number) {
+  const s = Math.max(w / iw, h / ih);
+  return { dx: (w - iw * s) / 2, dy: (h - ih * s) / 2, dw: iw * s, dh: ih * s };
+}
+
+type Scene = {
+  ctx: CanvasRenderingContext2D;
+  root: Cell;
+  width: number;
+  height: number;
+  scale: number;
+  dark: boolean;
+  clock: number;
+  split: number;
+  colorMix: number;
+  image: HTMLImageElement | null;
+};
+
+function greyOf(tone: number, dark: boolean, clock: number) {
+  return (
+    (dark ? 30 : 228) + tone * 13 + Math.sin(clock * 1.5 + tone * 6.28) * 3
+  );
+}
+
+function drawScene(s: Scene) {
+  const { ctx, root, width, height, split, colorMix } = s;
+  const base = greyOf(root.tone, s.dark, s.clock);
+  const shade = (v: number, target: number) =>
+    Math.round(mix(v, target, colorMix) * 0.92);
+
+  ctx.fillStyle = `rgb(${shade(base, root.r)},${shade(base, root.g)},${shade(base, root.b)})`;
+  ctx.fillRect(0, 0, width, height);
+
+  const soft = 1 - smoothstep(GUTTER_FADE[0], GUTTER_FADE[1], split);
+  const gutter = s.scale * soft;
+  const rounded = soft > 0.01 && typeof ctx.roundRect === "function";
+
+  const paint = (
+    left: number,
+    top: number,
+    w: number,
+    h: number,
+    r: number,
+    g: number,
+    b: number,
+    tone: number,
+  ) => {
+    const x = Math.round(left);
+    const y = Math.round(top);
+    const cw = Math.round(left + w) - x;
+    const ch = Math.round(top + h) - y;
+
+    const onLeft = x <= 0;
+    const onTop = y <= 0;
+    const onRight = x + cw >= width;
+    const onBottom = y + ch >= height;
+
+    const insetX = onLeft ? 0 : gutter;
+    const insetY = onTop ? 0 : gutter;
+    const innerW = cw - insetX - (onRight ? 0 : gutter);
+    const innerH = ch - insetY - (onBottom ? 0 : gutter);
+    if (innerW <= 0 || innerH <= 0) return;
+
+    const grey = greyOf(tone, s.dark, s.clock);
+    ctx.fillStyle = `rgb(${Math.round(mix(grey, r, colorMix))},${Math.round(
+      mix(grey, g, colorMix),
+    )},${Math.round(mix(grey, b, colorMix))})`;
+
+    if (rounded) {
+      const radius = Math.min(innerW, innerH) * 0.12 * soft;
+      ctx.beginPath();
+      ctx.roundRect(x + insetX, y + insetY, innerW, innerH, [
+        !onLeft && !onTop ? radius : 0,
+        !onRight && !onTop ? radius : 0,
+        !onRight && !onBottom ? radius : 0,
+        !onLeft && !onBottom ? radius : 0,
+      ]);
+      ctx.fill();
+    } else {
+      ctx.fillRect(x + insetX, y + insetY, innerW, innerH);
+    }
+  };
+
+  const walk = (
+    cell: Cell,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number,
+    g: number,
+    b: number,
+    tone: number,
+  ) => {
+    if (!cell.kids || split < cell.splitAt) {
+      paint(x, y, w, h, r, g, b, tone);
+      return;
+    }
+    const t = easeOut(clamp01((split - cell.splitAt) / MORPH));
+    for (const kid of cell.kids) {
+      walk(
+        kid,
+        mix(x, kid.x * width, t),
+        mix(y, kid.y * height, t),
+        mix(w, kid.w * width, t),
+        mix(h, kid.h * height, t),
+        mix(r, kid.r, t),
+        mix(g, kid.g, t),
+        mix(b, kid.b, t),
+        mix(tone, kid.tone, t),
+      );
+    }
+  };
+
+  walk(root, 0, 0, width, height, root.r, root.g, root.b, root.tone);
+
+  if (!s.image) return;
+  const photo =
+    colorMix > 0
+      ? smoothstep(PHOTO_FADE[0], PHOTO_FADE[1], split) * colorMix
+      : 0;
+  if (photo <= 0.002) return;
+
+  const fit = coverRect(
+    s.image.naturalWidth,
+    s.image.naturalHeight,
+    width,
+    height,
+  );
+  ctx.globalAlpha = photo;
+  ctx.drawImage(s.image, fit.dx, fit.dy, fit.dw, fit.dh);
+  ctx.globalAlpha = 1;
+}
+
+function readAverages(
+  el: HTMLImageElement,
+  root: Cell,
+  branches: Cell[],
+  at: number,
+) {
+  const buffer = document.createElement("canvas");
+  buffer.width = SAMPLE;
+  buffer.height = SAMPLE;
+  const ctx = buffer.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return false;
+
+  const fit = coverRect(el.naturalWidth, el.naturalHeight, SAMPLE, SAMPLE);
+  ctx.drawImage(el, fit.dx, fit.dy, fit.dw, fit.dh);
+
+  try {
+    measureTree(root, ctx.getImageData(0, 0, SAMPLE, SAMPLE).data, SAMPLE);
+    orderByDetail(branches, at);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function ImageReveal({
+  src,
+  alt = "",
+  progress,
+  aspect = 1,
+  caption,
+  estimatedDuration = 6000,
+  onRevealComplete,
+  className,
+  style,
+  ...props
+}: ImageRevealProps) {
+  const reduce = useReducedMotion();
+  const ratio = Number.isFinite(aspect) && aspect > 0 ? aspect : 1;
+  const frameRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [loaded, setLoaded] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+
+  const [lastSrc, setLastSrc] = useState(src);
+  if (src !== lastSrc) {
+    setLastSrc(src);
+    setLoaded(false);
+    setRevealed(false);
+  }
+
+  const progressRef = useRef(progress);
+  const durationRef = useRef(estimatedDuration);
+  const doneRef = useRef(onRevealComplete);
+
+  useEffect(() => {
+    progressRef.current = progress;
+    durationRef.current = estimatedDuration;
+    doneRef.current = onRevealComplete;
+  });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const frame = frameRef.current;
+    if (!canvas || !frame) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const { root, branches } = buildTree(ratio);
+
+    const scene: Scene = {
+      ctx,
+      root,
+      width: 1,
+      height: 1,
+      scale: 1,
+      dark: false,
+      clock: 0,
+      split: 0,
+      colorMix: 0,
+      image: null,
+    };
+
+    let hasColors = false;
+    let loadedAt = -1;
+    let cancelled = false;
+
+    const render = (split: number, now: number) => {
+      scene.dark = document.documentElement.classList.contains("dark");
+      scene.split = split;
+      scene.colorMix =
+        hasColors && loadedAt >= 0
+          ? smoothstep(0, COLOR_MS, now - loadedAt)
+          : 0;
+      drawScene(scene);
+    };
+
+    const renderStill = () => {
+      const ready = scene.image !== null;
+      render(
+        ready ? 1 : WAIT_CAP,
+        loadedAt < 0 ? performance.now() : loadedAt + COLOR_MS,
+      );
+    };
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = frame.getBoundingClientRect();
+      const w = Math.max(1, Math.round(rect.width * dpr));
+      const h = Math.max(1, Math.round(rect.height * dpr));
+      scene.scale = dpr;
+      if (w === scene.width && h === scene.height) return;
+      scene.width = w;
+      scene.height = h;
+      canvas.width = w;
+      canvas.height = h;
+      if (reduce) renderStill();
+    };
+
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(frame);
+
+    const load = (url: string, withCors: boolean) => {
+      const el = new Image();
+      if (withCors) el.crossOrigin = "anonymous";
+      el.decoding = "async";
+      el.onload = () => {
+        if (cancelled) return;
+        if (!el.naturalWidth || !el.naturalHeight) return;
+        scene.image = el;
+        loadedAt = performance.now();
+        hasColors = readAverages(el, root, branches, scene.split);
+        setLoaded(true);
+        if (reduce) renderStill();
+      };
+      el.onerror = () => {
+        if (!cancelled && withCors) load(url, false);
+      };
+      el.src = url;
+    };
+
+    if (src) load(src, true);
+
+    if (reduce) {
+      renderStill();
+      return () => {
+        cancelled = true;
+        observer.disconnect();
+      };
+    }
+
+    let frameId = 0;
+    let last = 0;
+    let elapsed = 0;
+    let eased = 0;
+    let split = 0;
+    let fired = false;
+
+    const tick = (now: number) => {
+      frameId = requestAnimationFrame(tick);
+      if (!last) last = now;
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      elapsed += dt;
+      scene.clock = elapsed;
+
+      const ready = scene.image !== null;
+      const controlled = progressRef.current !== undefined;
+      let target: number;
+
+      if (controlled) {
+        target = clamp01(progressRef.current as number);
+        if (!ready) target = Math.min(target, HOLD);
+      } else if (ready) {
+        target = 1;
+      } else {
+        target = selfPaced(elapsed * 1000, durationRef.current);
+      }
+
+      eased += (target - eased) * (1 - Math.exp(-dt * 5.5));
+      const wanted = Math.min(eased, ready ? 1 : WAIT_CAP);
+      split += (wanted - split) * (1 - Math.exp(-dt * 4));
+      render(split, now);
+
+      if (!fired && ready && eased > 0.995 && now - loadedAt > COLOR_MS) {
+        fired = true;
+        setRevealed(true);
+        doneRef.current?.();
+      }
+    };
+
+    frameId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frameId);
+      observer.disconnect();
+    };
+  }, [reduce, src, ratio]);
+
+  useEffect(() => {
+    if (reduce && loaded) doneRef.current?.();
+  }, [reduce, loaded]);
+
+  const finished = reduce ? loaded : revealed;
+
+  return (
+    <div
+      ref={frameRef}
+      data-slot="image-reveal"
+      className={cn(
+        "relative w-full overflow-hidden rounded-2xl bg-muted [corner-shape:squircle]",
+        className,
+      )}
+      style={{ aspectRatio: ratio, ...style }}
+      {...props}
+    >
+      <canvas
+        ref={canvasRef}
+        className="block h-full w-full"
+        {...(alt
+          ? { role: "img", "aria-label": alt }
+          : { "aria-hidden": true })}
+      />
+
+      {caption ? (
+        <motion.div
+          layout
+          className="pointer-events-none absolute bottom-3 left-3 flex h-6 items-center overflow-hidden bg-black/45 px-2.5 backdrop-blur-md"
+          style={{ borderRadius: 9999 }}
+          animate={{ opacity: finished ? 0 : 1 }}
+          transition={{
+            opacity: { duration: 0.28, ease: [0.4, 0, 0.2, 1] },
+            layout: { duration: 0.28, ease: [0.4, 0, 0.2, 1] },
+          }}
+        >
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.span
+              key={caption}
+              layout="position"
+              className={cn(
+                "block whitespace-nowrap text-[11px] font-medium leading-6",
+                reduce ? "text-white/75" : "bg-clip-text text-transparent",
+              )}
+              style={reduce ? undefined : SHIMMER}
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: 1,
+                ...(reduce || finished
+                  ? {}
+                  : { backgroundPosition: ["105% 0%", "-5% 0%"] }),
+              }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: reduce ? 0 : 0.28,
+                ease: [0.4, 0, 0.2, 1],
+                backgroundPosition: {
+                  duration: 1.6,
+                  repeat: Infinity,
+                  repeatDelay: 0.5,
+                  ease: [0.45, 0, 0.55, 1],
+                },
+              }}
+            >
+              {caption}
+            </motion.span>
+          </AnimatePresence>
+        </motion.div>
+      ) : null}
+    </div>
+  );
+}
+
+export default ImageReveal;

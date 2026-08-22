@@ -220,6 +220,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "image-reveal",
+      "type": "registry:ui",
+      "title": "Image Reveal",
+      "description": "A loading state for AI images that turns into the real picture when it arrives.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/image-reveal.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

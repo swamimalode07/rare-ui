@@ -1222,6 +1222,76 @@ export function Demo() {
   //   return <FamilyDrawer />
   // }`,
   // },
+  {
+    name: "Image Reveal",
+    href: "/components/imagereveal",
+    registry: "image-reveal",
+    description:
+      "A loading state for AI images that turns into the real picture when it arrives.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/image-reveal.tsx`,
+    featured: true,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Press Generate and the frame opens as four cells, then keeps splitting the biggest one in two until it becomes the picture. Busy parts of the image sharpen first, and a status pill sits in the bottom left until it lands. Honors prefers-reduced-motion by holding a still frame.",
+    props: [
+      {
+        name: "src",
+        type: "string | null",
+        description:
+          "Image to reveal. Leave it null while the image is still being generated, then set it once it is ready.",
+      },
+      {
+        name: "progress",
+        type: "number",
+        description:
+          "Position of the run from 0 to 1, driving how far the grid has split. Omit it to self-pace, which eases to 0.9 and waits there for the image.",
+      },
+      {
+        name: "aspect",
+        type: "number",
+        default: "1",
+        description:
+          "Width divided by height of the frame. Locked from the first paint so the arriving image causes no layout shift.",
+      },
+      {
+        name: "caption",
+        type: "string",
+        description:
+          "Optional status text, shown as a frosted pill in the bottom left of the frame and lit by a slow shimmer. Change it mid-run and the lines crossfade while the pill resizes to suit.",
+      },
+      {
+        name: "estimatedDuration",
+        type: "number",
+        default: "6000",
+        description:
+          "Milliseconds the self-paced ramp takes to reach 0.9. Ignored when progress is passed.",
+      },
+      {
+        name: "onRevealComplete",
+        type: "() => void",
+        description: "Fires once the image has fully resolved.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="image-reveal").',
+      },
+    ],
+    usage: `import ImageReveal from "@/components/ui/image-reveal"
+
+export function Demo({ src }: { src: string | null }) {
+  return <ImageReveal src={src} alt="Generated image" caption="Creating image" />
+}
+
+// Pass progress when your API reports it
+// <ImageReveal src={src} progress={job.progress} />`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
