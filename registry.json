@@ -206,6 +206,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "step-player",
+      "type": "registry:ui",
+      "title": "Step Player",
+      "description": "An iOS-style stepped progress track with a play, pause and replay control. The active step stretches into a bar that fills as it plays.",
+      "dependencies": ["motion", "flubber"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/step-player.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
