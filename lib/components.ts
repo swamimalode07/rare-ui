@@ -1244,7 +1244,7 @@ export function Demo() {
         name: "src",
         type: "string | null",
         description:
-          "Image to reveal. Leave it null while the image is still being generated, then set it once it is ready.",
+          "Image to reveal. Keep it null while the image is generating, since the grid only runs while this is empty and a src that is already loaded makes the whole run flash by.",
       },
       {
         name: "alt",
@@ -1263,7 +1263,7 @@ export function Demo() {
         type: "number",
         default: "1",
         description:
-          "Width divided by height of the frame. Locked from the first paint so the arriving image causes no layout shift.",
+          "Width divided by height of the frame. The frame fills its parent's width, so constrain the parent to size it.",
       },
       {
         name: "caption",
@@ -1296,14 +1296,30 @@ export function Demo() {
           'Extra classes merged onto the root element (data-slot="grid-reveal").',
       },
     ],
-    usage: `import GridReveal from "@/components/ui/grid-reveal"
+    usage: `"use client"
 
-export function Demo({ src }: { src: string | null }) {
-  return <GridReveal src={src} alt="Generated image" caption="Creating image" />
+import { useState } from "react"
+import GridReveal from "@/components/ui/grid-reveal"
+
+export function Demo() {
+  const [src, setSrc] = useState<string | null>(null)
+
+  async function generate() {
+    setSrc(null)                   // null is the waiting state, the grid runs while it is empty
+    setSrc(await createImage())    // setting it resolves the grid into the picture
+  }
+
+  return (
+    // the frame fills its parent, so give the parent a width
+    <div className="w-64">
+      <GridReveal src={src} alt="Generated image" caption="Creating image" />
+      <button onClick={generate}>Generate</button>
+    </div>
+  )
 }
 
-// Pass progress when your API reports it
-// <GridReveal src={src} progress={job.progress} />`,
+// Passing a src that is already loaded skips the wait, so the run flashes by.
+// Pass progress when your API reports it: <GridReveal src={src} progress={job.progress} />`,
   },
 ];
 
