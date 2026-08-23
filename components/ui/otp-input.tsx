@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ComponentProps } from "react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,9 @@ const SUCCESS = "#34C759";
 const SIZES = {
   sm: {
     box: "size-10 rounded-lg",
+    row: "h-10",
+    rowRem: 2.5,
+    clip: "rounded-lg",
     text: "text-base",
     caret: "h-5",
     gap: "gap-1.5",
@@ -30,6 +33,9 @@ const SIZES = {
   },
   md: {
     box: "size-12 rounded-xl",
+    row: "h-12",
+    rowRem: 3,
+    clip: "rounded-xl",
     text: "text-lg",
     caret: "h-6",
     gap: "gap-2",
@@ -38,6 +44,9 @@ const SIZES = {
   },
   lg: {
     box: "size-14 rounded-2xl",
+    row: "h-14",
+    rowRem: 3.5,
+    clip: "rounded-2xl",
     text: "text-xl",
     caret: "h-7",
     gap: "gap-2.5",
@@ -47,9 +56,10 @@ const SIZES = {
 } as const;
 
 const SLOT_CLASS =
-  "bg-[#F4F4F9] dark:bg-[#262626] text-center font-medium text-transparent caret-transparent outline-none transition-shadow duration-200 selection:bg-transparent disabled:cursor-not-allowed disabled:opacity-50";
+  "bg-[#F4F4F9] dark:bg-[#262626] text-center font-medium text-transparent caret-transparent outline-none transition-shadow duration-200 selection:bg-transparent selection:text-transparent disabled:cursor-not-allowed disabled:opacity-50";
 
 const ROLL_SPRING = { type: "spring", stiffness: 500, damping: 34 } as const;
+const ROLL_MS = 280;
 const CARET_SPRING = { type: "spring", stiffness: 500, damping: 40 } as const;
 const BLINK = {
   duration: 1.1,
@@ -85,8 +95,118 @@ export type OtpInputProps = Omit<
   mask?: boolean;
   disabled?: boolean;
   autoFocus?: boolean;
+  duration?: number;
+  dial?: boolean;
   slotClassName?: string;
 };
+
+const DIAL_DIGITS = [
+  "",
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+] as const;
+const DIAL_DURATION = 800;
+const DIAL_EASE = [0.45, 0, 0.15, 1] as const;
+const DIAL_MASK =
+  "linear-gradient(to bottom, transparent 0%, white 22%, white 78%, transparent 100%)";
+
+function dialIndex(char: string) {
+  return char >= "0" && char <= "9" ? Number(char) + 1 : 0;
+}
+
+function dialSeconds(index: number, durationMs: number) {
+  const max = DIAL_DIGITS.length - 1;
+  return (durationMs / 1000) * (0.4 + 0.6 * (index / max));
+}
+
+function entryMs(
+  char: string,
+  duration: number,
+  reduceMotion: boolean,
+  useDial: boolean,
+) {
+  if (!char || reduceMotion) return 0;
+  if (useDial && /^[0-9]$/.test(char)) {
+    return Math.round(dialSeconds(dialIndex(char), duration) * 1000);
+  }
+  return ROLL_MS;
+}
+
+function DigitDial({
+  char,
+  className,
+  duration,
+  reduceMotion,
+  rowClass,
+  rowRem,
+}: {
+  char: string;
+  className: string;
+  duration: number;
+  reduceMotion: boolean;
+  rowClass: string;
+  rowRem: number;
+}) {
+  const index = dialIndex(char);
+
+  return (
+    <span
+      aria-hidden
+      data-slot="otp-input-char"
+      className="absolute inset-0 overflow-hidden"
+    >
+      <span
+        className="absolute inset-0 overflow-hidden"
+        style={{
+          maskImage: DIAL_MASK,
+          WebkitMaskImage: DIAL_MASK,
+        }}
+      >
+        <motion.span
+          className={cn(
+            "flex w-full flex-col items-center tabular-nums",
+            className,
+          )}
+          initial={false}
+          animate={{ y: `${-index * rowRem}rem` }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: dialSeconds(index, duration), ease: DIAL_EASE }
+          }
+        >
+          {DIAL_DIGITS.map((digit, i) => (
+            <span
+              key={i}
+              className={cn(
+                "flex w-full shrink-0 items-center justify-center leading-none",
+                rowClass,
+              )}
+            >
+              {digit}
+            </span>
+          ))}
+        </motion.span>
+      </span>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[38%] [mask-image:linear-gradient(to_bottom,black,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,black,transparent)] backdrop-blur-[0.75px]"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[38%] [mask-image:linear-gradient(to_top,black,transparent)] [-webkit-mask-image:linear-gradient(to_top,black,transparent)] backdrop-blur-[0.75px]"
+      />
+    </span>
+  );
+}
 
 export function OtpInput({
   length = 6,
@@ -100,6 +220,8 @@ export function OtpInput({
   mask = false,
   disabled,
   autoFocus,
+  duration = DIAL_DURATION,
+  dial = true,
   className,
   slotClassName,
   ...props
@@ -112,9 +234,17 @@ export function OtpInput({
   const [caretX, setCaretX] = useState(0);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const cells = useRef<(HTMLDivElement | null)[]>([]);
+  const completeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // the slot the user deliberately moved to, so a full code only changes on purpose
   const editingAt = useRef<number | null>(null);
   const reduceMotion = useReducedMotion();
+
+  useEffect(
+    () => () => {
+      if (completeTimer.current) clearTimeout(completeTimer.current);
+    },
+    [],
+  );
 
   // padded, not joined: joining would close a gap left by a mid-code backspace
   const slots =
@@ -129,7 +259,28 @@ export function OtpInput({
     if (value === undefined) setUncontrolled(next);
     const code = next.join("");
     onChange?.(code);
-    if (next.every(Boolean)) onComplete?.(code);
+    if (completeTimer.current) {
+      clearTimeout(completeTimer.current);
+      completeTimer.current = null;
+    }
+    if (!next.every(Boolean) || !onComplete) return;
+    const useDial = dial && !mask && type !== "letters";
+    const delay = Math.max(
+      0,
+      ...next.map((char, i) =>
+        char !== slots[i]
+          ? entryMs(char, duration, Boolean(reduceMotion), useDial)
+          : 0,
+      ),
+    );
+    if (!delay) {
+      onComplete(code);
+      return;
+    }
+    completeTimer.current = setTimeout(() => {
+      completeTimer.current = null;
+      onComplete(code);
+    }, delay);
   };
 
   const setCharAt = (index: number, char: string) => {
@@ -140,7 +291,7 @@ export function OtpInput({
   const focusAt = (index: number) => {
     const input = inputs.current[Math.min(Math.max(index, 0), length - 1)];
     input?.focus();
-    input?.select();
+    if (!input?.value) input?.select();
   };
 
   const fill = (index: number, chars: string[]) => {
@@ -177,7 +328,7 @@ export function OtpInput({
 
     setCharAt(index, typed);
     editingAt.current = null;
-    focusAt(index + 1);
+    if (index + 1 < length) focusAt(index + 1);
   };
 
   const handleKeyDown = (
@@ -262,103 +413,135 @@ export function OtpInput({
         data-slot="otp-input-row"
         className={cn("relative flex items-center", scale.gap)}
       >
-        {slots.map((slot, index) => (
-          <div
-            key={index}
-            ref={(el) => {
-              cells.current[index] = el;
-            }}
-            data-slot="otp-input-cell"
-            data-filled={Boolean(slot)}
-            className="relative"
-          >
-            <input
+        {slots.map((slot, index) => {
+          const dialing =
+            dial &&
+            !mask &&
+            type !== "letters" &&
+            (!slot || /^[0-9]$/.test(slot));
+
+          return (
+            <div
+              key={index}
               ref={(el) => {
-                inputs.current[index] = el;
+                cells.current[index] = el;
               }}
-              data-slot="otp-input-slot"
+              data-slot="otp-input-cell"
               data-filled={Boolean(slot)}
-              value={slot}
-              onChange={(event) => handleChange(index, event.target.value)}
-              onKeyDown={(event) => handleKeyDown(index, event)}
-              onPaste={(event) => handlePaste(index, event)}
-              onPointerDown={(event) => handlePointerDown(index, event)}
-              onFocus={(event) => event.target.select()}
-              type={mask ? "password" : "text"}
-              inputMode={numeric ? "numeric" : "text"}
-              autoCapitalize={numeric ? undefined : "characters"}
-              autoComplete={index === 0 ? "one-time-code" : "off"}
-              autoFocus={autoFocus && index === 0}
-              disabled={disabled}
-              aria-label={`${numeric ? "Digit" : "Character"} ${index + 1} of ${length}`}
-              className={cn(
-                SLOT_CLASS,
-                scale.box,
-                scale.text,
-                RING[status],
-                slotClassName,
-              )}
-            />
+              className="relative"
+            >
+              <input
+                ref={(el) => {
+                  inputs.current[index] = el;
+                }}
+                data-slot="otp-input-slot"
+                data-filled={Boolean(slot)}
+                value={slot}
+                onChange={(event) => handleChange(index, event.target.value)}
+                onKeyDown={(event) => handleKeyDown(index, event)}
+                onPaste={(event) => handlePaste(index, event)}
+                onPointerDown={(event) => handlePointerDown(index, event)}
+                onFocus={(event) => {
+                  if (!event.target.value) event.target.select();
+                }}
+                type={mask ? "password" : "text"}
+                inputMode={numeric ? "numeric" : "text"}
+                autoCapitalize={numeric ? undefined : "characters"}
+                autoComplete={index === 0 ? "one-time-code" : "off"}
+                autoFocus={autoFocus && index === 0}
+                disabled={disabled}
+                aria-label={`${numeric ? "Digit" : "Character"} ${index + 1} of ${length}`}
+                className={cn(
+                  SLOT_CLASS,
+                  scale.box,
+                  scale.text,
+                  RING[status],
+                  slotClassName,
+                )}
+              />
 
-            <AnimatePresence>
-              {status === "success" && (
-                <motion.svg
-                  aria-hidden
-                  data-slot="otp-input-ring"
-                  viewBox={`0 0 ${scale.px} ${scale.px}`}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className="pointer-events-none absolute inset-0 size-full"
-                >
-                  <motion.rect
-                    x={1}
-                    y={1}
-                    width={scale.px - 2}
-                    height={scale.px - 2}
-                    rx={scale.radius - 1}
-                    fill="none"
-                    stroke={SUCCESS}
-                    strokeWidth={2}
-                    initial={reduceMotion ? false : { pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={
-                      reduceMotion
-                        ? { duration: 0 }
-                        : {
-                            duration: 0.45,
-                            ease: "easeOut",
-                            delay: 0.15 + index * 0.05,
-                          }
-                    }
-                  />
-                </motion.svg>
-              )}
-            </AnimatePresence>
-
-            <span className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden">
-              <AnimatePresence initial={false} custom={cleared}>
-                {slot && (
-                  <motion.span
-                    key={slot}
-                    custom={cleared}
-                    variants={ROLL}
-                    initial={reduceMotion ? false : "initial"}
-                    animate={{ y: 0 }}
-                    exit={reduceMotion ? { opacity: 0 } : "exit"}
-                    transition={reduceMotion ? { duration: 0 } : ROLL_SPRING}
-                    data-slot="otp-input-char"
-                    className={cn(
-                      "font-semibold text-black dark:text-white",
-                      scale.text,
-                    )}
+              <AnimatePresence>
+                {status === "success" && (
+                  <motion.svg
+                    aria-hidden
+                    data-slot="otp-input-ring"
+                    viewBox={`0 0 ${scale.px} ${scale.px}`}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="pointer-events-none absolute inset-0 size-full"
                   >
-                    {mask ? "•" : slot}
-                  </motion.span>
+                    <motion.rect
+                      x={1}
+                      y={1}
+                      width={scale.px - 2}
+                      height={scale.px - 2}
+                      rx={scale.radius - 1}
+                      fill="none"
+                      stroke={SUCCESS}
+                      strokeWidth={2}
+                      initial={reduceMotion ? false : { pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={
+                        reduceMotion
+                          ? { duration: 0 }
+                          : {
+                              duration: 0.45,
+                              ease: "easeOut",
+                              delay: 0.15 + index * 0.05,
+                            }
+                      }
+                    />
+                  </motion.svg>
                 )}
               </AnimatePresence>
-            </span>
-          </div>
-        ))}
+
+              <span
+                className={cn(
+                  "pointer-events-none absolute inset-0 grid place-items-center overflow-hidden",
+                  scale.clip,
+                )}
+              >
+                <AnimatePresence initial={false} custom={cleared}>
+                  {dialing ? (
+                    <DigitDial
+                      key="dial"
+                      char={slot}
+                      duration={duration}
+                      reduceMotion={Boolean(reduceMotion)}
+                      rowClass={scale.row}
+                      rowRem={scale.rowRem}
+                      className={cn(
+                        "font-semibold text-black dark:text-white",
+                        scale.text,
+                      )}
+                    />
+                  ) : (
+                    slot && (
+                      <motion.span
+                        key={slot}
+                        custom={cleared}
+                        variants={ROLL}
+                        initial={reduceMotion ? false : "initial"}
+                        animate={{ y: 0 }}
+                        exit={reduceMotion ? { opacity: 0 } : "exit"}
+                        transition={
+                          reduceMotion ? { duration: 0 } : ROLL_SPRING
+                        }
+                        data-slot="otp-input-char"
+                        className={cn(
+                          "font-semibold text-black dark:text-white",
+                          scale.text,
+                        )}
+                      >
+                        {mask ? "•" : slot}
+                      </motion.span>
+                    )
+                  )}
+                </AnimatePresence>
+              </span>
+            </div>
+          );
+        })}
 
         {caretVisible && (
           <motion.span
