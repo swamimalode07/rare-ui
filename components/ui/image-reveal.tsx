@@ -22,11 +22,11 @@ const HOLD = 0.9;
 const WAIT_CAP = 0.72;
 const LAST_SPLIT = 0.92;
 const MORPH = 0.055;
-const OPENING_SPLIT_AT = -MORPH;
 const SAMPLE = 128;
 const COLOR_MS = 420;
-const GUTTER_FADE = [0.35, 0.75] as const;
-const PHOTO_FADE = [0.93, 1] as const;
+const GUTTER_FROM = 0.35;
+const GUTTER_TO = 0.75;
+const PHOTO_FROM = 0.93;
 
 const SHIMMER = {
   backgroundImage:
@@ -132,30 +132,24 @@ function buildTree(aspect: number) {
     leaves.push(a, b);
   }
 
-  const paced = Math.max(1, branches.length - OPENING_CELLS + 2);
+  const opening = OPENING_CELLS - 1;
+  const rest = Math.max(1, branches.length - opening);
   branches.forEach((cell, i) => {
-    const step = i - OPENING_CELLS + 2;
     cell.splitAt =
-      i < OPENING_CELLS - 1 ? OPENING_SPLIT_AT : (LAST_SPLIT * step) / paced;
+      i < opening ? -MORPH : (LAST_SPLIT * (i - opening + 1)) / rest;
   });
 
   return { root, branches };
 }
 
 function measureTree(root: Cell, pixels: Uint8ClampedArray, size: number) {
-  const store = (cell: Cell, s: Sums) => {
-    const n = s.n || 1;
-    cell.r = s.r / n;
-    cell.g = s.g / n;
-    cell.b = s.b / n;
-    cell.detail = Math.max(0, s.l2 / n - (s.l / n) * (s.l / n));
-  };
-
   const gather = (cell: Cell): Sums => {
+    let s: Sums;
+
     if (cell.kids) {
       const a = gather(cell.kids[0]);
       const b = gather(cell.kids[1]);
-      const s: Sums = {
+      s = {
         n: a.n + b.n,
         r: a.r + b.r,
         g: a.g + b.g,
@@ -163,33 +157,35 @@ function measureTree(root: Cell, pixels: Uint8ClampedArray, size: number) {
         l: a.l + b.l,
         l2: a.l2 + b.l2,
       };
-      store(cell, s);
-      return s;
-    }
+    } else {
+      s = { n: 0, r: 0, g: 0, b: 0, l: 0, l2: 0 };
+      const x0 = Math.round(cell.x * size);
+      const y0 = Math.round(cell.y * size);
+      const x1 = Math.max(x0 + 1, Math.round((cell.x + cell.w) * size));
+      const y1 = Math.max(y0 + 1, Math.round((cell.y + cell.h) * size));
 
-    const x0 = Math.round(cell.x * size);
-    const y0 = Math.round(cell.y * size);
-    const x1 = Math.max(x0 + 1, Math.round((cell.x + cell.w) * size));
-    const y1 = Math.max(y0 + 1, Math.round((cell.y + cell.h) * size));
-    const s: Sums = { n: 0, r: 0, g: 0, b: 0, l: 0, l2: 0 };
-
-    for (let y = y0; y < y1; y++) {
-      for (let x = x0; x < x1; x++) {
-        const i = (y * size + x) * 4;
-        const r = pixels[i];
-        const g = pixels[i + 1];
-        const b = pixels[i + 2];
-        const l = 0.299 * r + 0.587 * g + 0.114 * b;
-        s.n++;
-        s.r += r;
-        s.g += g;
-        s.b += b;
-        s.l += l;
-        s.l2 += l * l;
+      for (let y = y0; y < y1; y++) {
+        for (let x = x0; x < x1; x++) {
+          const i = (y * size + x) * 4;
+          const r = pixels[i];
+          const g = pixels[i + 1];
+          const b = pixels[i + 2];
+          const l = 0.299 * r + 0.587 * g + 0.114 * b;
+          s.n++;
+          s.r += r;
+          s.g += g;
+          s.b += b;
+          s.l += l;
+          s.l2 += l * l;
+        }
       }
     }
 
-    store(cell, s);
+    const n = s.n || 1;
+    cell.r = s.r / n;
+    cell.g = s.g / n;
+    cell.b = s.b / n;
+    cell.detail = Math.max(0, s.l2 / n - (s.l / n) * (s.l / n));
     return s;
   };
 
@@ -244,55 +240,57 @@ function greyOf(tone: number, dark: boolean, clock: number) {
   );
 }
 
+type Patch = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  r: number;
+  g: number;
+  b: number;
+  tone: number;
+};
+
 function drawScene(s: Scene) {
   const { ctx, root, width, height, split } = s;
   const tint = s.hasColors ? s.fade : 0;
+  const shade = (grey: number, target: number) =>
+    Math.round(mix(grey, target, tint));
   const base = greyOf(root.tone, s.dark, s.clock);
-  const shade = (v: number, target: number) =>
-    Math.round(mix(v, target, tint) * 0.92);
 
-  ctx.fillStyle = `rgb(${shade(base, root.r)},${shade(base, root.g)},${shade(base, root.b)})`;
+  ctx.fillStyle = `rgb(${Math.round(shade(base, root.r) * 0.92)},${Math.round(
+    shade(base, root.g) * 0.92,
+  )},${Math.round(shade(base, root.b) * 0.92)})`;
   ctx.fillRect(0, 0, width, height);
 
-  const soft = 1 - smoothstep(GUTTER_FADE[0], GUTTER_FADE[1], split);
+  const soft = 1 - smoothstep(GUTTER_FROM, GUTTER_TO, split);
   const gutter = s.scale * soft;
   const rounded = soft > 0.01 && typeof ctx.roundRect === "function";
 
-  const paint = (
-    left: number,
-    top: number,
-    w: number,
-    h: number,
-    r: number,
-    g: number,
-    b: number,
-    tone: number,
-  ) => {
-    const x = Math.round(left);
-    const y = Math.round(top);
-    const cw = Math.round(left + w) - x;
-    const ch = Math.round(top + h) - y;
+  const paint = (p: Patch) => {
+    const x = Math.round(p.x);
+    const y = Math.round(p.y);
+    const w = Math.round(p.x + p.w) - x;
+    const h = Math.round(p.y + p.h) - y;
 
     const onLeft = x <= 0;
     const onTop = y <= 0;
-    const onRight = x + cw >= width;
-    const onBottom = y + ch >= height;
+    const onRight = x + w >= width;
+    const onBottom = y + h >= height;
 
-    const insetX = onLeft ? 0 : gutter;
-    const insetY = onTop ? 0 : gutter;
-    const innerW = cw - insetX - (onRight ? 0 : gutter);
-    const innerH = ch - insetY - (onBottom ? 0 : gutter);
+    const left = onLeft ? 0 : gutter;
+    const top = onTop ? 0 : gutter;
+    const innerW = w - left - (onRight ? 0 : gutter);
+    const innerH = h - top - (onBottom ? 0 : gutter);
     if (innerW <= 0 || innerH <= 0) return;
 
-    const grey = greyOf(tone, s.dark, s.clock);
-    ctx.fillStyle = `rgb(${Math.round(mix(grey, r, tint))},${Math.round(
-      mix(grey, g, tint),
-    )},${Math.round(mix(grey, b, tint))})`;
+    const grey = greyOf(p.tone, s.dark, s.clock);
+    ctx.fillStyle = `rgb(${shade(grey, p.r)},${shade(grey, p.g)},${shade(grey, p.b)})`;
 
     if (rounded) {
       const radius = Math.min(innerW, innerH) * 0.12 * soft;
       ctx.beginPath();
-      ctx.roundRect(x + insetX, y + insetY, innerW, innerH, [
+      ctx.roundRect(x + left, y + top, innerW, innerH, [
         !onLeft && !onTop ? radius : 0,
         !onRight && !onTop ? radius : 0,
         !onRight && !onBottom ? radius : 0,
@@ -300,46 +298,44 @@ function drawScene(s: Scene) {
       ]);
       ctx.fill();
     } else {
-      ctx.fillRect(x + insetX, y + insetY, innerW, innerH);
+      ctx.fillRect(x + left, y + top, innerW, innerH);
     }
   };
 
-  const walk = (
-    cell: Cell,
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    r: number,
-    g: number,
-    b: number,
-    tone: number,
-  ) => {
+  const walk = (cell: Cell, p: Patch) => {
     if (!cell.kids || split < cell.splitAt) {
-      paint(x, y, w, h, r, g, b, tone);
+      paint(p);
       return;
     }
     const t = easeOut(clamp01((split - cell.splitAt) / MORPH));
     for (const kid of cell.kids) {
-      walk(
-        kid,
-        mix(x, kid.x * width, t),
-        mix(y, kid.y * height, t),
-        mix(w, kid.w * width, t),
-        mix(h, kid.h * height, t),
-        mix(r, kid.r, t),
-        mix(g, kid.g, t),
-        mix(b, kid.b, t),
-        mix(tone, kid.tone, t),
-      );
+      walk(kid, {
+        x: mix(p.x, kid.x * width, t),
+        y: mix(p.y, kid.y * height, t),
+        w: mix(p.w, kid.w * width, t),
+        h: mix(p.h, kid.h * height, t),
+        r: mix(p.r, kid.r, t),
+        g: mix(p.g, kid.g, t),
+        b: mix(p.b, kid.b, t),
+        tone: mix(p.tone, kid.tone, t),
+      });
     }
   };
 
-  walk(root, 0, 0, width, height, root.r, root.g, root.b, root.tone);
+  walk(root, {
+    x: 0,
+    y: 0,
+    w: width,
+    h: height,
+    r: root.r,
+    g: root.g,
+    b: root.b,
+    tone: root.tone,
+  });
 
   if (!s.image) return;
   const photo = s.hasColors
-    ? smoothstep(PHOTO_FADE[0], PHOTO_FADE[1], split) * s.fade
+    ? smoothstep(PHOTO_FROM, 1, split) * s.fade
     : s.fade;
   if (photo <= 0.002) return;
 
@@ -452,16 +448,10 @@ export function ImageReveal({
       drawScene(scene);
     };
 
-    const settledNow = () =>
-      loadedAt < 0 ? performance.now() : loadedAt + COLOR_MS;
-
-    const renderStill = () => {
-      render(scene.image !== null ? 1 : WAIT_CAP, settledNow());
-    };
-
     const repaint = () => {
-      if (reduce) renderStill();
-      else render(scene.split, settledNow());
+      const settled = loadedAt < 0 ? performance.now() : loadedAt + COLOR_MS;
+      const still = scene.image !== null ? 1 : WAIT_CAP;
+      render(reduce ? still : scene.split, settled);
     };
 
     const resize = () => {
@@ -496,7 +486,7 @@ export function ImageReveal({
         loadedAt = performance.now();
         scene.hasColors = readAverages(el, root, branches, scene.split);
         setLoaded(true);
-        if (reduce) renderStill();
+        if (reduce) repaint();
       };
       el.onerror = () => {
         if (cancelled) return;
@@ -509,7 +499,7 @@ export function ImageReveal({
     if (src) load(src, true);
 
     if (reduce) {
-      renderStill();
+      repaint();
       return () => {
         cancelled = true;
         observer.disconnect();
@@ -534,16 +524,15 @@ export function ImageReveal({
       scene.clock = elapsed;
 
       const ready = scene.image !== null;
-      const controlled = progressRef.current !== undefined;
+      const paced = progressRef.current === undefined;
       let target: number;
 
-      if (controlled) {
-        target = clamp01(progressRef.current as number);
-        if (!ready) target = Math.min(target, HOLD);
-      } else if (ready) {
+      if (ready) {
         target = 1;
-      } else {
+      } else if (paced) {
         target = selfPaced(elapsed * 1000, durationRef.current);
+      } else {
+        target = Math.min(clamp01(progressRef.current as number), HOLD);
       }
 
       eased += (target - eased) * (1 - Math.exp(-dt * 5.5));

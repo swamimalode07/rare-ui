@@ -1254,7 +1254,7 @@ export function Demo() {
         name: "progress",
         type: "number",
         description:
-          "Position of the run from 0 to 1, driving how far the grid has split. It holds at 0.72 until the image decodes, so the reveal can never finish early.",
+          "Position of the wait from 0 to 1, driving how far the grid has split. It holds at 0.72 until the image decodes, and the image landing is what finishes the reveal.",
       },
       {
         name: "aspect",
