@@ -1083,6 +1083,7 @@ export function Demo() {
     description:
       "An iOS-style stepped progress track with a play, pause and replay control. The active step stretches into a bar that fills as it plays.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/step-player.tsx`,
+    preview: "/componentdemos/stepplayer.mp4",
     dependencies: [
       {
         name: "motion",
@@ -1229,6 +1230,7 @@ export function Demo() {
     description:
       "A loading state for AI images that turns into the real picture when it arrives.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/image-reveal.tsx`,
+    preview: "/componentdemos/imagegen.mp4",
     dependencies: [
       {
         name: "motion",
