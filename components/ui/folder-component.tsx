@@ -235,6 +235,8 @@ const FolderComponent = ({
                   height="140%"
                 >
                   <feGaussianBlur stdDeviation="3" />
+                  {/* clip the blurred fill to the flap silhouette so it cannot bleed past the stroke */}
+                  <feComposite in2="SourceAlpha" operator="in" />
                 </filter>
                 <filter
                   id={flapFilterId}
