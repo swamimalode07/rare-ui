@@ -658,23 +658,17 @@ export function Demo() {
         default: '"currentColor"',
         options: [
           "#1A73F2",
-          "#5856D6",
           "#AF52DE",
-          "#FF2D92",
           "#FF3B30",
           "#F75001",
-          "#FFB800",
           "#34C759",
         ],
         control: "swatch",
         optionColors: {
           "#1A73F2": "#1A73F2",
-          "#5856D6": "#5856D6",
           "#AF52DE": "#AF52DE",
-          "#FF2D92": "#FF2D92",
           "#FF3B30": "#FF3B30",
           "#F75001": "#F75001",
-          "#FFB800": "#FFB800",
           "#34C759": "#34C759",
         },
         description:

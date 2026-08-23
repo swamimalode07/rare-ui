@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-import { CodeXml, Maximize, Minimize } from "lucide-react";
+import { CodeXml, Maximize, Minimize, X } from "lucide-react";
 import { activeComponent } from "@/lib/components";
+import { cn } from "@/lib/utils";
 import CodeDrawer from "./CodeDrawer";
 import DescriptionContent from "./DescriptionContent";
+import InstallBar from "./InstallBar";
 import ThemeToggle from "../ThemeToggle";
 import Tooltip from "../Tooltip";
 
@@ -37,38 +39,51 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
 
   return (
     <div className="pointer-events-none absolute right-0 top-0 z-40 h-full">
-      <div className="pointer-events-auto absolute top-4 right-4 z-50 flex items-center gap-2 rounded-2xl border-apple bg-muted p-2 shadow-sm">
-        <Tooltip label={open ? "Close description" : "Open description"}>
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Close description" : "Open description"}
-            className="cursor-pointer rounded-full bg-popover p-1"
-          >
-            {open ? (
-              <Maximize className="h-5 w-5" />
-            ) : (
-              <Minimize className="h-5 w-5" />
-            )}
-          </button>
-        </Tooltip>
+      <div className="pointer-events-auto absolute right-4 top-4 z-50 flex items-stretch">
+        {item?.registry && <InstallBar key={item.href} item={item} />}
 
-        {item?.registry && (
-          <Tooltip label={codeOpen ? "Hide code" : "Get code"}>
+        <div
+          className={cn(
+            "flex items-center gap-2 border-apple bg-muted p-2 shadow-sm",
+            item?.registry ? "rounded-r-2xl" : "rounded-2xl",
+          )}
+        >
+          <Tooltip label={open ? "Close description" : "Open description"}>
             <button
               type="button"
-              onClick={toggleCode}
-              aria-label={codeOpen ? "Hide code" : "Get code"}
+              onClick={() => setOpen((v) => !v)}
+              aria-label={open ? "Close description" : "Open description"}
               className="cursor-pointer rounded-full bg-popover p-1"
             >
-              <CodeXml className="h-5 w-5" />
+              {open ? (
+                <Maximize className="h-5 w-5" />
+              ) : (
+                <Minimize className="h-5 w-5" />
+              )}
             </button>
           </Tooltip>
-        )}
 
-        <Tooltip label="Toggle theme" align="end">
-          <ThemeToggle className="rounded-full p-1 bg-popover" />
-        </Tooltip>
+          {item?.registry && (
+            <Tooltip label={codeOpen ? "Hide code" : "Get code"}>
+              <button
+                type="button"
+                onClick={toggleCode}
+                aria-label={codeOpen ? "Hide code" : "Get code"}
+                className="cursor-pointer rounded-full bg-popover p-1"
+              >
+                {codeOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <CodeXml className="h-5 w-5" />
+                )}
+              </button>
+            </Tooltip>
+          )}
+
+          <Tooltip label="Toggle theme" align="end">
+            <ThemeToggle className="rounded-full p-1 bg-popover" />
+          </Tooltip>
+        </div>
       </div>
 
       <motion.div
