@@ -222,15 +222,15 @@
       ]
     },
     {
-      "name": "image-reveal",
+      "name": "grid-reveal",
       "type": "registry:ui",
-      "title": "Image Reveal",
+      "title": "Grid Reveal",
       "description": "A loading state for AI images that turns into the real picture when it arrives.",
       "dependencies": ["motion"],
       "registryDependencies": ["utils"],
       "files": [
         {
-          "path": "components/ui/image-reveal.tsx",
+          "path": "components/ui/grid-reveal.tsx",
           "type": "registry:ui"
         }
       ]

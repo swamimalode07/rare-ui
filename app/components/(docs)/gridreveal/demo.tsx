@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ImageReveal from "@/components/ui/image-reveal";
+import GridReveal from "@/components/ui/grid-reveal";
 
 const IMAGE = "/assets/landing/herobg.webp";
 const GENERATE_MS = 3600;
@@ -12,7 +12,7 @@ const BUTTON =
 
 const LABEL = "col-start-1 row-start-1 transition-opacity duration-200";
 
-export default function ImageRevealPage() {
+export default function GridRevealPage() {
   const [run, setRun] = useState(0);
   const [src, setSrc] = useState<string | null>(null);
   const [warm, setWarm] = useState(false);
@@ -44,7 +44,7 @@ export default function ImageRevealPage() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-5">
       <div className="w-[260px]">
-        <ImageReveal
+        <GridReveal
           key={run}
           src={src}
           alt="A sky of soft clouds at sunset"

@@ -1224,12 +1224,12 @@ export function Demo() {
   // }`,
   // },
   {
-    name: "Image Reveal",
-    href: "/components/imagereveal",
-    registry: "image-reveal",
+    name: "Grid Reveal",
+    href: "/components/gridreveal",
+    registry: "grid-reveal",
     description:
       "A loading state for AI images that turns into the real picture when it arrives.",
-    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/image-reveal.tsx`,
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/grid-reveal.tsx`,
     preview: "/componentdemos/imagegen.mp4",
     dependencies: [
       {
@@ -1293,17 +1293,17 @@ export function Demo() {
         name: "className",
         type: "string",
         description:
-          'Extra classes merged onto the root element (data-slot="image-reveal").',
+          'Extra classes merged onto the root element (data-slot="grid-reveal").',
       },
     ],
-    usage: `import ImageReveal from "@/components/ui/image-reveal"
+    usage: `import GridReveal from "@/components/ui/grid-reveal"
 
 export function Demo({ src }: { src: string | null }) {
-  return <ImageReveal src={src} alt="Generated image" caption="Creating image" />
+  return <GridReveal src={src} alt="Generated image" caption="Creating image" />
 }
 
 // Pass progress when your API reports it
-// <ImageReveal src={src} progress={job.progress} />`,
+// <GridReveal src={src} progress={job.progress} />`,
   },
 ];
 

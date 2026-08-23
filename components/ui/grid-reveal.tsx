@@ -5,7 +5,7 @@ import type { ComponentProps } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-export type ImageRevealProps = Omit<ComponentProps<"div">, "children"> & {
+export type GridRevealProps = Omit<ComponentProps<"div">, "children"> & {
   src?: string | null;
   alt?: string;
   progress?: number;
@@ -389,7 +389,7 @@ function readAverages(
   }
 }
 
-export function ImageReveal({
+export function GridReveal({
   src,
   alt = "",
   progress,
@@ -401,7 +401,7 @@ export function ImageReveal({
   className,
   style,
   ...props
-}: ImageRevealProps) {
+}: GridRevealProps) {
   const reduce = useReducedMotion();
   const ratio = Number.isFinite(aspect) && aspect > 0 ? aspect : 1;
   const frameRef = useRef<HTMLDivElement>(null);
@@ -486,8 +486,10 @@ export function ImageReveal({
     };
 
     resize();
-    const observer = new ResizeObserver(resize);
-    observer.observe(frame);
+    // jsdom and older browsers lack these, so the component degrades instead of throwing
+    const observer =
+      typeof ResizeObserver === "function" ? new ResizeObserver(resize) : null;
+    observer?.observe(frame);
 
     const load = (url: string, withCors: boolean) => {
       const el = new Image();
@@ -520,7 +522,7 @@ export function ImageReveal({
       repaint();
       return () => {
         cancelled = true;
-        observer.disconnect();
+        observer?.disconnect();
       };
     }
 
@@ -581,24 +583,27 @@ export function ImageReveal({
     };
 
     // no reason to animate a frame nobody is looking at
-    const visibility = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting === visible) return;
-        visible = entry.isIntersecting;
-        if (visible) start();
-        else cancelAnimationFrame(frameId);
-      },
-      { rootMargin: "150px" },
-    );
-    visibility.observe(frame);
+    const visibility =
+      typeof IntersectionObserver === "function"
+        ? new IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting === visible) return;
+              visible = entry.isIntersecting;
+              if (visible) start();
+              else cancelAnimationFrame(frameId);
+            },
+            { rootMargin: "150px" },
+          )
+        : null;
+    visibility?.observe(frame);
 
     start();
 
     return () => {
       cancelled = true;
       cancelAnimationFrame(frameId);
-      observer.disconnect();
-      visibility.disconnect();
+      observer?.disconnect();
+      visibility?.disconnect();
     };
   }, [reduce, src, ratio]);
 
@@ -611,7 +616,7 @@ export function ImageReveal({
   return (
     <div
       ref={frameRef}
-      data-slot="image-reveal"
+      data-slot="grid-reveal"
       className={cn(
         "relative w-full overflow-hidden rounded-2xl bg-muted [corner-shape:squircle]",
         className,
@@ -675,4 +680,4 @@ export function ImageReveal({
   );
 }
 
-export default ImageReveal;
+export default GridReveal;
