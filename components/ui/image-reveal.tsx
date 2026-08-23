@@ -18,9 +18,12 @@ export type ImageRevealProps = Omit<ComponentProps<"div">, "children"> & {
 
 const CELLS = 180;
 const OPENING_CELLS = 4;
+// hold short of the end so the run can never finish before the image does
 const HOLD = 0.9;
+// the grid stops splitting here while waiting, leaving arrival somewhere to go
 const WAIT_CAP = 0.72;
 const LAST_SPLIT = 0.92;
+// how long one cell takes to separate, in progress units
 const MORPH = 0.055;
 const SAMPLE = 128;
 const COLOR_MS = 420;
@@ -58,6 +61,7 @@ type Sums = {
   l2: number;
 };
 
+// written as comparisons so NaN falls through to 0
 const clamp01 = (n: number) => (n > 0 ? (n < 1 ? n : 1) : 0);
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -67,6 +71,7 @@ function smoothstep(a: number, b: number, x: number) {
   return t * t * (3 - 2 * t);
 }
 
+// never reaches its ceiling, so a job that outruns the estimate keeps creeping
 function selfPaced(elapsed: number, duration: number) {
   const span = duration > 0 ? duration : 1;
   return HOLD * (1 - Math.exp(-elapsed / span));
@@ -100,6 +105,7 @@ function makeCell(
   };
 }
 
+// splitting the biggest cell each time keeps cells square and the count rising one at a time
 function buildTree(aspect: number) {
   const root = makeCell(0, 0, 1, 1, null);
   const leaves: Cell[] = [root];
@@ -110,6 +116,7 @@ function buildTree(aspect: number) {
     let widest = -1;
     for (let i = 0; i < leaves.length; i++) {
       const c = leaves[i];
+      // the jitter only breaks ties between cells of equal size
       const area = c.w * aspect * c.h * (1 + 0.12 * hash(c.x, c.y, 7.3));
       if (area > widest) {
         widest = area;
@@ -134,6 +141,7 @@ function buildTree(aspect: number) {
 
   const opening = OPENING_CELLS - 1;
   const rest = Math.max(1, branches.length - opening);
+  // the opening splits sit before zero so those cells are already apart on frame one
   branches.forEach((cell, i) => {
     cell.splitAt =
       i < opening ? -MORPH : (LAST_SPLIT * (i - opening + 1)) / rest;
@@ -142,6 +150,7 @@ function buildTree(aspect: number) {
   return { root, branches };
 }
 
+// average colour per cell, plus the luminance spread that decides what splits first
 function measureTree(root: Cell, pixels: Uint8ClampedArray, size: number) {
   const gather = (cell: Cell): Sums => {
     let s: Sums;
@@ -192,6 +201,7 @@ function measureTree(root: Cell, pixels: Uint8ClampedArray, size: number) {
   gather(root);
 }
 
+// reuse the same time slots so only the order changes and the pacing stays identical
 function orderByDetail(branches: Cell[], openedBefore: number) {
   const pending = branches.filter((c) => c.splitAt > openedBefore);
   if (pending.length < 2) return;
@@ -253,11 +263,13 @@ type Patch = {
 
 function drawScene(s: Scene) {
   const { ctx, root, width, height, split } = s;
+  // without pixel access the grid stays grey, but the photo still fades in below
   const tint = s.hasColors ? s.fade : 0;
   const shade = (grey: number, target: number) =>
     Math.round(mix(grey, target, tint));
   const base = greyOf(root.tone, s.dark, s.clock);
 
+  // gutters recess into this instead of cutting through to the surface behind
   ctx.fillStyle = `rgb(${Math.round(shade(base, root.r) * 0.92)},${Math.round(
     shade(base, root.g) * 0.92,
   )},${Math.round(shade(base, root.b) * 0.92)})`;
@@ -268,6 +280,7 @@ function drawScene(s: Scene) {
   const rounded = soft > 0.01 && typeof ctx.roundRect === "function";
 
   const paint = (p: Patch) => {
+    // snap to whole pixels so neighbouring cells stay flush with no seam
     const x = Math.round(p.x);
     const y = Math.round(p.y);
     const w = Math.round(p.x + p.w) - x;
@@ -278,6 +291,7 @@ function drawScene(s: Scene) {
     const onRight = x + w >= width;
     const onBottom = y + h >= height;
 
+    // only interior edges get a gutter, so the outer silhouette stays the frame
     const left = onLeft ? 0 : gutter;
     const top = onTop ? 0 : gutter;
     const innerW = w - left - (onRight ? 0 : gutter);
@@ -307,6 +321,7 @@ function drawScene(s: Scene) {
       paint(p);
       return;
     }
+    // children start on the parent's rect and separate into their own
     const t = easeOut(clamp01((split - cell.splitAt) / MORPH));
     for (const kid of cell.kids) {
       walk(kid, {
@@ -450,6 +465,7 @@ export function ImageReveal({
 
     const repaint = () => {
       if (!reduce) return render(scene.split, performance.now());
+      // reduced motion has no loop, so jump straight to the settled frame
       const settled = loadedAt < 0 ? performance.now() : loadedAt + COLOR_MS;
       render(scene.image ? 1 : WAIT_CAP, settled);
     };
@@ -465,6 +481,7 @@ export function ImageReveal({
       scene.height = h;
       canvas.width = w;
       canvas.height = h;
+      // resizing the canvas clears it, so always paint again
       repaint();
     };
 
@@ -488,6 +505,7 @@ export function ImageReveal({
         setLoaded(true);
         if (reduce) repaint();
       };
+      // hosts without CORS headers reject the request, so retry plainly
       el.onerror = () => {
         if (cancelled) return;
         if (withCors) load(url, false);
@@ -527,6 +545,7 @@ export function ImageReveal({
       const paced = progressRef.current === undefined;
       let target: number;
 
+      // the image landing is what finishes the run, not the number
       if (ready) {
         target = 1;
       } else if (paced) {
@@ -546,6 +565,7 @@ export function ImageReveal({
         doneRef.current?.();
       }
 
+      // nothing moves after this, so stop burning frames
       if (fired && split > 0.9995) {
         render(1, now);
         stopped = true;
@@ -560,6 +580,7 @@ export function ImageReveal({
       frameId = requestAnimationFrame(tick);
     };
 
+    // no reason to animate a frame nobody is looking at
     const visibility = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting === visible) return;
