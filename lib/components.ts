@@ -142,10 +142,9 @@ export function Demo() {
     props: [
       {
         name: "items",
-        type: "(string | { label: string; href?: string; group?: string })[]",
+        type: "string[]",
         required: true,
-        description:
-          "The nav items, top to bottom. Pass a plain string for a label, or an object to link it with href and head it with a group label. A group only prints when it differs from the item above, so keep items of the same group next to each other.",
+        description: "Labels rendered as the vertical list of nav items.",
       },
       {
         name: "value",
@@ -181,9 +180,8 @@ export function Demo() {
     usage: `import { BounceSidebar } from "@/components/ui/bounce-sidebar"
   
   const items = [
-    { label: "Home", href: "/", group: "General" },
-    { label: "About", href: "/about", group: "General" },
-    { label: "Billing", href: "/billing", group: "Account" },
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
   ]
   
   export function Demo() {
@@ -1406,13 +1404,6 @@ export const gallerySections: ComponentSection[] = [
     items: components.filter((c) => c.categories.includes(id)),
   })),
 ].filter((section) => section.items.length > 0);
-
-// sidebar lists each component once, so only the first category counts
-export const navSections: ComponentSection[] = CATEGORY_ORDER.map((id) => ({
-  id,
-  label: CATEGORY_LABELS[id],
-  items: components.filter((c) => c.categories[0] === id),
-})).filter((section) => section.items.length > 0);
 
 export function activeComponent(pathname: string): ComponentItem | undefined {
   return components.find((c) => c.href === pathname);

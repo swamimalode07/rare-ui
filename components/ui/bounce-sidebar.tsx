@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Fragment,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ComponentProps,
-} from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
 import Link from "next/link";
 import { motion, useAnimate } from "motion/react";
 import { arc } from "motion";
@@ -18,9 +11,7 @@ const MotionLink = motion.create(Link);
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-export type BounceSidebarItem =
-  | string
-  | { label: string; href?: string; group?: string };
+export type BounceSidebarItem = string | { label: string; href?: string };
 
 export type BounceSidebarProps = Omit<ComponentProps<"ul">, "onChange"> & {
   items: BounceSidebarItem[];
@@ -135,9 +126,6 @@ export function BounceSidebar({
       {items.map((item, index) => {
         const label = typeof item === "string" ? item : item.label;
         const href = typeof item === "string" ? undefined : item.href;
-        const group = typeof item === "string" ? undefined : item.group;
-        const prev = items[index - 1];
-        const prevGroup = typeof prev === "string" ? undefined : prev?.group;
         const isActive = index === activeIndex;
         const itemClassName = cn(
           "flex w-full cursor-pointer items-center rounded-lg p-1 text-left text-sm transition-colors duration-200",
@@ -145,46 +133,34 @@ export function BounceSidebar({
         );
 
         return (
-          <Fragment key={label}>
-            {group && group !== prevGroup && (
-              <li
-                data-slot="bounce-sidebar-group"
-                className={cn(
-                  "px-1 pb-1 pt-4 text-xs font-medium uppercase tracking-wide text-foreground/35",
-                  index === 0 && "pt-0",
-                )}
+          <li
+            key={label}
+            ref={(el) => {
+              itemRefs.current[index] = el;
+            }}
+          >
+            {href ? (
+              <MotionLink
+                href={href}
+                data-slot="bounce-sidebar-item"
+                data-active={isActive}
+                onClick={() => select(index)}
+                className={itemClassName}
               >
-                {group}
-              </li>
+                {label}
+              </MotionLink>
+            ) : (
+              <motion.button
+                type="button"
+                data-slot="bounce-sidebar-item"
+                data-active={isActive}
+                onClick={() => select(index)}
+                className={itemClassName}
+              >
+                {label}
+              </motion.button>
             )}
-            <li
-              ref={(el) => {
-                itemRefs.current[index] = el;
-              }}
-            >
-              {href ? (
-                <MotionLink
-                  href={href}
-                  data-slot="bounce-sidebar-item"
-                  data-active={isActive}
-                  onClick={() => select(index)}
-                  className={itemClassName}
-                >
-                  {label}
-                </MotionLink>
-              ) : (
-                <motion.button
-                  type="button"
-                  data-slot="bounce-sidebar-item"
-                  data-active={isActive}
-                  onClick={() => select(index)}
-                  className={itemClassName}
-                >
-                  {label}
-                </motion.button>
-              )}
-            </li>
-          </Fragment>
+          </li>
         );
       })}
     </ul>
