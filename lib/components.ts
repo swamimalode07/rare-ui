@@ -1083,6 +1083,7 @@ export function Demo() {
     description:
       "An iOS-style stepped progress track with a play, pause and replay control. The active step stretches into a bar that fills as it plays.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/step-player.tsx`,
+    preview: "/componentdemos/stepplayer.mp4",
     dependencies: [
       {
         name: "motion",
@@ -1222,6 +1223,88 @@ export function Demo() {
   //   return <FamilyDrawer />
   // }`,
   // },
+  {
+    name: "Grid Reveal",
+    href: "/components/gridreveal",
+    registry: "grid-reveal",
+    description:
+      "A loading state for AI images that turns into the real picture when it arrives.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/grid-reveal.tsx`,
+    preview: "/componentdemos/imagegen.mp4",
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Press Generate and the frame opens as four cells, then keeps splitting the biggest one in two until it becomes the picture. Busy parts of the image sharpen first, and a status pill sits in the bottom left until it lands. Honors prefers-reduced-motion by holding a still frame.",
+    props: [
+      {
+        name: "src",
+        type: "string | null",
+        description:
+          "Image to reveal. Leave it null while the image is still being generated, then set it once it is ready.",
+      },
+      {
+        name: "alt",
+        type: "string",
+        description:
+          "Describes the finished image for screen readers. The frame is hidden from assistive tech when omitted.",
+      },
+      {
+        name: "progress",
+        type: "number",
+        description:
+          "Position of the wait from 0 to 1, driving how far the grid has split. It holds at 0.72 until the image decodes, and the image landing is what finishes the reveal.",
+      },
+      {
+        name: "aspect",
+        type: "number",
+        default: "1",
+        description:
+          "Width divided by height of the frame. Locked from the first paint so the arriving image causes no layout shift.",
+      },
+      {
+        name: "caption",
+        type: "string",
+        description:
+          "Optional status text, shown as a frosted pill in the bottom left of the frame and lit by a slow shimmer. Change it mid-run and the lines crossfade while the pill resizes to suit.",
+      },
+      {
+        name: "estimatedDuration",
+        type: "number",
+        default: "6000",
+        description:
+          "Roughly how long the work takes, used to pace the grid when no progress is passed. Overrunning it is fine, the grid keeps creeping instead of stopping.",
+      },
+      {
+        name: "onRevealComplete",
+        type: "() => void",
+        description: "Fires once the image has fully resolved.",
+      },
+      {
+        name: "onError",
+        type: "() => void",
+        description:
+          "Fires when the image fails to load. Without it a broken src leaves the grid waiting, so use it to show your own fallback.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="grid-reveal").',
+      },
+    ],
+    usage: `import GridReveal from "@/components/ui/grid-reveal"
+
+export function Demo({ src }: { src: string | null }) {
+  return <GridReveal src={src} alt="Generated image" caption="Creating image" />
+}
+
+// Pass progress when your API reports it
+// <GridReveal src={src} progress={job.progress} />`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
