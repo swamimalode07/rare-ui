@@ -70,8 +70,13 @@ export default function ComponentCard({
 
       <div className="flex items-center justify-between gap-3 px-3 pb-1 pt-2">
         <div className="min-w-0">
-          <h3 className="font-runde text-base font-semibold tracking-tight">
+          <h3 className="flex items-center gap-2 font-runde text-base font-semibold tracking-tight">
             {item.name}
+            {item.isNew && (
+              <span className="rounded-full bg-[#FC4C01]/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#FC4C01]">
+                New
+              </span>
+            )}
           </h3>
           {/* {item.description && (
             <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">

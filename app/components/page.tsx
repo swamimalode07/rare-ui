@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import ComponentCard from "@/components/gallery/ComponentCard";
 import GooeyNavbar from "@/components/GooeyNavbar";
-import { components } from "@/lib/components";
+import { components, gallerySections } from "@/lib/components";
 import { fetchStarCount } from "@/lib/github";
 import { SITE_KEYWORDS, componentsJsonLd } from "@/lib/seo";
 
@@ -43,11 +43,28 @@ export default async function ComponentsIndexPage() {
           </p>
         </header>
 
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {components.map((item) => (
-            <ComponentCard key={item.href} item={item} />
-          ))}
-        </div>
+        {gallerySections.map((section) => (
+          <section
+            key={section.id}
+            id={section.id}
+            className="mt-14 scroll-mt-28 first:mt-10"
+          >
+            <h2 className="font-runde text-lg font-semibold tracking-tight sm:text-xl">
+              {section.label}{" "}
+              <span className="text-muted-foreground">
+                <span className="text-[#FC4C01]">[</span>
+                {section.items.length}
+                <span className="text-[#FC4C01]">]</span>
+              </span>
+            </h2>
+
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {section.items.map((item) => (
+                <ComponentCard key={item.href} item={item} />
+              ))}
+            </div>
+          </section>
+        ))}
       </main>
 
       <Footer />

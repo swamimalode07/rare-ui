@@ -2,18 +2,21 @@
 
 import { usePathname } from "next/navigation";
 import { BounceSidebar } from "@/components/ui/bounce-sidebar";
-import { components } from "@/lib/components";
+import { navSections } from "@/lib/components";
 
-const items = components.map((component) => ({
-  label: component.name,
-  href: component.href,
-}));
+const items = navSections.flatMap((section) =>
+  section.items.map((component) => ({
+    label: component.name,
+    href: component.href,
+    group: section.label,
+  })),
+);
 
 const SidebarList = ({ onNavigate }: { onNavigate?: () => void }) => {
   const pathname = usePathname();
   const activeIndex = Math.max(
     0,
-    components.findIndex((component) => pathname === component.href),
+    items.findIndex((item) => pathname === item.href),
   );
 
   return (
