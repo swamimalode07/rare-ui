@@ -17,12 +17,24 @@
       ]
     },
     {
+      "name": "color",
+      "type": "registry:lib",
+      "title": "Color helpers",
+      "description": "Parse CSS colors into RGB, then mix or convert them.",
+      "files": [
+        {
+          "path": "lib/color.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "folder-component",
       "type": "registry:ui",
       "title": "Folder Component",
-      "description": "An animated folder whose cards fan out on hover and lift open on click, with a 3D-tilted flap. Supports color and size (sm/md/lg) props.",
+      "description": "An animated folder whose cards fan out on hover and lift open on click, with a 3D-tilted flap.",
       "dependencies": ["motion"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "color"],
       "files": [
         {
           "path": "components/ui/folder-component.tsx",
@@ -62,7 +74,7 @@
       "name": "proximity-sidebar",
       "type": "registry:ui",
       "title": "Proximity Sidebar",
-      "description": "A dash-style scroll sidebar whose items expand as the pointer approaches.",
+      "description": "A document minimap that maps page sections to interactive dashes.",
       "dependencies": ["motion"],
       "registryDependencies": ["utils"],
       "files": [
@@ -137,7 +149,7 @@
       "name": "otp-input",
       "type": "registry:ui",
       "title": "OTP Input",
-      "description": "A one-time-code input whose characters roll into place behind a caret that slides from slot to slot.",
+      "description": "A one-time-code input whose digits spin into place like a dial, behind a caret that slides from slot to slot.",
       "dependencies": ["motion"],
       "registryDependencies": ["utils"],
       "files": [

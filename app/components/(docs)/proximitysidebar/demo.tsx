@@ -1,3 +1,5 @@
+"use client";
+
 import ProximitySidebar from "@/components/ui/proximity-sidebar";
 import type { ProximitySection } from "@/components/ui/proximity-sidebar";
 
@@ -26,7 +28,7 @@ const docs: DocGroup[] = [
     eyebrow: "Introduction",
     title: "Proximity Sidebar",
     description:
-      "A compact document minimap that turns headings and body rhythm into interactive dashes. It stays quiet by default, expands near the pointer, and briefly pulses the matching dash while the reader scrolls.",
+      "A compact document minimap that turns headings and body rhythm into interactive dashes. Nearby dashes expand under the pointer, and a translucent fill tracks how far you have read.",
     items: [
       {
         id: "overview-purpose",
@@ -41,9 +43,9 @@ const docs: DocGroup[] = [
         id: "overview-pattern",
         label: "Pattern",
         eyebrow: "Interaction model",
-        title: "Hover locally, pulse on scroll",
+        title: "Hover locally, fill on scroll",
         description:
-          "Pointer proximity expands nearby dashes continuously. Scroll activation only pulses for a short moment, then returns to baseline so the navigation does not stay visually loud.",
+          "Pointer proximity expands nearby dashes continuously. Scroll fills each dash in order up to the current section, so you can see where you are in the page.",
         kind: "body",
       },
       {
@@ -145,7 +147,7 @@ const docs: DocGroup[] = [
     eyebrow: "Interaction",
     title: "Behavior",
     description:
-      "The sidebar balances direct interaction with passive reading. It responds to the pointer, follows scroll position briefly, and stays out of the way when idle.",
+      "The sidebar balances direct interaction with passive reading. It expands near the pointer, fills as you scroll, and stays usable as navigation.",
     items: [
       {
         id: "behavior-hover",
@@ -153,16 +155,16 @@ const docs: DocGroup[] = [
         eyebrow: "Pointer",
         title: "Nearby dashes expand around the cursor",
         description:
-          "Hovering over the stack sets a shared pointer value. Each dash measures its own distance from that pointer and scales according to proximity.",
+          "Hovering over the stack sets a shared pointer value. Each dash measures its own distance from that pointer and scales according to proximity. The aimed dash goes full foreground in light mode. In dark mode it goes solid and the rest dim.",
         kind: "body",
       },
       {
         id: "behavior-scroll",
         label: "Scroll",
         eyebrow: "Passive state",
-        title: "Scroll creates a temporary pulse",
+        title: "Scroll fills the rail tick by tick",
         description:
-          "When the reader scrolls, the closest content section expands for half a second and then returns to normal. The active cue is useful but not sticky.",
+          "As each section crosses the viewport anchor, its dash joins a translucent fill from the top. Nearby dashes also pulse in length for 80ms. Reaching the end of the scroll container fills the last dash.",
         kind: "body",
       },
       {
@@ -180,7 +182,7 @@ const docs: DocGroup[] = [
         eyebrow: "Containers",
         title: "Nested scroll containers are supported",
         description:
-          "The demo uses an internal scroll area. The component detects scrollable parents for the target sections, so the pulse works inside app layouts too.",
+          "The demo uses an internal scroll area. The component detects scrollable parents for the target sections, so fill and pulse work inside app layouts too.",
         kind: "body",
       },
       {
@@ -209,7 +211,7 @@ const docs: DocGroup[] = [
     eyebrow: "Visual System",
     title: "Styling",
     description:
-      "The dash stack keeps the original visual tone: thin one-pixel marks, eight-pixel spacing, muted small entries, and strong foreground markers.",
+      "The dash stack keeps a quiet visual tone: hairline marks, eight-pixel spacing, a translucent fill for progress, and a thicker tip on the current section.",
     items: [
       {
         id: "styling-gap",
@@ -224,18 +226,18 @@ const docs: DocGroup[] = [
         id: "styling-thickness",
         label: "Thickness",
         eyebrow: "Line weight",
-        title: "Keep the dash height at one pixel",
+        title: "Keep idle dashes hairline thin",
         description:
-          "The hierarchy comes from length and color instead of heavy stroke widths. That keeps the minimap refined even when the page has many anchors.",
+          "Idle marks are 1.5 pixels in light mode and one pixel in dark mode. The current section scales to twice that height in place so neighbors do not shift. Hierarchy still comes from length and color.",
         kind: "body",
       },
       {
         id: "styling-color",
         label: "Color",
         eyebrow: "Contrast",
-        title: "Use foreground for markers and muted color for details",
+        title: "Fill uses a translucent foreground wash",
         description:
-          "Major sections use the foreground color. Smaller items use muted foreground opacity so they create density without overpowering the page.",
+          "Read sections share a foreground fill at 0.69 in light mode and 0.55 in dark mode. Unread marks stay quieter. Hovering a dash makes that mark full foreground in light mode. In dark mode the aimed mark goes solid and the others dim.",
         kind: "body",
       },
       {
@@ -328,7 +330,7 @@ const docs: DocGroup[] = [
     eyebrow: "API",
     title: "Reference",
     description:
-      "The component accepts a side, optional className, optional active offset, and an ordered list of sections. That order is the order rendered in the dash stack.",
+      "The component accepts a side, optional className, optional active offset, optional fill opacity, optional hover cue, and an ordered list of sections. That order is the order rendered in the dash stack.",
     items: [],
   },
 ];
@@ -357,9 +359,7 @@ export default function Page() {
               id={group.id}
               className="mt-10 scroll-mt-12 first:mt-0"
             >
-              <p className="mb-2 text-sm text-foreground/40">
-                {group.eyebrow}
-              </p>
+              <p className="mb-2 text-sm text-foreground/40">{group.eyebrow}</p>
               {groupIndex === 0 ? (
                 <h1 className="font-cal text-5xl font-medium tracking-wider text-foreground">
                   {group.title}
@@ -375,20 +375,15 @@ export default function Page() {
 
               {group.id === "reference" ? (
                 <div className="mt-6 grid gap-6">
-                  <div
-                    id="reference-props"
-                    className="scroll-mt-12"
-                  >
+                  <div id="reference-props" className="scroll-mt-12">
                     <p className="font-sans text-sm leading-6 text-foreground/40">
                       Pass <code>sections</code>, <code>side</code>,{" "}
-                      <code>className</code>, and <code>activeOffset</code>.
-                      The section ids should match elements in the document.
+                      <code>className</code>, <code>activeOffset</code>,{" "}
+                      <code>fillOpacity</code>, and <code>hoverCue</code>. The
+                      section ids should match elements in the document.
                     </p>
                   </div>
-                  <div
-                    id="reference-output"
-                    className="scroll-mt-12"
-                  >
+                  <div id="reference-output" className="scroll-mt-12">
                     <p className="font-sans text-sm leading-6 text-foreground/40">
                       The component renders an accessible navigation rail where
                       each dash is a button tied to its matching content block.

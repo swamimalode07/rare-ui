@@ -55,7 +55,7 @@ export const components: ComponentItem[] = [
     href: "/components/foldercomponent",
     registry: "folder-component",
     description:
-      "An animated folder whose cards fan out on hover and lift open on click, with a 3D-tilted flap. Supports color and size (sm/md/lg) props.",
+      "An animated folder whose cards fan out on hover and lift open on click, with a 3D-tilted flap.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/folder-component.tsx`,
     preview: "/componentdemos/foldercomponent.mp4",
     featured: true,
@@ -66,21 +66,14 @@ export const components: ComponentItem[] = [
       },
     ],
     interaction:
-      "Hover to fan the cards out, then click to lift the folder open.",
+      "Pick a color to re-theme the folder. Hover to fan the cards out, then click to lift the folder open.",
     props: [
       {
         name: "color",
-        type: '"black" | "white" | "blue"',
+        type: "string",
         default: '"black"',
-        options: ["black", "white", "blue"],
-        control: "swatch",
-        optionColors: {
-          black: "#000000",
-          white: "#ffffff",
-          blue: "#50B1FD",
-        },
         description:
-          "Color theme of the folder, flap, and cards. Each theme sets matching fills, strokes, and inner shadows.",
+          "Any CSS color: hex, rgb, hsl, or a name like white. The folder, flap, and cards are derived from it.",
       },
       {
         name: "size",
@@ -94,7 +87,7 @@ export const components: ComponentItem[] = [
     usage: `import { Folder } from "@/components/ui/folder-component",
 
 export function Demo() {
-  return <Folder color="blue" size="md" />
+  return <Folder color="royalblue" size="md" />
 }`,
   },
   {
@@ -166,7 +159,7 @@ export function Demo() {
     href: "/components/proximitysidebar",
     registry: "proximity-sidebar",
     description:
-      "An interactive sidebar with proximity hover effects that appears while scrolling and responds to scroll intensity.",
+      "A document minimap that maps page sections to interactive dashes.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/proximity-sidebar.tsx`,
     preview: "/componentdemos/proximitysidebar.mp4",
     dependencies: [
@@ -176,7 +169,7 @@ export function Demo() {
       },
     ],
     interaction:
-      "Scroll through content to track the current section, then move the pointer near dashes to expand them and click to smooth-scroll to a section.",
+      "Scroll to fill dashes up to the current section. Move the pointer to expand nearby dashes and solidify the one you are aiming at. Click a dash to scroll there; the fill eases to it.",
     props: [
       {
         name: "sections",
@@ -199,6 +192,21 @@ export function Demo() {
         default: "0.4",
         description:
           "Viewport anchor ratio used to detect the active section while scrolling (0 = top, 1 = bottom).",
+      },
+      {
+        name: "fillOpacity",
+        type: "number",
+        default: "0.69 light / 0.55 dark",
+        description:
+          "Foreground alpha of the filled trail. Omit to use 0.69 in light mode and 0.55 in dark mode.",
+      },
+      {
+        name: "hoverCue",
+        type: '"none" | "dim" | "solid"',
+        default: '"solid"',
+        options: ["none", "dim", "solid"],
+        description:
+          "How the aimed dash looks under the pointer. solid makes it full foreground in light mode, and in dark mode makes it full color while dimming the rest. dim keeps a softer contrast, none leaves color to the fill.",
       },
       {
         name: "className",
@@ -692,7 +700,7 @@ export function Demo() {
     href: "/components/otpinput",
     registry: "otp-input",
     description:
-      "A one-time-code input whose characters roll into place behind a caret that slides from slot to slot.",
+      "A one-time-code input whose digits spin into place like a dial, behind a caret that slides from slot to slot.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/otp-input.tsx`,
     preview: "/componentdemos/otpinput.mp4",
     featured: true,
@@ -703,7 +711,7 @@ export function Demo() {
       },
     ],
     interaction:
-      "Type to fill each slot and move to the next one. Backspace clears a slot in place, then steps back on the next press. Arrow keys move between slots, and a caret slides along with you. Pasting a code, or letting the phone autofill one from a text message, drops it straight in. Set the status to turn the slots green, or shake them red on a wrong code.",
+      "Type to fill each slot and move to the next one. Each digit rolls through the full slot. Neighboring numbers blur and fade at the top and bottom before the target settles in the center. Backspace clears a slot in place, then steps back on the next press. Arrow keys move between slots, and a caret slides along with you. Pasting a code, or letting the phone autofill one from a text message, drops it straight in. After the last digit settles, the slots turn green, or shake red on a wrong code.",
     props: [
       {
         name: "length",
@@ -719,6 +727,20 @@ export function Demo() {
         options: ["sm", "md", "lg"],
         description:
           "Overall scale of the boxes. Maps to 40px (sm), 48px (md), and 56px (lg), and carries the text, caret, and gaps with it.",
+      },
+      {
+        name: "duration",
+        type: "number",
+        default: "800",
+        description:
+          "How long a 9 takes to roll into place, in milliseconds. Smaller digits settle sooner. Ignored when dial is off.",
+      },
+      {
+        name: "dial",
+        type: "boolean",
+        default: "true",
+        description:
+          "Spins each digit through the numbers below it. Off, the character slides in on its own.",
       },
       {
         name: "value",
@@ -740,7 +762,8 @@ export function Demo() {
       {
         name: "onComplete",
         type: "(value: string) => void",
-        description: "Fires once the last slot is filled.",
+        description:
+          "Fires once the last slot is filled, after its digit has finished rolling.",
       },
       {
         name: "type",

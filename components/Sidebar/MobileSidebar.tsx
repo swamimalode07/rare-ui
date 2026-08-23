@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import SidebarList from "./SidebarList";
 import { ClosedIcon, OpenIcon } from "./icons";
+import { Squircle } from "@squircle-js/react";
 
 export default function MobileSidebar() {
   const [open, setOpen] = useState(false);
@@ -19,14 +20,16 @@ export default function MobileSidebar() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-label={open ? "Close sidebar" : "Open sidebar"}
-        className="absolute left-4 top-4 z-60 cursor-pointer rounded-lg bg-popover p-2"
-      >
-        {open ? <OpenIcon /> : <ClosedIcon />}
-      </button>
+      <Squircle asChild cornerRadius={16} cornerSmoothing={1}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? "Close sidebar" : "Open sidebar"}
+          className="absolute left-4 top-4 z-60 cursor-pointer bg-popover p-2"
+        >
+          {open ? <OpenIcon /> : <ClosedIcon />}
+        </button>
+      </Squircle>
 
       <AnimatePresence>
         {open && (

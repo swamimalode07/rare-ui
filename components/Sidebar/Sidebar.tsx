@@ -16,14 +16,16 @@ const Sidebar = ({
 }) => {
   return (
     <div className="pointer-events-none absolute left-0 top-0 z-40 h-full">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-label={open ? "Close sidebar" : "Open sidebar"}
-        className="pointer-events-auto absolute top-4 left-4 z-50 cursor-pointer rounded-lg bg-popover p-2"
-      >
-        {open ? <OpenIcon /> : <ClosedIcon />}
-      </button>
+      <Squircle asChild cornerRadius={open ? 12 : 18} cornerSmoothing={1}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? "Close sidebar" : "Open sidebar"}
+          className="pointer-events-auto absolute top-4 left-4 z-50 cursor-pointer bg-popover p-2"
+        >
+          {open ? <OpenIcon /> : <ClosedIcon />}
+        </button>
+      </Squircle>
 
       <Squircle asChild cornerRadius={23} cornerSmoothing={1}>
         <motion.div
