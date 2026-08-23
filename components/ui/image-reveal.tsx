@@ -449,9 +449,9 @@ export function ImageReveal({
     };
 
     const repaint = () => {
+      if (!reduce) return render(scene.split, performance.now());
       const settled = loadedAt < 0 ? performance.now() : loadedAt + COLOR_MS;
-      const still = scene.image !== null ? 1 : WAIT_CAP;
-      render(reduce ? still : scene.split, settled);
+      render(scene.image ? 1 : WAIT_CAP, settled);
     };
 
     const resize = () => {
