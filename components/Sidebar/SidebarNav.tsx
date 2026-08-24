@@ -45,7 +45,7 @@ const Rail = ({
         height: Math.max(0, (y ?? 0) - CORNER - from),
         backgroundImage: DASH,
       }}
-      className="absolute left-[2px] w-px transition-[top,height] duration-200 motion-reduce:transition-none"
+      className="absolute left-0.5 w-px transition-[top,height] duration-200 motion-reduce:transition-none"
     />
     <svg
       width="12"
@@ -53,7 +53,7 @@ const Rail = ({
       viewBox="0 0 12 7"
       fill="none"
       style={{ top: (y ?? 0) - CORNER }}
-      className="absolute left-[2px] transition-[top] duration-200 motion-reduce:transition-none"
+      className="absolute left-0.5 transition-[top] duration-200 motion-reduce:transition-none"
     >
       <path
         d="M0.5 0a6 6 0 0 0 6 6H12"
@@ -149,7 +149,7 @@ const SidebarGroup = ({
 
   return (
     <div className="flex flex-col">
-      <span className="pb-2 pl-[2px] pr-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/40">
+      <span className="pb-2 pl-0.5 pr-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/40">
         {label}
       </span>
 

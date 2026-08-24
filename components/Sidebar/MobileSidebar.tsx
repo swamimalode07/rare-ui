@@ -49,7 +49,7 @@ export default function MobileSidebar() {
               className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col rounded-r-3xl bg-card p-4 pl-6"
             >
               <h2 className="mt-18">Components</h2>
-              <SidebarScroll className="mt-4 min-h-0 flex-1 pb-6">
+              <SidebarScroll className="mt-4 min-h-0 flex-1">
                 <SidebarNav onNavigate={() => setOpen(false)} />
               </SidebarScroll>
             </motion.div>

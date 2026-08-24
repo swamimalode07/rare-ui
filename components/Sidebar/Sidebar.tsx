@@ -34,7 +34,7 @@ const Sidebar = ({
           className="pointer-events-auto flex h-full w-75 flex-col bg-background p-4 pl-6"
         >
           <h2 className="mt-18">Components</h2>
-          <SidebarScroll className="mt-4 min-h-0 flex-1 pb-6">
+          <SidebarScroll className="mt-4 min-h-0 flex-1">
             <SidebarNav />
           </SidebarScroll>
         </motion.div>
