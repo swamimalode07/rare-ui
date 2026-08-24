@@ -191,7 +191,7 @@ const SidebarGroup = ({
               className={cn(
                 "rounded-lg py-1.5 pl-5 pr-2 text-sm transition-colors duration-200",
                 isActive
-                  ? "bg-foreground/8 text-foreground"
+                  ? "text-foreground"
                   : "text-foreground/50 hover:text-foreground/80",
               )}
             >
