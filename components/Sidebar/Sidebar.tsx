@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
-import SidebarList from "./SidebarList";
+import SidebarNav from "./SidebarNav";
+import SidebarScroll from "./SidebarScroll";
 import { ClosedIcon, OpenIcon } from "./icons";
 import { Squircle } from "@squircle-js/react";
 
@@ -30,12 +31,12 @@ const Sidebar = ({
           initial={false}
           animate={{ x: open ? 0 : -PANEL_SHIFT }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="pointer-events-auto h-full w-75 bg-card p-4 pl-6"
+          className="pointer-events-auto flex h-full w-75 flex-col bg-background p-4 pl-6"
         >
           <h2 className="mt-18">Components</h2>
-          <div className="mt-4">
-            <SidebarList />
-          </div>
+          <SidebarScroll className="mt-4 min-h-0 flex-1 pb-6">
+            <SidebarNav />
+          </SidebarScroll>
         </motion.div>
       </Squircle>
     </div>

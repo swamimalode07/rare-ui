@@ -33,17 +33,17 @@ export const CATEGORY_LABELS: Record<ComponentCategory, string> = {
 };
 
 export const CATEGORY_ORDER: ComponentCategory[] = [
+  "display",
   "ai",
   "navigation",
   "inputs",
   "feedback",
-  "display",
 ];
 
 export type ComponentItem = {
   name: string;
   href: string;
-  categories: ComponentCategory[];
+  category: ComponentCategory;
   isNew?: boolean;
   description?: string;
   registry?: string;
@@ -78,7 +78,7 @@ export const components: ComponentItem[] = [
   {
     name: "Folder component",
     href: "/components/foldercomponent",
-    categories: ["display"],
+    category: "display",
     registry: "folder-component",
     description:
       "An animated folder whose cards fan out on hover and lift open on click, with a 3D-tilted flap. Supports color and size (sm/md/lg) props.",
@@ -126,7 +126,7 @@ export function Demo() {
   {
     name: "Bounce sidebar",
     href: "/components/bouncesidebar",
-    categories: ["navigation"],
+    category: "navigation",
     registry: "bounce-sidebar",
     description:
       "A vertical navigation list with a bouncy, spring-animated active indicator.",
@@ -142,9 +142,10 @@ export function Demo() {
     props: [
       {
         name: "items",
-        type: "string[]",
+        type: "Array<string | { label: string; href?: string } | { label: string; heading: true }>",
         required: true,
-        description: "Labels rendered as the vertical list of nav items.",
+        description:
+          "Rows rendered as the vertical list. A plain string or an object with a label is a nav item, and href turns it into a link. Add heading: true to render a non-selectable group label the marker skips over.",
       },
       {
         name: "value",
@@ -180,6 +181,7 @@ export function Demo() {
     usage: `import { BounceSidebar } from "@/components/ui/bounce-sidebar"
   
   const items = [
+    { label: "General", heading: true },
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
   ]
@@ -191,7 +193,7 @@ export function Demo() {
   {
     name: "Proximity Sidebar",
     href: "/components/proximitysidebar",
-    categories: ["navigation"],
+    category: "navigation",
     registry: "proximity-sidebar",
     description:
       "An interactive sidebar with proximity hover effects that appears while scrolling and responds to scroll intensity.",
@@ -259,7 +261,7 @@ export function Demo() {
   {
     name: "Duration Picker",
     href: "/components/durationpicker",
-    categories: ["inputs"],
+    category: "inputs",
     registry: "duration-picker",
     description:
       "A gooey, spring-animated picker for entering a duration in hours and minutes.",
@@ -380,7 +382,7 @@ export function Demo() {
   {
     name: "Fluid Orb",
     href: "/components/fluidorb",
-    categories: ["ai"],
+    category: "ai",
     registry: "fluid-orb",
     description:
       "An animated WebGL orb with drifting fluid shading, inspired by ChatGPT's voice mode.",
@@ -429,7 +431,7 @@ export function Demo() {
   {
     name: "Scroll Progress",
     href: "/components/scrollprogressindicator",
-    categories: ["navigation"],
+    category: "navigation",
     registry: "scroll-progress",
     description:
       "A scroll progress pill that tracks reading position and expands into a squircle menu of sections you can jump to.",
@@ -502,7 +504,7 @@ export function Demo() {
   {
     name: "Code Block",
     href: "/components/codeblock",
-    categories: ["display"],
+    category: "display",
     registry: "code-block",
     description:
       "A clean code block that builds its entire theme from a single accent color. Pass code and a hex, it does the rest.",
@@ -614,7 +616,7 @@ export function Demo() {
   {
     name: "Gravity Letters",
     href: "/components/gravityletters",
-    categories: ["display"],
+    category: "display",
     registry: "gravity-letters",
     description:
       "A playful gravity field where letters, numbers, emoji, or any components you pass fall and pile up like real objects.",
@@ -717,7 +719,7 @@ export function Demo() {
   {
     name: "OTP Input",
     href: "/components/otpinput",
-    categories: ["inputs"],
+    category: "inputs",
     registry: "otp-input",
     description:
       "A one-time-code input whose characters roll into place behind a caret that slides from slot to slot.",
@@ -835,7 +837,7 @@ export function Demo() {
   {
     name: "GitHub activity",
     href: "/components/githubactivity",
-    categories: ["display"],
+    category: "display",
     registry: "github-activity",
     description:
       "A contribution heatmap with a footer panel that expands over the grid to rank your top repositories.",
@@ -943,7 +945,7 @@ export function Demo() {
   {
     name: "Emoji reaction",
     href: "/components/emojireaction",
-    categories: ["feedback"],
+    category: "feedback",
     registry: "emoji-reaction",
     description:
       "A tapback-style reaction button that opens a bar of Apple emoji and sends copies of your pick floating up out of it.",
@@ -1022,7 +1024,7 @@ export function Demo() {
   {
     name: "Notification bell",
     href: "/components/notificationbell",
-    categories: ["feedback"],
+    category: "feedback",
     isNew: true,
     registry: "notification-bell",
     description: "An iOS-style notification bell with an unread count badge.",
@@ -1111,7 +1113,7 @@ export function Demo() {
   {
     name: "Step player",
     href: "/components/stepplayer",
-    categories: ["display"],
+    category: "display",
     isNew: true,
     registry: "step-player",
     description:
@@ -1260,7 +1262,7 @@ export function Demo() {
   {
     name: "Grid Reveal",
     href: "/components/gridreveal",
-    categories: ["ai"],
+    category: "ai",
     isNew: true,
     registry: "grid-reveal",
     description:
@@ -1395,7 +1397,7 @@ export const gallerySections: ComponentSection[] = [
   ...CATEGORY_ORDER.map((id) => ({
     id,
     label: CATEGORY_LABELS[id],
-    items: components.filter((c) => c.categories.includes(id)),
+    items: components.filter((c) => c.category === id),
   })),
 ].filter((section) => section.items.length > 0);
 
