@@ -33,7 +33,7 @@ export const TIERS: SponsorTier[] = [
     price: 250,
     featured: true,
     checkoutUrl:
-      "https://buy.polar.sh/polar_cl_0pe09k94wkpksRQh5NMOAMqyT5XmUWltmF71e2qdvEF",
+      "https://www.creem.io/payment/prod_2VfSTJv2zZJwX8zmyiGK8r",
     perks: [
       "Largest logo on the sponsors page",
       "Largest logo on the home page",
@@ -47,7 +47,7 @@ export const TIERS: SponsorTier[] = [
     name: "Gold",
     price: 100,
     checkoutUrl:
-      "https://buy.polar.sh/polar_cl_Is8M2gxbEHpIRWdGy1bp2NlgB7sKr6idwu6bp2mZ2tj",
+      "https://www.creem.io/payment/prod_6zlt70u5xv7Cx40rsElck",
     perks: [
       "Larger logo on the sponsors page",
       "Logo on the home page",
@@ -60,7 +60,7 @@ export const TIERS: SponsorTier[] = [
     name: "Silver",
     price: 50,
     checkoutUrl:
-      "https://buy.polar.sh/polar_cl_ay1irCsyanCY5PDdkbmGK3hxPmFTVVejf0v9a2bo6pI",
+      "https://www.creem.io/payment/prod_6lFZbxKu7OQmLT5iWAfcBP",
     perks: ["Logo in the README", "Listed on the sponsors page"],
   },
 ];
