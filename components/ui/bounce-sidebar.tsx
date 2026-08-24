@@ -11,7 +11,10 @@ const MotionLink = motion.create(Link);
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-export type BounceSidebarItem = string | { label: string; href?: string };
+export type BounceSidebarItem =
+  | string
+  | { label: string; href?: string }
+  | { label: string; heading: true };
 
 export type BounceSidebarProps = Omit<ComponentProps<"ul">, "onChange"> & {
   items: BounceSidebarItem[];
@@ -125,6 +128,24 @@ export function BounceSidebar({
 
       {items.map((item, index) => {
         const label = typeof item === "string" ? item : item.label;
+
+        if (typeof item !== "string" && "heading" in item) {
+          return (
+            <li
+              key={`${index}-${label}`}
+              ref={(el) => {
+                itemRefs.current[index] = el;
+              }}
+              role="presentation"
+              data-slot="bounce-sidebar-heading"
+              style={{ color: dotColor }}
+              className="px-1 pb-1 pt-7 text-[11px] font-semibold uppercase tracking-[0.14em] first:pt-0"
+            >
+              {label}
+            </li>
+          );
+        }
+
         const href = typeof item === "string" ? undefined : item.href;
         const isActive = index === activeIndex;
         const itemClassName = cn(
@@ -134,7 +155,7 @@ export function BounceSidebar({
 
         return (
           <li
-            key={label}
+            key={`${index}-${label}`}
             ref={(el) => {
               itemRefs.current[index] = el;
             }}
