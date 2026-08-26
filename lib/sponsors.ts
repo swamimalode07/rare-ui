@@ -112,3 +112,35 @@ export function sponsorsByTier(tier: SponsorTierId) {
 export function tierById(tier: SponsorTierId) {
   return TIERS.find((entry) => entry.id === tier)!;
 }
+
+export function tierByProductId(productId?: string) {
+  if (!productId) return undefined;
+  return TIERS.find((tier) => tier.checkoutUrl.includes(productId));
+}
+
+export const SPONSOR_ASSET_CHECKLIST = [
+  {
+    title: "Your logo",
+    detail:
+      "SVG is best. If you only have a PNG, send it at 2x on a transparent background, at least 512px wide.",
+  },
+  {
+    title: "A light and a dark version",
+    detail:
+      "The site runs in both themes. If you only have one version, send it anyway and we will make it work.",
+  },
+  {
+    title: "The link destination",
+    detail:
+      "The exact URL your logo should point to, including any UTM tags you want on it.",
+  },
+  {
+    title: "Your name as it should appear",
+    detail:
+      "Company or product name, spelled and capitalised the way you want it read.",
+  },
+  {
+    title: "Your X and LinkedIn handles",
+    detail: "For the shoutout post, on Diamond and Gold tiers.",
+  },
+];
