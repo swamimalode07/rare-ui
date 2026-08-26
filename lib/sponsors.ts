@@ -20,8 +20,6 @@ export type Sponsor = {
 
 export const TIERS_HREF = "/sponsors#tiers";
 
-export const SPONSOR_EMAIL = "swamimalodeofficial@gmail.com";
-
 export const SPONSOR_X_URL = "https://x.com/swamimalode";
 
 export const MONTHLY_PAGEVIEWS = "120K+";

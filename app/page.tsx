@@ -7,7 +7,9 @@ import HeroIntro from "@/components/HeroIntro";
 import ComponentsShowcase from "@/components/ComponentsShowcase";
 import Footer from "@/components/Footer";
 import { OpenSlotCard, SponsorCard } from "@/components/sponsors/SponsorCards";
-import { SPONSORS, TIER_CARD_HEIGHT } from "@/lib/sponsors";
+import { SPONSORS, TIERS, TIER_CARD_HEIGHT } from "@/lib/sponsors";
+
+const LOWEST_TIER_PRICE = Math.min(...TIERS.map((tier) => tier.price));
 
 export const metadata: Metadata = {
   alternates: {
@@ -77,7 +79,7 @@ function BackersSection() {
         href="/sponsors"
         className="font-runde text-sm font-semibold text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
       >
-        See all tiers and become a sponsor &rarr;
+        Sponsorship from ${LOWEST_TIER_PRICE}/month. See all tiers &rarr;
       </Link>
     </section>
   );

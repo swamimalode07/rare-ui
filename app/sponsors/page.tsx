@@ -9,7 +9,8 @@ import { TierGroup } from "@/components/sponsors/SponsorCards";
 import { fetchStarCount } from "@/lib/github";
 import { SITE_KEYWORDS } from "@/lib/seo";
 import { SITE_NAME } from "@/lib/site";
-import { SPONSOR_EMAIL, SPONSOR_X_URL } from "@/lib/sponsors";
+import { SUPPORT_EMAIL } from "@/lib/legal";
+import { SPONSOR_X_URL } from "@/lib/sponsors";
 
 const TITLE = `Sponsors | ${SITE_NAME}`;
 
@@ -115,7 +116,7 @@ export default async function SponsorsPage() {
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
             <SponsorCta
-              href={`mailto:${SPONSOR_EMAIL}`}
+              href={`mailto:${SUPPORT_EMAIL}`}
               variant="subtle"
               className="min-w-44"
             >

@@ -1,6 +1,11 @@
+import Link from "next/link";
 import SponsorCta from "@/components/sponsors/SponsorCta";
+import { MERCHANT_NAME, SUPPORT_EMAIL } from "@/lib/legal";
 import { TIERS, type SponsorTier } from "@/lib/sponsors";
 import { cn } from "@/lib/utils";
+
+const INLINE_LINK =
+  "text-foreground underline decoration-foreground/25 underline-offset-4 transition-colors duration-150 ease-out hover:decoration-foreground";
 
 function CheckIcon({ featured }: { featured?: boolean }) {
   return (
@@ -105,6 +110,20 @@ export default function TierPricing() {
           <TierCard key={tier.id} tier={tier} />
         ))}
       </div>
+
+      <p className="max-w-2xl text-balance text-center text-sm leading-relaxed text-muted-foreground">
+        All prices are in USD and billed monthly, renewing automatically until
+        you cancel. Taxes are calculated at checkout. Payments and invoicing are
+        handled by {MERCHANT_NAME}, our merchant of record. See the{" "}
+        <Link href="/terms" className={INLINE_LINK}>
+          Terms of Service
+        </Link>{" "}
+        for delivery, cancellation and refunds, or email{" "}
+        <a href={`mailto:${SUPPORT_EMAIL}`} className={INLINE_LINK}>
+          {SUPPORT_EMAIL}
+        </a>
+        .
+      </p>
     </section>
   );
 }
