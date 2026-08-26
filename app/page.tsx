@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
+// import Link from "next/link";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import { fetchStarCount } from "@/lib/github";
 import HeroCta from "@/components/HeroCta";
 import HeroIntro from "@/components/HeroIntro";
 import ComponentsShowcase from "@/components/ComponentsShowcase";
 import Footer from "@/components/Footer";
+import {
+  OpenSlotCard,
+  PlatformSponsorCard,
+} from "@/components/sponsors/SponsorCards";
+import { PLATFORM_CARD_HEIGHT, PLATFORM_SPONSORS } from "@/lib/sponsors";
+
+// const LOWEST_TIER_PRICE = Math.min(...TIERS.map((tier) => tier.price));
 
 export const metadata: Metadata = {
   alternates: {
@@ -49,95 +57,6 @@ export default async function Home() {
   );
 }
 
-const SPONSOR_URL = "https://github.com/sponsors/swamimalode07";
-
-type Backer = {
-  name: string;
-  href: string;
-  lightSrc: string;
-  darkSrc: string;
-  cardHeight: string;
-};
-
-// mintlify's wordmark has a far larger x-height and sits higher in its artboard, so it needs its own size
-const BACKERS: Backer[] = [
-  {
-    name: "Databuddy",
-    href: "https://www.databuddy.cc",
-    lightSrc: "/logos/databuddydark.svg",
-    darkSrc: "/logos/databuddywhite.svg",
-    cardHeight: "h-10 sm:h-12",
-  },
-  {
-    name: "Mintlify",
-    href: "https://mintlify.com",
-    lightSrc: "/logos/mintlifydark.png",
-    darkSrc: "/logos/mintlifylight.png",
-    cardHeight: "h-8 sm:h-9.5",
-  },
-];
-
-function BackerLogo({
-  backer,
-  className,
-}: {
-  backer: Backer;
-  className: string;
-}) {
-  return (
-    <>
-      <img
-        src={backer.lightSrc}
-        alt={backer.name}
-        className={`${className} w-auto dark:hidden`}
-      />
-      <img
-        src={backer.darkSrc}
-        alt={backer.name}
-        className={`hidden w-auto dark:block ${className}`}
-      />
-    </>
-  );
-}
-
-function SponsorSlot() {
-  return (
-    <a
-      href={SPONSOR_URL}
-      target="_blank"
-      rel="noreferrer"
-      className="group relative flex h-24 w-full items-center justify-center rounded-3xl bg-card/60 transition-colors duration-150 ease-out hover:bg-card dark:bg-muted/60 dark:hover:bg-muted sm:h-32"
-    >
-      <span className="flex items-center gap-2.5 text-muted-foreground/70 transition-colors duration-200 ease-out group-hover:text-foreground">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          xmlns="http://www.w3.org/2000/svg"
-          className="size-4 transition-transform duration-200 ease-[cubic-bezier(0.215,0.61,0.355,1)] group-hover:rotate-90 motion-reduce:transition-none"
-          aria-hidden="true"
-        >
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-        <span className="grid overflow-hidden whitespace-nowrap text-center text-sm font-medium">
-          <span className="col-start-1 row-start-1 transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.215,0.61,0.355,1)] group-hover:-translate-y-full group-hover:opacity-0 motion-reduce:transition-none">
-            Your logo here
-          </span>
-          <span
-            aria-hidden="true"
-            className="col-start-1 row-start-1 translate-y-full opacity-0 transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.215,0.61,0.355,1)] group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none"
-          >
-            <span className="font-runde font-semibold">Take this slot</span>{" "}
-            <span className="text-[#FC4C01]">&#10084;</span>
-          </span>
-        </span>
-      </span>
-    </a>
-  );
-}
-
 function BackersSection() {
   return (
     <section
@@ -147,23 +66,20 @@ function BackersSection() {
       <h2 className="max-w-2xl text-balance font-runde text-3xl font-bold tracking-tight sm:text-4xl">
         Rare UI is backed and supported by the finest
       </h2>
+
       <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
-        {BACKERS.map((backer) => (
-          <a
-            key={backer.name}
-            href={backer.href}
-            target="_blank"
-            rel="noreferrer"
-            className="flex h-24 items-center justify-center rounded-3xl bg-card/60 px-6 transition-colors duration-150 ease-out hover:bg-card dark:bg-muted/60 dark:hover:bg-muted sm:h-32"
-          >
-            <BackerLogo
-              backer={backer}
-              className={`${backer.cardHeight} max-w-full object-contain`}
-            />
-          </a>
+        {PLATFORM_SPONSORS.map((sponsor) => (
+          <PlatformSponsorCard key={sponsor.name} sponsor={sponsor} />
         ))}
-        <SponsorSlot />
+        <OpenSlotCard height={PLATFORM_CARD_HEIGHT} />
       </div>
+
+      {/* <Link
+        href="/sponsors"
+        className="font-runde text-sm font-semibold text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
+      >
+        Sponsorship from ${LOWEST_TIER_PRICE}/month. See all tiers &rarr;
+      </Link> */}
     </section>
   );
 }

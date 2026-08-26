@@ -1,5 +1,7 @@
 import { Fragment } from "react";
 import Link from "next/link";
+import { SUPPORT_EMAIL } from "@/lib/legal";
+import { TIERS_HREF } from "@/lib/sponsors";
 import FluidWave from "./FluidWave";
 
 const GITHUB_URL = "https://github.com/swamimalode07/rare-ui";
@@ -10,11 +12,15 @@ type FooterLink = { label: string; href: string; external?: boolean };
 const LINKS: FooterLink[] = [
   { label: "Home", href: "/" },
   { label: "Components", href: "/components" },
+  { label: "Sponsors", href: "/sponsors" },
+  { label: "Pricing", href: TIERS_HREF },
   { label: "GitHub", href: GITHUB_URL, external: true },
   { label: "X / Twitter", href: X_URL, external: true },
 ];
 
 const UTILITY_LINKS = [
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms of Service", href: "/terms" },
   { label: "Sitemap", href: "/sitemap.xml" },
   { label: "robots.txt", href: "/robots.txt" },
 ];
@@ -75,8 +81,19 @@ export default function Footer() {
         <div
           className={`flex flex-wrap items-center justify-between gap-3 pb-8 text-xs ${MUTED}`}
         >
-          <span>Rare UI &copy; {new Date().getFullYear()}</span>
-          <span className="flex items-center gap-2.5">
+          <span className="flex flex-wrap items-center gap-2.5">
+            <span>Rare UI &copy; {new Date().getFullYear()}</span>
+            <span
+              aria-hidden="true"
+              className="text-black/25 dark:text-white/25"
+            >
+              &middot;
+            </span>
+            <a href={`mailto:${SUPPORT_EMAIL}`} className={HOVER}>
+              Support: {SUPPORT_EMAIL}
+            </a>
+          </span>
+          <span className="flex flex-wrap items-center gap-2.5">
             {UTILITY_LINKS.map((link, index) => (
               <Fragment key={link.href}>
                 {index > 0 && (
