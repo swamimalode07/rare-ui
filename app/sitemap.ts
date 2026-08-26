@@ -5,7 +5,6 @@ import { SITE_URL } from "@/lib/site";
 const lastModified = new Date("2026-07-30");
 
 export default function sitemap(): MetadataRoute.Sitemap {
-
   return [
     {
       url: SITE_URL,

@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+// import Link from "next/link";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import { fetchStarCount } from "@/lib/github";
 import HeroCta from "@/components/HeroCta";
 import HeroIntro from "@/components/HeroIntro";
 import ComponentsShowcase from "@/components/ComponentsShowcase";
 import Footer from "@/components/Footer";
-import { OpenSlotCard, SponsorCard } from "@/components/sponsors/SponsorCards";
-import { SPONSORS, TIERS, TIER_CARD_HEIGHT } from "@/lib/sponsors";
+import {
+  OpenSlotCard,
+  PlatformSponsorCard,
+} from "@/components/sponsors/SponsorCards";
+import { PLATFORM_CARD_HEIGHT, PLATFORM_SPONSORS } from "@/lib/sponsors";
 
-const LOWEST_TIER_PRICE = Math.min(...TIERS.map((tier) => tier.price));
+// const LOWEST_TIER_PRICE = Math.min(...TIERS.map((tier) => tier.price));
 
 export const metadata: Metadata = {
   alternates: {
@@ -65,22 +68,18 @@ function BackersSection() {
       </h2>
 
       <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
-        {SPONSORS.map((sponsor) => (
-          <SponsorCard
-            key={sponsor.name}
-            sponsor={sponsor}
-            height={TIER_CARD_HEIGHT.gold}
-          />
+        {PLATFORM_SPONSORS.map((sponsor) => (
+          <PlatformSponsorCard key={sponsor.name} sponsor={sponsor} />
         ))}
-        <OpenSlotCard height={TIER_CARD_HEIGHT.gold} />
+        <OpenSlotCard height={PLATFORM_CARD_HEIGHT} />
       </div>
 
-      <Link
+      {/* <Link
         href="/sponsors"
         className="font-runde text-sm font-semibold text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
       >
         Sponsorship from ${LOWEST_TIER_PRICE}/month. See all tiers &rarr;
-      </Link>
+      </Link> */}
     </section>
   );
 }

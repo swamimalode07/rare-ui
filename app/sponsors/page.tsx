@@ -5,7 +5,10 @@ import HeroIntro from "@/components/HeroIntro";
 import SponsorCta from "@/components/sponsors/SponsorCta";
 import SponsorStats from "@/components/sponsors/SponsorStats";
 import TierPricing from "@/components/sponsors/TierPricing";
-import { TierGroup } from "@/components/sponsors/SponsorCards";
+import {
+  PlatformTierGroup,
+  TierGroup,
+} from "@/components/sponsors/SponsorCards";
 import { fetchStarCount } from "@/lib/github";
 import { SITE_KEYWORDS } from "@/lib/seo";
 import { SITE_NAME } from "@/lib/site";
@@ -95,12 +98,17 @@ export default async function SponsorsPage() {
             name="Diamond"
             emptyLabel="Be the first Diamond sponsor"
           />
-          <TierGroup tier="gold" name="Gold" />
+          <TierGroup
+            tier="gold"
+            name="Gold"
+            emptyLabel="Be the first Gold sponsor"
+          />
           <TierGroup
             tier="silver"
             name="Silver"
             emptyLabel="Be the first Silver sponsor"
           />
+          <PlatformTierGroup />
         </section>
 
         <TierPricing />

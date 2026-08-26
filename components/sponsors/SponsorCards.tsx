@@ -1,9 +1,16 @@
 import { cn } from "@/lib/utils";
 import {
+  PLATFORM_CARD_HEIGHT,
+  PLATFORM_CARD_WIDTH,
+  PLATFORM_SPONSORS,
+  PLATFORM_TIER_BLURB,
+  PLATFORM_TIER_NAME,
   TIERS_HREF,
   TIER_CARD_HEIGHT,
   TIER_CARD_WIDTH,
+  type PlatformSponsor,
   type Sponsor,
+  type SponsorBrand,
   type SponsorTierId,
   sponsorsByTier,
 } from "@/lib/sponsors";
@@ -35,7 +42,7 @@ function SponsorLogo({
   sponsor,
   className,
 }: {
-  sponsor: Sponsor;
+  sponsor: SponsorBrand;
   className: string;
 }) {
   return (
@@ -75,6 +82,57 @@ export function SponsorCard({
         className={`${sponsor.logoHeight} max-w-full object-contain`}
       />
     </a>
+  );
+}
+
+export function PlatformSponsorCard({
+  sponsor,
+  height = PLATFORM_CARD_HEIGHT,
+  className,
+}: {
+  sponsor: PlatformSponsor;
+  height?: string;
+  className?: string;
+}) {
+  return (
+    <a
+      href={sponsor.href}
+      target="_blank"
+      rel="noreferrer"
+      className={cn(CARD, height, "flex-col gap-3", className)}
+    >
+      <SponsorLogo
+        sponsor={sponsor}
+        className={`${sponsor.logoHeight} max-w-full object-contain`}
+      />
+      <span className="font-runde text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/70">
+        {sponsor.role}
+      </span>
+    </a>
+  );
+}
+
+export function PlatformTierGroup() {
+  return (
+    <div className="flex w-full flex-col gap-4">
+      <div className="flex flex-col items-center gap-1.5">
+        <h2 className="text-center font-runde text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {PLATFORM_TIER_NAME}
+        </h2>
+        <p className="max-w-md text-balance text-center text-sm text-muted-foreground/70">
+          {PLATFORM_TIER_BLURB}
+        </p>
+      </div>
+      <div className="flex w-full flex-wrap justify-center gap-4">
+        {PLATFORM_SPONSORS.map((sponsor) => (
+          <PlatformSponsorCard
+            key={sponsor.name}
+            sponsor={sponsor}
+            className={PLATFORM_CARD_WIDTH}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 

@@ -9,29 +9,31 @@ export type SponsorTier = {
   featured?: boolean;
 };
 
-export type Sponsor = {
+export type SponsorBrand = {
   name: string;
   href: string;
-  tier: SponsorTierId;
   lightSrc: string;
   darkSrc: string;
   logoHeight: string;
 };
 
+export type Sponsor = SponsorBrand & { tier: SponsorTierId };
+
+export type PlatformSponsor = SponsorBrand & { role: string };
+
 export const TIERS_HREF = "/sponsors#tiers";
 
 export const SPONSOR_X_URL = "https://x.com/swamimalode";
 
-export const MONTHLY_PAGEVIEWS = "120K+";
+export const MONTHLY_PAGEVIEWS = "130K+";
 
 export const TIERS: SponsorTier[] = [
   {
     id: "diamond",
     name: "Diamond",
-    price: 250,
+    price: 249,
     featured: true,
-    checkoutUrl:
-      "https://www.creem.io/payment/prod_2VfSTJv2zZJwX8zmyiGK8r",
+    checkoutUrl: "https://www.creem.io/payment/prod_2VfSTJv2zZJwX8zmyiGK8r",
     perks: [
       "Largest logo on the sponsors page",
       "Largest logo on the home page",
@@ -43,9 +45,8 @@ export const TIERS: SponsorTier[] = [
   {
     id: "gold",
     name: "Gold",
-    price: 100,
-    checkoutUrl:
-      "https://www.creem.io/payment/prod_6zlt70u5xv7Cx40rsElck",
+    price: 149,
+    checkoutUrl: "https://www.creem.io/payment/prod_6zlt70u5xv7Cx40rsElck",
     perks: [
       "Larger logo on the sponsors page",
       "Logo on the home page",
@@ -56,26 +57,36 @@ export const TIERS: SponsorTier[] = [
   {
     id: "silver",
     name: "Silver",
-    price: 50,
-    checkoutUrl:
-      "https://www.creem.io/payment/prod_6lFZbxKu7OQmLT5iWAfcBP",
+    price: 49,
+    checkoutUrl: "https://www.creem.io/payment/prod_6lFZbxKu7OQmLT5iWAfcBP",
     perks: ["Logo in the README", "Listed on the sponsors page"],
   },
 ];
 
-export const SPONSORS: Sponsor[] = [
+export const SPONSORS: Sponsor[] = [];
+
+export const PLATFORM_TIER_NAME = "Platform Sponsors";
+
+export const PLATFORM_TIER_BLURB =
+  "Products that back Rare UI through their open-source programs.";
+
+export const PLATFORM_CARD_HEIGHT = "h-24 sm:h-32";
+
+export const PLATFORM_CARD_WIDTH = "sm:w-[calc((100%-2rem)/3)]";
+
+export const PLATFORM_SPONSORS: PlatformSponsor[] = [
   {
     name: "Databuddy",
+    role: "Analytics Sponsor",
     href: "https://www.databuddy.cc",
-    tier: "gold",
     lightSrc: "/logos/databuddydark.svg",
     darkSrc: "/logos/databuddywhite.svg",
     logoHeight: "h-10 sm:h-12",
   },
   {
     name: "Mintlify",
+    role: "Docs Sponsor",
     href: "https://mintlify.com",
-    tier: "gold",
     lightSrc: "/logos/mintlifydark.png",
     darkSrc: "/logos/mintlifylight.png",
     logoHeight: "h-8 sm:h-9.5",
