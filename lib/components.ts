@@ -199,6 +199,7 @@ export function Demo() {
     description:
       "A vertical navigation list with a dashed rail that marks the active item.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/hook-sidebar.tsx`,
+    preview: "/componentdemos/hooksiebarvid.mp4",
     dependencies: [
       {
         name: "motion",
@@ -1558,10 +1559,10 @@ export function Demo() {
     name: "Delete button",
     href: "/components/deletebutton",
     category: "inputs",
-    isNew: true,
+    isNew: false,
     registry: "delete-button",
     description:
-      "A bin icon that opens its lid and slides out a confirm or cancel choice.",
+      "A delete button that asks for confirmation in place, no dialog needed.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/delete-button.tsx`,
     dependencies: [
       {
@@ -1570,7 +1571,7 @@ export function Demo() {
       },
     ],
     interaction:
-      "Click the bin to lift its lid open. A panel slides out with a check to confirm and a cross to back out.",
+      "Click the bin to lift its lid open. A panel slides out with a check to confirm and a cross to back out. Escape backs out too. Confirming draws a check where the bin was, backing out settles the bin in place.",
     props: [
       {
         name: "onConfirm",
@@ -1580,7 +1581,8 @@ export function Demo() {
       {
         name: "onCancel",
         type: "() => void",
-        description: "Called when the cross is pressed and the panel closes.",
+        description:
+          "Called when the panel closes without deleting, from the cross, the bin, or Escape.",
       },
       {
         name: "className",
