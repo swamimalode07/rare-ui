@@ -262,6 +262,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "delete-button",
+      "type": "registry:ui",
+      "title": "Delete Button",
+      "description": "A delete button that asks for confirmation in place, no dialog needed.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/delete-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
