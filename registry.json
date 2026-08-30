@@ -48,7 +48,7 @@
       "name": "hook-sidebar",
       "type": "registry:ui",
       "title": "Hook Sidebar",
-      "description": "A vertical navigation list where a dashed rail drops down and curves into the active item.",
+      "description": "A vertical navigation list with a dashed rail that marks the active item.",
       "dependencies": ["motion"],
       "registryDependencies": ["utils"],
       "files": [

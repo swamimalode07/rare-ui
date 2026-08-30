@@ -29,14 +29,14 @@ const labelOf = (item: HookSidebarItem) =>
   typeof item === "string" ? item : item.label;
 
 const Rail = ({
-  from,
+  from = 0,
   y,
   visible,
   color,
   dashed,
   className,
 }: {
-  from: number;
+  from?: number;
   y: number | null;
   visible: boolean;
   color?: string;
@@ -125,20 +125,17 @@ export function HookSidebar({
 
     const observer = new ResizeObserver(measure);
     observer.observe(list);
-    document.fonts?.ready.then(measure);
     return () => observer.disconnect();
   }, [items.length]);
 
   const activeY = activeIndex < 0 ? null : (centers[activeIndex] ?? null);
   const hoverY = hoverIndex === null ? null : (centers[hoverIndex] ?? null);
 
-  // starts the neutral line where the accent one ends, so the two never overlap
+  // above the active row the accent line already covers the span, so draw only the corner
   const hoverFrom =
-    activeY === null
-      ? 0
-      : hoverY !== null && hoverY > activeY
-        ? activeY
-        : Math.max(0, (hoverY ?? 0) - CORNER);
+    activeY !== null && hoverY !== null && hoverY <= activeY
+      ? Math.max(0, hoverY - CORNER)
+      : (activeY ?? 0);
 
   const select = (index: number) => {
     if (value === undefined) setInternalValue(index);
@@ -155,7 +152,7 @@ export function HookSidebar({
       {label && (
         <span
           data-slot="hook-sidebar-label"
-          className="pb-2 pl-0.5 pr-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/40"
+          className="pb-3 pl-0.5 pr-2 font-sans text-sm font-medium uppercase tracking-wide text-foreground"
         >
           {label}
         </span>
@@ -174,7 +171,6 @@ export function HookSidebar({
           className="text-foreground/30"
         />
         <Rail
-          from={0}
           y={activeY}
           visible={activeY !== null}
           color={color}
@@ -182,6 +178,7 @@ export function HookSidebar({
         />
 
         {items.map((item, index) => {
+          const text = labelOf(item);
           const href = hrefOf(item);
           const isActive = index === activeIndex;
           const setRef = (el: HTMLElement | null) => {
@@ -210,23 +207,23 @@ export function HookSidebar({
 
           return href ? (
             <Link
-              key={`${index}-${labelOf(item)}`}
+              key={`${index}-${text}`}
               {...rowProps}
               ref={setRef}
               href={href}
               aria-current={isActive ? "page" : undefined}
             >
-              {labelOf(item)}
+              {text}
             </Link>
           ) : (
             <button
-              key={`${index}-${labelOf(item)}`}
+              key={`${index}-${text}`}
               {...rowProps}
               ref={setRef}
               type="button"
               aria-current={isActive ? "true" : undefined}
             >
-              {labelOf(item)}
+              {text}
             </button>
           );
         })}

@@ -197,7 +197,7 @@ export function Demo() {
     registry: "hook-sidebar",
     isNew: true,
     description:
-      "A vertical navigation list where a dashed rail drops down and curves into the active item.",
+      "A vertical navigation list with a dashed rail that marks the active item.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/hook-sidebar.tsx`,
     dependencies: [
       {
@@ -262,13 +262,21 @@ export function Demo() {
     usage: `import { HookSidebar } from "@/components/ui/hook-sidebar"
 
   // any item with an href makes the rail follow the current route
-  const items = [
-    { label: "Home", href: "/" },
-    { label: "About", href: "/about" },
+  const display = [
+    { label: "Folder", href: "/folder" },
+    { label: "Code block", href: "/codeblock" },
   ]
 
+  const navigation = [{ label: "Gooey nav", href: "/gooeynav" }]
+
+  // one HookSidebar per group, stacked
   export function Demo() {
-    return <HookSidebar label="Display" items={items} color="#FC4C01" />
+    return (
+      <div className="flex flex-col gap-5">
+        <HookSidebar label="Display" items={display} />
+        <HookSidebar label="Navigation" items={navigation} />
+      </div>
+    )
   }`,
   },
   {
@@ -1194,7 +1202,6 @@ export function Demo() {
     name: "Step player",
     href: "/components/stepplayer",
     category: "display",
-    isNew: true,
     registry: "step-player",
     description:
       "An iOS-style stepped progress track with a play, pause and replay control. The active step stretches into a bar that fills as it plays.",
