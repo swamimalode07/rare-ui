@@ -19,13 +19,14 @@ export const JURISDICTION = `the courts of ${BUSINESS_COUNTRY}`;
 
 export const DISPUTE_WINDOW = "30 days";
 
-export const LEGAL_UPDATED = "August 26, 2026";
+export const LEGAL_UPDATED = "August 30, 2026";
 
-export const MERCHANT_NAME = "Creem";
+export const MERCHANT_NAME = "Dodo Payments";
 
-export const MERCHANT_URL = "https://www.creem.io";
+export const MERCHANT_URL = "https://dodopayments.com";
 
-export const MERCHANT_PRIVACY_URL = "https://www.creem.io/privacy";
+export const MERCHANT_PRIVACY_URL =
+  "https://dodopayments.com/legal/privacy-policy";
 
 export const SUPPORT_RESPONSE = "within 2 business days";
 

@@ -8,7 +8,7 @@ import { MERCHANT_NAME, SUPPORT_EMAIL } from "@/lib/legal";
 import {
   SPONSOR_ASSET_CHECKLIST,
   SPONSOR_X_URL,
-  tierByProductId,
+  tierByParam,
 } from "@/lib/sponsors";
 import { SITE_NAME } from "@/lib/site";
 
@@ -48,9 +48,7 @@ export default async function SponsorThankYouPage({
 }) {
   const [stars, params] = await Promise.all([fetchStarCount(), searchParams]);
 
-  const productId =
-    typeof params.product_id === "string" ? params.product_id : undefined;
-  const tier = tierByProductId(productId);
+  const tier = tierByParam(params.tier);
 
   const subject = tier
     ? `${SITE_NAME} ${tier.name} sponsorship assets`

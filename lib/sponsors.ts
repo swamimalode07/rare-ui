@@ -1,3 +1,5 @@
+import { SITE_URL } from "@/lib/site";
+
 export type SponsorTierId = "diamond" | "gold" | "silver";
 
 export type SponsorTier = {
@@ -27,13 +29,19 @@ export const SPONSOR_X_URL = "https://x.com/swamimalode";
 
 export const MONTHLY_PAGEVIEWS = "130K+";
 
+// dodo does not echo the product back on the return url, so the tier is carried on redirect_url
+function checkoutUrl(productId: string, tier: SponsorTierId) {
+  const redirect = `${SITE_URL}/sponsors/thank-you?tier=${tier}`;
+  return `https://checkout.dodopayments.com/buy/${productId}?quantity=1&redirect_url=${encodeURIComponent(redirect)}`;
+}
+
 export const TIERS: SponsorTier[] = [
   {
     id: "diamond",
     name: "Diamond",
     price: 249,
     featured: true,
-    checkoutUrl: "https://www.creem.io/payment/prod_2VfSTJv2zZJwX8zmyiGK8r",
+    checkoutUrl: checkoutUrl("pdt_0NmWwRrCkr52Q8lUgnRmv", "diamond"),
     perks: [
       "Largest logo on the sponsors page",
       "Largest logo on the home page",
@@ -46,7 +54,7 @@ export const TIERS: SponsorTier[] = [
     id: "gold",
     name: "Gold",
     price: 149,
-    checkoutUrl: "https://www.creem.io/payment/prod_6zlt70u5xv7Cx40rsElck",
+    checkoutUrl: checkoutUrl("pdt_0NmX0YaB0scByQK477GpK", "gold"),
     perks: [
       "Larger logo on the sponsors page",
       "Logo on the home page",
@@ -58,7 +66,7 @@ export const TIERS: SponsorTier[] = [
     id: "silver",
     name: "Silver",
     price: 49,
-    checkoutUrl: "https://www.creem.io/payment/prod_6lFZbxKu7OQmLT5iWAfcBP",
+    checkoutUrl: checkoutUrl("pdt_0NmX0j1cBjnmqah0xjy0l", "silver"),
     perks: ["Logo in the README", "Listed on the sponsors page"],
   },
 ];
@@ -113,9 +121,9 @@ export function tierById(tier: SponsorTierId) {
   return TIERS.find((entry) => entry.id === tier)!;
 }
 
-export function tierByProductId(productId?: string) {
-  if (!productId) return undefined;
-  return TIERS.find((tier) => tier.checkoutUrl.includes(productId));
+export function tierByParam(value?: string | string[]) {
+  if (typeof value !== "string") return undefined;
+  return TIERS.find((tier) => tier.id === value);
 }
 
 export const SPONSOR_ASSET_CHECKLIST = [

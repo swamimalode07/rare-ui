@@ -45,6 +45,20 @@
       ]
     },
     {
+      "name": "hook-sidebar",
+      "type": "registry:ui",
+      "title": "Hook Sidebar",
+      "description": "A vertical navigation list with a dashed rail that marks the active item.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/hook-sidebar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "family-drawer",
       "type": "registry:ui",
       "title": "Family Drawer",
