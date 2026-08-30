@@ -1359,6 +1359,113 @@ export function Demo() {
 // Passing a src that is already loaded skips the wait, so the run flashes by.
 // Pass progress when your API reports it: <GridReveal src={src} progress={job.progress} />`,
   },
+  {
+    name: "Gooey nav",
+    href: "/components/gooeynav",
+    category: "navigation",
+    isNew: true,
+    registry: "gooey-nav",
+    description:
+      "A gooey navigation bar that separates the selected item from the group.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/gooey-nav.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Click an item to lift it out of the bar; the rest close back into one piece behind it.",
+    props: [
+      {
+        name: "items",
+        type: "(string | { label: string; href?: string; icon?: ReactNode })[]",
+        required: true,
+        description:
+          "Nav entries. A string is a button, an object with href is a link, and icon renders before the label.",
+      },
+      {
+        name: "value",
+        type: "number",
+        description:
+          "Index of the selected item. Pass it to control the nav yourself; leave it out and the nav follows the url when the items have hrefs, and its own state otherwise.",
+      },
+      {
+        name: "defaultValue",
+        type: "number",
+        default: "0",
+        description:
+          "Index the nav starts on when it is uncontrolled. Ignored once value is passed, and ignored when an item href matches the current url.",
+      },
+      {
+        name: "onChange",
+        type: "(index: number) => void",
+        description: "Fires with the index of the item that was clicked.",
+      },
+      {
+        name: "size",
+        type: '"xs" | "sm" | "md" | "lg"',
+        default: '"md"',
+        options: ["xs", "sm", "md", "lg"],
+        description:
+          "Scale of the bar. Sets the label padding, text size and icon size, and picks the matching separation and radius so the shape stays in proportion. Use xs on phones, where it fits a 360px screen.",
+      },
+      {
+        name: "activeColor",
+        type: "string",
+        default: '"#FC4C01"',
+        description:
+          "Fill of the selected tile. The unselected bar follows the theme instead, light grey on light and near black on dark.",
+      },
+      {
+        name: "activeLabelColor",
+        type: "string",
+        default: '"#ffffff"',
+        description:
+          "Label color of the selected item. Set it when a light activeColor leaves white text unreadable.",
+      },
+      {
+        name: "separation",
+        type: "number",
+        description:
+          "Gap in pixels that opens on each side of the selected item, which is what pushes the rest of the bar aside. Defaults to the size: 14 (xs), 16 (sm), 20 (md), 24 (lg).",
+      },
+      {
+        name: "radius",
+        type: "number",
+        description:
+          "Corner radius of the tiles in pixels. Only the outer corners of the bar and the corners along an open gap use it; a closed seam sits at 0 so the tiles read as one shape. Defaults to the size: 8 (xs), 10 (sm), 12 (md), 14 (lg).",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="gooey-nav"). The bar sizes to its content and never wraps, so add an overflow container here if it can outgrow its parent.',
+      },
+    ],
+    usage: `"use client"
+
+import { GooeyNav } from "@/components/ui/gooey-nav"
+
+export function Demo() {
+  return (
+    // hrefs make it track the url on its own, no value needed
+    <GooeyNav
+      items={[
+        { label: "Home", href: "/", icon: <HouseIcon /> },
+        { label: "Changelog", href: "/changelog" },
+        { label: "About", href: "/about" },
+      ]}
+    />
+  )
+}
+
+// strings render buttons instead, for a segmented control:
+// <GooeyNav items={["Day", "Week", "Month"]} onChange={setRange} />
+
+// size is a single value, so step it down yourself on small screens:
+// <GooeyNav items={items} size={useIsMobile() ? "xs" : "md"} />`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
