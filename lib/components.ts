@@ -1404,11 +1404,11 @@ export function Demo() {
       },
       {
         name: "size",
-        type: '"sm" | "md" | "lg"',
+        type: '"xs" | "sm" | "md" | "lg"',
         default: '"md"',
-        options: ["sm", "md", "lg"],
+        options: ["xs", "sm", "md", "lg"],
         description:
-          "Scale of the bar. Sets the label padding, text size and icon size, and picks the matching separation and radius so the shape stays in proportion.",
+          "Scale of the bar. Sets the label padding, text size and icon size, and picks the matching separation and radius so the shape stays in proportion. Use xs on phones, where it fits a 360px screen.",
       },
       {
         name: "activeColor",
@@ -1428,13 +1428,13 @@ export function Demo() {
         name: "separation",
         type: "number",
         description:
-          "Gap in pixels that opens on each side of the selected item, which is what pushes the rest of the bar aside. Defaults to the size: 16 (sm), 20 (md), 24 (lg).",
+          "Gap in pixels that opens on each side of the selected item, which is what pushes the rest of the bar aside. Defaults to the size: 14 (xs), 16 (sm), 20 (md), 24 (lg).",
       },
       {
         name: "radius",
         type: "number",
         description:
-          "Corner radius of the tiles in pixels. Only the outer corners of the bar and the corners along an open gap use it; a closed seam sits at 0 so the tiles read as one shape. Defaults to the size: 10 (sm), 12 (md), 14 (lg).",
+          "Corner radius of the tiles in pixels. Only the outer corners of the bar and the corners along an open gap use it; a closed seam sits at 0 so the tiles read as one shape. Defaults to the size: 8 (xs), 10 (sm), 12 (md), 14 (lg).",
       },
       {
         name: "className",
@@ -1461,7 +1461,10 @@ export function Demo() {
 }
 
 // strings render buttons instead, for a segmented control:
-// <GooeyNav items={["Day", "Week", "Month"]} onChange={setRange} />`,
+// <GooeyNav items={["Day", "Week", "Month"]} onChange={setRange} />
+
+// size is a single value, so step it down yourself on small screens:
+// <GooeyNav items={items} size={useIsMobile() ? "xs" : "md"} />`,
   },
 ];
 

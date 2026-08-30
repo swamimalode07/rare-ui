@@ -13,6 +13,11 @@ const FADE_IN = "transition-colors duration-[400ms]";
 const FADE_OUT = "transition-colors duration-0";
 
 const SIZES = {
+  xs: {
+    label: "gap-1 px-2 py-1.5 text-[11px] leading-4 [&_svg]:size-[11px]",
+    radius: 8,
+    separation: 14,
+  },
   sm: {
     label: "gap-1.5 px-3.5 py-2 text-xs leading-4 [&_svg]:size-3",
     radius: 10,
@@ -119,7 +124,7 @@ export function GooeyNav({
   // in render, not an effect: an effect here cascades renders
   if (routeIndex !== seenRoute) {
     setSeenRoute(routeIndex);
-    if (routeIndex !== -1) setUncontrolled(routeIndex);
+    if (routeIndex !== -1 && value === undefined) setUncontrolled(routeIndex);
   }
 
   const active = value ?? uncontrolled;
@@ -154,11 +159,12 @@ export function GooeyNav({
     >
       <ul className="flex items-center">
         {items.map((item, i) => {
+          const navItem = toItem(item);
           const isActive = i === active;
 
           return (
             <motion.li
-              key={i}
+              key={`${i}-${navItem.label}`}
               data-slot="gooey-nav-segment"
               className={cn(
                 "bg-[#F4F4F9] dark:bg-[#262626]",
@@ -170,7 +176,7 @@ export function GooeyNav({
               transition={reduced ? { duration: 0 } : SPRING}
             >
               <NavLabel
-                {...toItem(item)}
+                {...navItem}
                 isActive={isActive}
                 size={size}
                 activeLabelColor={activeLabelColor}
