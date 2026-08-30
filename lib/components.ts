@@ -1375,14 +1375,14 @@ export function Demo() {
       },
     ],
     interaction:
-      "The items read as one solid bar. Click one and a gap opens on both sides of it, so it pulls away as its own rounded tile while the items it left behind close back into a single bar. Corners round out as a gap opens and flatten again as it closes, so the tiles look like they are separating rather than sliding apart. The move springs a little past its mark and settles. When the items carry hrefs, the bar follows the current url, so a refresh or a direct visit still lands on the right item. Honors prefers-reduced-motion by moving straight to the new layout.",
+      "Click an item to lift it out of the bar; the rest close back into one piece behind it.",
     props: [
       {
         name: "items",
-        type: "(string | { label: string; href?: string })[]",
+        type: "(string | { label: string; href?: string; icon?: ReactNode })[]",
         required: true,
         description:
-          "The nav labels. Pass a string for a plain button, or an object with href to render a Next.js link.",
+          "Nav entries. A string is a button, an object with href is a link, and icon renders before the label.",
       },
       {
         name: "value",
@@ -1408,7 +1408,7 @@ export function Demo() {
         default: '"md"',
         options: ["sm", "md", "lg"],
         description:
-          "Scale of the bar. Sets the label padding and text size, and picks the matching separation and radius so the shape stays in proportion.",
+          "Scale of the bar. Sets the label padding, text size and icon size, and picks the matching separation and radius so the shape stays in proportion.",
       },
       {
         name: "activeColor",
@@ -1440,7 +1440,7 @@ export function Demo() {
         name: "className",
         type: "string",
         description:
-          'Extra classes merged onto the root element (data-slot="gooey-nav").',
+          'Extra classes merged onto the root element (data-slot="gooey-nav"). The bar sizes to its content and never wraps, so add an overflow container here if it can outgrow its parent.',
       },
     ],
     usage: `"use client"
@@ -1452,7 +1452,7 @@ export function Demo() {
     // hrefs make it track the url on its own, no value needed
     <GooeyNav
       items={[
-        { label: "Home", href: "/" },
+        { label: "Home", href: "/", icon: <HouseIcon /> },
         { label: "Changelog", href: "/changelog" },
         { label: "About", href: "/about" },
       ]}
@@ -1460,11 +1460,8 @@ export function Demo() {
   )
 }
 
-// plain strings render buttons instead, for a segmented control:
-// <GooeyNav items={["Day", "Week", "Month"]} onChange={setRange} />
-
-// the bar sizes to its content and will not wrap, so wrap it yourself
-// if it can outgrow its container: <div className="overflow-x-auto">`,
+// strings render buttons instead, for a segmented control:
+// <GooeyNav items={["Day", "Week", "Month"]} onChange={setRange} />`,
   },
 ];
 

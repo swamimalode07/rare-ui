@@ -6,31 +6,38 @@ import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-const GAP_SPRING = { type: "spring", duration: 0.72, bounce: 0.38 } as const;
-const CORNER_SPRING = {
-  type: "spring",
-  duration: 0.5,
-  bounce: 0.15,
-  delay: 0.05,
-} as const;
+// the duration picker's spring, damped so nothing overshoots
+const SPRING = { type: "spring", stiffness: 200, damping: 28, mass: 1 } as const;
 
-const TRANSITION = {
-  default: GAP_SPRING,
-  borderTopLeftRadius: CORNER_SPRING,
-  borderBottomLeftRadius: CORNER_SPRING,
-  borderTopRightRadius: CORNER_SPRING,
-  borderBottomRightRadius: CORNER_SPRING,
-};
+const FADE_IN = "transition-colors duration-[400ms]";
+const FADE_OUT = "transition-colors duration-0";
 
 const SIZES = {
-  sm: { label: "px-3.5 py-2 text-xs leading-4", radius: 10, separation: 16 },
-  md: { label: "px-5 py-2.5 text-sm leading-5", radius: 12, separation: 20 },
-  lg: { label: "px-6 py-3 text-base leading-6", radius: 14, separation: 24 },
+  sm: {
+    label: "gap-1.5 px-3.5 py-2 text-xs leading-4 [&_svg]:size-3",
+    radius: 10,
+    separation: 16,
+  },
+  md: {
+    label: "gap-2 px-5 py-2.5 text-sm leading-5 [&_svg]:size-3.5",
+    radius: 12,
+    separation: 20,
+  },
+  lg: {
+    label: "gap-2.5 px-6 py-3 text-base leading-6 [&_svg]:size-4",
+    radius: 14,
+    separation: 24,
+  },
 } as const;
 
 export type GooeyNavSize = keyof typeof SIZES;
 
-export type GooeyNavItem = string | { label: string; href?: string };
+type NavItem = { label: string; href?: string; icon?: ReactNode };
+
+export type GooeyNavItem = string | NavItem;
+
+const toItem = (item: GooeyNavItem): NavItem =>
+  typeof item === "string" ? { label: item } : item;
 
 export type GooeyNavProps = Omit<ComponentProps<"nav">, "onChange"> & {
   items: GooeyNavItem[];
@@ -44,32 +51,29 @@ export type GooeyNavProps = Omit<ComponentProps<"nav">, "onChange"> & {
   radius?: number;
 };
 
-const toItem = (item: GooeyNavItem) =>
-  typeof item === "string" ? { label: item, href: undefined } : item;
-
-type NavLabelProps = {
-  href?: string;
+type NavLabelProps = NavItem & {
   isActive: boolean;
   size: GooeyNavSize;
   activeLabelColor: string;
   onSelect: () => void;
-  children: ReactNode;
 };
 
 function NavLabel({
+  label,
   href,
+  icon,
   isActive,
   size,
   activeLabelColor,
   onSelect,
-  children,
 }: NavLabelProps) {
   const props = {
     "data-slot": "gooey-nav-item",
     "data-active": isActive,
     "aria-current": isActive ? (href ? "page" : true) : undefined,
     className: cn(
-      "block cursor-pointer whitespace-nowrap font-medium transition-colors duration-500",
+      "flex cursor-pointer items-center whitespace-nowrap font-medium [&_svg]:shrink-0",
+      isActive ? FADE_IN : FADE_OUT,
       SIZES[size].label,
       !isActive && "text-[#868593]",
     ),
@@ -79,11 +83,13 @@ function NavLabel({
 
   return href ? (
     <Link href={href} {...props}>
-      {children}
+      {icon}
+      {label}
     </Link>
   ) : (
     <button type="button" {...props}>
-      {children}
+      {icon}
+      {label}
     </button>
   );
 }
@@ -148,28 +154,28 @@ export function GooeyNav({
     >
       <ul className="flex items-center">
         {items.map((item, i) => {
-          const { label, href } = toItem(item);
           const isActive = i === active;
 
           return (
             <motion.li
               key={i}
               data-slot="gooey-nav-segment"
-              className="bg-[#F4F4F9] transition-colors duration-500 dark:bg-[#262626]"
+              className={cn(
+                "bg-[#F4F4F9] dark:bg-[#262626]",
+                isActive ? FADE_IN : FADE_OUT,
+              )}
               style={{ backgroundColor: isActive ? activeColor : undefined }}
               initial={false}
               animate={shape(i)}
-              transition={reduced ? { duration: 0 } : TRANSITION}
+              transition={reduced ? { duration: 0 } : SPRING}
             >
               <NavLabel
-                href={href}
+                {...toItem(item)}
                 isActive={isActive}
                 size={size}
                 activeLabelColor={activeLabelColor}
                 onSelect={() => select(i)}
-              >
-                {label}
-              </NavLabel>
+              />
             </motion.li>
           );
         })}
