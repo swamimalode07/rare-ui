@@ -1368,6 +1368,7 @@ export function Demo() {
     description:
       "A gooey navigation bar that separates the selected item from the group.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/gooey-nav.tsx`,
+    preview: "/componentdemos/gooeynav.mp4",
     dependencies: [
       {
         name: "motion",
