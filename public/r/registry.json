@@ -262,6 +262,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "delete-button",
+      "type": "registry:ui",
+      "title": "Delete Button",
+      "description": "A bin icon that opens its lid and slides out a confirm or cancel choice.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/delete-button.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

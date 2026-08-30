@@ -1554,6 +1554,48 @@ export function Demo() {
 // size is a single value, so step it down yourself on small screens:
 // <GooeyNav items={items} size={useIsMobile() ? "xs" : "md"} />`,
   },
+  {
+    name: "Delete button",
+    href: "/components/deletebutton",
+    category: "inputs",
+    isNew: true,
+    registry: "delete-button",
+    description:
+      "A bin icon that opens its lid and slides out a confirm or cancel choice.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/delete-button.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Click the bin to lift its lid open. A panel slides out with a check to confirm and a cross to back out.",
+    props: [
+      {
+        name: "onConfirm",
+        type: "() => void",
+        description: "Called when the check is pressed.",
+      },
+      {
+        name: "onCancel",
+        type: "() => void",
+        description: "Called when the cross is pressed and the panel closes.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description: "Extra classes merged onto the root element.",
+      },
+    ],
+    usage: `"use client"
+
+import { DeleteButton } from "@/components/ui/delete-button"
+
+export function Demo() {
+  return <DeleteButton onConfirm={() => remove(id)} />
+}`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
