@@ -191,6 +191,87 @@ export function Demo() {
   }`,
   },
   {
+    name: "Hook Sidebar",
+    href: "/components/hooksidebar",
+    category: "navigation",
+    registry: "hook-sidebar",
+    isNew: true,
+    description:
+      "A vertical navigation list where a dashed rail drops down and curves into the active item.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/hook-sidebar.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Click an item to spring the accent rail down to it. Hovering or tabbing to another row draws a second, dimmer rail that stops where the accent one ends.",
+    props: [
+      {
+        name: "items",
+        type: "Array<string | { label: string; href?: string }>",
+        required: true,
+        description:
+          "Rows rendered as the vertical list. A plain string or an object with a label is a nav item, and href turns it into a link.",
+      },
+      {
+        name: "label",
+        type: "string",
+        description:
+          "Group title shown above the list, outside the rail. Omit it for a bare list. Also names the nav for screen readers.",
+      },
+      {
+        name: "value",
+        type: "number",
+        description:
+          "Active item index for controlled usage. When set, it wins over both the URL and internal state.",
+      },
+      {
+        name: "defaultValue",
+        type: "number",
+        default: "0",
+        description:
+          "Initial active index. Used only when no item has an href and value is not provided.",
+      },
+      {
+        name: "onChange",
+        type: "(index: number) => void",
+        description: "Called with the new index whenever an item is selected.",
+      },
+      {
+        name: "color",
+        type: "string",
+        default: '"#FC4C01"',
+        description:
+          "Any CSS color for the active rail (hex, rgb, hsl, var). The hover rail stays neutral.",
+      },
+      {
+        name: "dashed",
+        type: "boolean",
+        default: "true",
+        description:
+          "Draws the rail and its corner as dashes. Set false for a solid line.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description: "Extra classes merged onto the root <nav> element.",
+      },
+    ],
+    usage: `import { HookSidebar } from "@/components/ui/hook-sidebar"
+
+  // any item with an href makes the rail follow the current route
+  const items = [
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+  ]
+
+  export function Demo() {
+    return <HookSidebar label="Display" items={items} color="#FC4C01" />
+  }`,
+  },
+  {
     name: "Proximity Sidebar",
     href: "/components/proximitysidebar",
     category: "navigation",
