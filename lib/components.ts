@@ -1025,7 +1025,6 @@ export function Demo() {
     name: "Notification bell",
     href: "/components/notificationbell",
     category: "feedback",
-    isNew: true,
     registry: "notification-bell",
     description: "An iOS-style notification bell with an unread count badge.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/notification-bell.tsx`,
@@ -1500,7 +1499,7 @@ export const gallerySections: ComponentSection[] = [
   {
     id: "new",
     label: "New releases",
-    items: components.filter((c) => c.isNew),
+    items: components.filter((c) => c.isNew).reverse(),
   },
   ...CATEGORY_ORDER.map((id) => ({
     id,
