@@ -1359,6 +1359,113 @@ export function Demo() {
 // Passing a src that is already loaded skips the wait, so the run flashes by.
 // Pass progress when your API reports it: <GridReveal src={src} progress={job.progress} />`,
   },
+  {
+    name: "Gooey nav",
+    href: "/components/gooeynav",
+    category: "navigation",
+    isNew: true,
+    registry: "gooey-nav",
+    description:
+      "A gooey navigation bar that separates the selected item from the group.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/gooey-nav.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "The items read as one solid bar. Click one and a gap opens on both sides of it, so it pulls away as its own rounded tile while the items it left behind close back into a single bar. Corners round out as a gap opens and flatten again as it closes, so the tiles look like they are separating rather than sliding apart. The move springs a little past its mark and settles. When the items carry hrefs, the bar follows the current url, so a refresh or a direct visit still lands on the right item. Honors prefers-reduced-motion by moving straight to the new layout.",
+    props: [
+      {
+        name: "items",
+        type: "(string | { label: string; href?: string })[]",
+        required: true,
+        description:
+          "The nav labels. Pass a string for a plain button, or an object with href to render a Next.js link.",
+      },
+      {
+        name: "value",
+        type: "number",
+        description:
+          "Index of the selected item. Pass it to control the nav yourself; leave it out and the nav follows the url when the items have hrefs, and its own state otherwise.",
+      },
+      {
+        name: "defaultValue",
+        type: "number",
+        default: "0",
+        description:
+          "Index the nav starts on when it is uncontrolled. Ignored once value is passed, and ignored when an item href matches the current url.",
+      },
+      {
+        name: "onChange",
+        type: "(index: number) => void",
+        description: "Fires with the index of the item that was clicked.",
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        default: '"md"',
+        options: ["sm", "md", "lg"],
+        description:
+          "Scale of the bar. Sets the label padding and text size, and picks the matching separation and radius so the shape stays in proportion.",
+      },
+      {
+        name: "activeColor",
+        type: "string",
+        default: '"#FC4C01"',
+        description:
+          "Fill of the selected tile. The unselected bar follows the theme instead, light grey on light and near black on dark.",
+      },
+      {
+        name: "activeLabelColor",
+        type: "string",
+        default: '"#ffffff"',
+        description:
+          "Label color of the selected item. Set it when a light activeColor leaves white text unreadable.",
+      },
+      {
+        name: "separation",
+        type: "number",
+        description:
+          "Gap in pixels that opens on each side of the selected item, which is what pushes the rest of the bar aside. Defaults to the size: 16 (sm), 20 (md), 24 (lg).",
+      },
+      {
+        name: "radius",
+        type: "number",
+        description:
+          "Corner radius of the tiles in pixels. Only the outer corners of the bar and the corners along an open gap use it; a closed seam sits at 0 so the tiles read as one shape. Defaults to the size: 10 (sm), 12 (md), 14 (lg).",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="gooey-nav").',
+      },
+    ],
+    usage: `"use client"
+
+import { GooeyNav } from "@/components/ui/gooey-nav"
+
+export function Demo() {
+  return (
+    // hrefs make it track the url on its own, no value needed
+    <GooeyNav
+      items={[
+        { label: "Home", href: "/" },
+        { label: "Changelog", href: "/changelog" },
+        { label: "About", href: "/about" },
+      ]}
+    />
+  )
+}
+
+// plain strings render buttons instead, for a segmented control:
+// <GooeyNav items={["Day", "Week", "Month"]} onChange={setRange} />
+
+// the bar sizes to its content and will not wrap, so wrap it yourself
+// if it can outgrow its container: <div className="overflow-x-auto">`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";

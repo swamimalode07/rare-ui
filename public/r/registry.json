@@ -234,6 +234,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "gooey-nav",
+      "type": "registry:ui",
+      "title": "Gooey Nav",
+      "description": "A gooey navigation bar that separates the selected item from the group.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/gooey-nav.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
