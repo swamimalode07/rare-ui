@@ -212,7 +212,7 @@ export function TierGroup({
           height={height}
           className={width}
           label={empty && emptyLabel ? emptyLabel : undefined}
-          hoverLabel={empty && emptyLabel ? "Claim it" : undefined}
+          hoverLabel={empty && emptyLabel ? "Take this spot" : undefined}
         />
       </div>
     </div>
