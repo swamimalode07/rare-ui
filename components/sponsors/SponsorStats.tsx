@@ -15,7 +15,7 @@ export default function SponsorStats({ stars }: { stars: number | null }) {
   ];
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-6 md:pb-28">
+    <section className="mx-auto w-full max-w-6xl px-5 pt-20 sm:px-6 md:pt-28">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {STATS.map((stat) => (
           <div

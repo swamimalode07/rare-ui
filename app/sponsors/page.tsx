@@ -92,10 +92,29 @@ export default async function SponsorsPage() {
       </section>
 
       <main className="flex-1">
-        <TierPricing />
         <SponsorStats stars={stars} />
+        <TierPricing />
 
-        <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-5 pb-20 text-center sm:px-6 md:pb-28">
+        <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-12 px-5 pb-20 sm:px-6 md:pb-28">
+          <PlatformTierGroup />
+          <TierGroup
+            tier="diamond"
+            name="Diamond"
+            emptyLabel="Be the first Diamond sponsor"
+          />
+          <TierGroup
+            tier="gold"
+            name="Gold"
+            emptyLabel="Be the first Gold sponsor"
+          />
+          <TierGroup
+            tier="silver"
+            name="Silver"
+            emptyLabel="Be the first Silver sponsor"
+          />
+        </section>
+
+        <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-5 pb-24 text-center sm:px-6 md:pb-32">
           <h2 className="text-balance font-runde text-2xl font-bold tracking-tight sm:text-3xl">
             Questions, or need a custom package?
           </h2>
@@ -119,25 +138,6 @@ export default async function SponsorsPage() {
               DM on X
             </SponsorCta>
           </div>
-        </section>
-
-        <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-12 px-5 pb-24 sm:px-6 md:pb-32">
-          <PlatformTierGroup />
-          <TierGroup
-            tier="diamond"
-            name="Diamond"
-            emptyLabel="Be the first Diamond sponsor"
-          />
-          <TierGroup
-            tier="gold"
-            name="Gold"
-            emptyLabel="Be the first Gold sponsor"
-          />
-          <TierGroup
-            tier="silver"
-            name="Silver"
-            emptyLabel="Be the first Silver sponsor"
-          />
         </section>
       </main>
 
