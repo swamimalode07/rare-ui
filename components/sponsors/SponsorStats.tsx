@@ -1,5 +1,5 @@
 import { components } from "@/lib/components";
-import { MONTHLY_PAGEVIEWS } from "@/lib/sponsors";
+import { MONTHLY_PAGEVIEWS, TOTAL_PAGEVIEWS } from "@/lib/sponsors";
 
 function formatStars(stars: number) {
   return stars >= 1000 ? `${(stars / 1000).toFixed(1)}K+` : `${stars}`;
@@ -11,6 +11,7 @@ export default function SponsorStats({ stars }: { stars: number | null }) {
     { value: stars ? formatStars(stars) : "Open source", label: "GitHub stars" },
     { value: `${components.length}+`, label: "Components" },
     { value: "MIT", label: "Free forever" },
+    { value: TOTAL_PAGEVIEWS, label: "Pageviews since launch" },
   ];
 
   return (
@@ -19,7 +20,7 @@ export default function SponsorStats({ stars }: { stars: number | null }) {
         {STATS.map((stat) => (
           <div
             key={stat.label}
-            className="flex flex-col items-center gap-1 rounded-3xl bg-card/60 px-4 py-8 text-center dark:bg-muted/60 sm:px-6 sm:py-9"
+            className="flex flex-col items-center gap-1 rounded-3xl bg-card/60 px-4 py-8 text-center last:col-span-2 dark:bg-muted/60 sm:px-6 sm:py-9 lg:last:col-span-4"
             style={{ cornerShape: "squircle" } as React.CSSProperties}
           >
             <span className="font-runde text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
