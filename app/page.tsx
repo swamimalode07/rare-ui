@@ -63,24 +63,24 @@ function BackersSection() {
       id="sponsors"
       className="mx-auto flex w-full max-w-7xl scroll-mt-24 flex-col items-center gap-12 px-6 py-24 text-center md:py-32"
     >
-      <div className="flex flex-col items-center gap-4">
-        <h2 className="max-w-2xl text-balance font-runde text-3xl font-bold tracking-tight sm:text-4xl">
-          Rare UI is backed and supported by the finest
-        </h2>
+      <h2 className="max-w-2xl text-balance font-runde text-3xl font-bold tracking-tight sm:text-4xl">
+        Rare UI is backed and supported by the finest
+      </h2>
+
+      <div className="flex w-full flex-col items-center gap-8">
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
+          {PLATFORM_SPONSORS.map((sponsor) => (
+            <PlatformSponsorCard key={sponsor.name} sponsor={sponsor} />
+          ))}
+          <OpenSlotCard height={PLATFORM_CARD_HEIGHT} />
+        </div>
 
         <Link
           href="/sponsors"
           className="font-runde text-sm font-semibold text-muted-foreground underline underline-offset-4 transition-colors duration-150 ease-out hover:text-foreground"
         >
-          Become a sponsor
+          Become a sponsor &rarr;
         </Link>
-      </div>
-
-      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
-        {PLATFORM_SPONSORS.map((sponsor) => (
-          <PlatformSponsorCard key={sponsor.name} sponsor={sponsor} />
-        ))}
-        <OpenSlotCard height={PLATFORM_CARD_HEIGHT} />
       </div>
 
       {/* <Link

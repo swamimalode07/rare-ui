@@ -3,19 +3,25 @@ import Link from "next/link";
 import { SUPPORT_EMAIL } from "@/lib/legal";
 import { TIERS_HREF } from "@/lib/sponsors";
 import FluidWave from "./FluidWave";
+import { GithubLogo, XLogo, type LogoProps } from "./logos";
 
 const GITHUB_URL = "https://github.com/swamimalode07/rare-ui";
 const X_URL = "https://x.com/swamimalode";
 
-type FooterLink = { label: string; href: string; external?: boolean };
+type FooterLink = {
+  label: string;
+  href: string;
+  external?: boolean;
+  icon?: (props: LogoProps) => React.ReactElement;
+};
 
 const LINKS: FooterLink[] = [
   { label: "Home", href: "/" },
   { label: "Components", href: "/components" },
   { label: "Sponsors", href: "/sponsors" },
   { label: "Pricing", href: TIERS_HREF },
-  { label: "GitHub", href: GITHUB_URL, external: true },
-  { label: "X / Twitter", href: X_URL, external: true },
+  { label: "GitHub", href: GITHUB_URL, external: true, icon: GithubLogo },
+  { label: "X / Twitter", href: X_URL, external: true, icon: XLogo },
 ];
 
 const UTILITY_LINKS = [
@@ -30,20 +36,27 @@ const HOVER =
 
 const MUTED = "text-black/50 dark:text-white/50";
 
-function NavLink({ label, href, external }: FooterLink) {
-  const className = `w-fit text-lg ${MUTED} ${HOVER}`;
+function NavLink({ label, href, external, icon: Icon }: FooterLink) {
+  const className = `w-fit ${Icon ? "flex items-center" : "text-lg"} ${MUTED} ${HOVER}`;
+  const content = Icon ? <Icon className="h-[1.375rem] w-[1.375rem]" /> : label;
 
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noreferrer" className={className}>
-        {label}
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className={className}
+        aria-label={Icon ? label : undefined}
+      >
+        {content}
       </a>
     );
   }
 
   return (
-    <Link href={href} className={className}>
-      {label}
+    <Link href={href} className={className} aria-label={Icon ? label : undefined}>
+      {content}
     </Link>
   );
 }
@@ -66,8 +79,18 @@ export default function Footer() {
           </Link>
 
           <nav className="flex flex-wrap items-center gap-x-7 gap-y-2">
-            {LINKS.map((link) => (
-              <NavLink key={link.label} {...link} />
+            {LINKS.map((link, index) => (
+              <Fragment key={link.label}>
+                {link.icon && !LINKS[index - 1]?.icon && (
+                  <span
+                    aria-hidden="true"
+                    className="-mx-3 text-lg text-black/25 dark:text-white/25"
+                  >
+                    |
+                  </span>
+                )}
+                <NavLink {...link} />
+              </Fragment>
             ))}
           </nav>
         </div>
@@ -79,7 +102,7 @@ export default function Footer() {
         </div>
 
         <div
-          className={`flex flex-wrap items-center justify-between gap-3 pb-8 text-xs ${MUTED}`}
+          className={`selection-contrast flex flex-wrap items-center justify-between gap-3 pb-8 text-xs ${MUTED}`}
         >
           <span className="flex flex-wrap items-center gap-2.5">
             <span>Rare UI &copy; {new Date().getFullYear()}</span>
