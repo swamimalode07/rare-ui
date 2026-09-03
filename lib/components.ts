@@ -1598,6 +1598,109 @@ export function Demo() {
   return <DeleteButton onConfirm={() => remove(id)} />
 }`,
   },
+  {
+    name: "Animated counter",
+    href: "/components/animatedcounter",
+    category: "display",
+    isNew: true,
+    registry: "animated-counter",
+    description:
+      "A number that counts to its new value on a wheel of digits, like an odometer.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/animated-counter.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Pass a new value and every digit that changed rolls to its new face, fading in and out at the top and bottom of its window rather than being cut off. Digits roll up when the number grows and back down when it shrinks, and a digit still moving when the value changes again keeps its speed instead of starting over, so a value dragged on a slider spins rather than stutters. The width always matches the number, never padded with leading zeros: a place that is gained slides in, and one that is lost fades out while the rest close up. Separators glide to their new spot as the number crosses each group.",
+    props: [
+      {
+        name: "value",
+        type: "number",
+        required: true,
+        description:
+          "The number to show. Each change animates from whatever is on screen, so it can be updated as often as you like.",
+      },
+      {
+        name: "decimals",
+        type: "number",
+        default: "0",
+        description:
+          "How many decimal places to keep. The value is rounded to that precision, so the wheels always land on a whole digit.",
+      },
+      {
+        name: "duration",
+        type: "number",
+        default: "0.6",
+        description:
+          "Roughly how many seconds a digit takes to settle on its new face. Lower it when the value updates continuously, so the wheels stay close to the number.",
+      },
+      {
+        name: "padStart",
+        type: "number",
+        default: "1",
+        description:
+          "Fewest whole digits to show, padded with leading zeros. Use it to hold the width steady when the number crosses a power of ten.",
+      },
+      {
+        name: "separator",
+        type: "string",
+        default: '","',
+        description:
+          "Character placed every three whole digits. Pass an empty string to group nothing.",
+      },
+      {
+        name: "decimalSeparator",
+        type: "string",
+        default: '"."',
+        description: "Character between the whole and decimal digits.",
+      },
+      {
+        name: "grouping",
+        type: '"western" | "indian"',
+        default: '"western"',
+        options: ["western", "indian"],
+        description:
+          "Where the separators land. Western groups every three digits, 1,234,567. Indian groups the last three then pairs, 12,34,567.",
+      },
+      {
+        name: "prefix",
+        type: "ReactNode",
+        description:
+          "Rendered before the number, for a currency mark or an icon. It sits outside the wheels and never animates.",
+      },
+      {
+        name: "suffix",
+        type: "ReactNode",
+        description: "Rendered after the number, for a unit or a percent sign.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="animated-counter"). Font size and color are inherited, so style it like text.',
+      },
+    ],
+    usage: `"use client"
+
+import { AnimatedCounter } from "@/components/ui/animated-counter"
+
+export function Demo() {
+  const [value, setValue] = useState(12480)
+
+  return (
+    <AnimatedCounter value={value} className="text-6xl font-medium" />
+  )
+}
+
+// money: two decimals and a currency mark that stays put
+// <AnimatedCounter value={total} decimals={2} prefix={<span>₹</span>} grouping="indian" />
+
+// fixed width, so a timer never shifts as it rolls over
+// <AnimatedCounter value={seconds} padStart={4} separator="" />`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";

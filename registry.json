@@ -276,6 +276,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "animated-counter",
+      "type": "registry:ui",
+      "title": "Animated Counter",
+      "description": "A number that counts to its new value on a wheel of digits, like an odometer.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/animated-counter.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
