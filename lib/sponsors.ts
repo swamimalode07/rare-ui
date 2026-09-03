@@ -27,9 +27,9 @@ export const TIERS_HREF = "/sponsors#tiers";
 
 export const SPONSOR_X_URL = "https://x.com/swamimalode";
 
-export const MONTHLY_PAGEVIEWS = "155K+";
+export const MONTHLY_PAGEVIEWS = "170K+";
 
-export const TOTAL_PAGEVIEWS = "180K+";
+export const TOTAL_PAGEVIEWS = "192K+";
 
 // dodo does not echo the product back on the return url, so the tier is carried on redirect_url
 function checkoutUrl(productId: string, tier: SponsorTierId) {
