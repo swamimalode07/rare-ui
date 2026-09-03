@@ -1614,7 +1614,7 @@ export function Demo() {
       },
     ],
     interaction:
-      "Pass a new value and every digit that changed rolls to its new face, fading in and out at the top and bottom of its window rather than being cut off. Digits roll up when the number grows and back down when it shrinks, and a digit still moving when the value changes again keeps its speed instead of starting over, so a value dragged on a slider spins rather than stutters. The width always matches the number, never padded with leading zeros: a place that is gained slides in, and one that is lost fades out while the rest close up. Separators glide to their new spot as the number crosses each group.",
+      "Digits roll up as the number grows and back down as it shrinks, fading in and out at the top and bottom of each window rather than being cut off. A number that keeps changing spins instead of stuttering. The width always matches the number: a place that is gained slides in, one that is lost fades out while the rest close up, and the separators glide along with them.",
     props: [
       {
         name: "value",
@@ -1628,7 +1628,7 @@ export function Demo() {
         type: "number",
         default: "0",
         description:
-          "How many decimal places to keep. The value is rounded to that precision, so the wheels always land on a whole digit.",
+          "How many decimal places to keep, up to 15. The value is rounded to that precision, so the wheels always land on a whole digit.",
       },
       {
         name: "duration",
@@ -1642,7 +1642,7 @@ export function Demo() {
         type: "number",
         default: "1",
         description:
-          "Fewest whole digits to show, padded with leading zeros. Use it to hold the width steady when the number crosses a power of ten.",
+          "Fewest whole digits to show, up to 24, padded with leading zeros. Use it to hold the width steady when the number crosses a power of ten.",
       },
       {
         name: "separator",
@@ -1680,19 +1680,15 @@ export function Demo() {
         name: "className",
         type: "string",
         description:
-          'Extra classes merged onto the root element (data-slot="animated-counter"). Font size and color are inherited, so style it like text.',
+          'Extra classes merged onto the root element (data-slot="animated-counter"). Size, color, font and weight are all inherited, so style it like text. The digit columns carry data-slot="animated-counter-digit" and the separators data-slot="animated-counter-mark", for reaching either from the root.',
       },
     ],
     usage: `"use client"
 
 import { AnimatedCounter } from "@/components/ui/animated-counter"
 
-export function Demo() {
-  const [value, setValue] = useState(12480)
-
-  return (
-    <AnimatedCounter value={value} className="text-6xl font-medium" />
-  )
+export function Revenue({ total }: { total: number }) {
+  return <AnimatedCounter value={total} className="text-6xl font-medium" />
 }
 
 // money: two decimals and a currency mark that stays put

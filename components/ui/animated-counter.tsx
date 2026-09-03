@@ -38,7 +38,38 @@ const BOUNCE = 0.18;
 const LEAVE = { duration: 0.18, ease: EASE } as const;
 const INSTANT = { duration: 0 } as const;
 
+const spring = (duration: number): Transition => ({
+  type: "spring",
+  visualDuration: duration,
+  bounce: BOUNCE,
+});
+
+const MAX_DECIMALS = 15;
+const MAX_PAD = 24;
+const MIN_DURATION = 0.01;
+const MAX_DURATION = 60;
+
 const mod = (n: number, m: number) => ((n % m) + m) % m;
+const clamp = (n: number, low: number, high: number) =>
+  Math.min(high, Math.max(low, Number.isFinite(n) ? n : low));
+const isDigit = (char: string) => char >= "0" && char <= "9";
+
+// built once so React skips reconciling 21 spans per digit on every change
+const SIZER = FACES.map((face) => (
+  <span key={face} aria-hidden className="invisible [grid-area:1/1]">
+    {face}
+  </span>
+));
+
+const STACK = WHEEL.map((face, index) => (
+  <span
+    key={index}
+    className="flex items-center justify-center"
+    style={{ height: `${LINE}em` }}
+  >
+    {face}
+  </span>
+));
 
 export type Grouping = "western" | "indian";
 
@@ -47,7 +78,7 @@ const EVERY_TWO = /\B(?=(\d{2})+(?!\d))/g;
 
 function group(whole: string, separator: string, grouping: Grouping) {
   if (!separator) return whole;
-  if (grouping === "western") return whole.replace(EVERY_THREE, separator);
+  if (grouping !== "indian") return whole.replace(EVERY_THREE, separator);
 
   // indian: three at the end, pairs the rest of the way up
   const head = whole.slice(0, -3);
@@ -55,15 +86,46 @@ function group(whole: string, separator: string, grouping: Grouping) {
   return `${head.replace(EVERY_TWO, separator)}${separator}${whole.slice(-3)}`;
 }
 
+type Shape = {
+  amount: number;
+  scaled: number;
+  places: number;
+  pace: number;
+  width: number;
+};
+
+function measure(
+  value: number,
+  decimals: number,
+  padStart: number,
+  duration: number,
+): Shape {
+  // NaN would make the previous-value comparison true forever
+  const amount = Number.isFinite(value) ? value : 0;
+  const places = clamp(Math.trunc(decimals), 0, MAX_DECIMALS);
+  const pad = clamp(Math.trunc(padStart), 1, MAX_PAD);
+  // past MAX_SAFE_INTEGER the digits are noise, and past 1e21 String() turns exponential
+  const scaled = Math.min(
+    Number.MAX_SAFE_INTEGER,
+    Math.round(Math.abs(amount) * 10 ** places),
+  );
+
+  return {
+    amount,
+    scaled,
+    places,
+    pace: clamp(duration, MIN_DURATION, MAX_DURATION),
+    width: Math.max(String(scaled).length, places + pad),
+  };
+}
+
 function format(
-  scaled: number,
-  places: number,
-  pad: number,
+  { scaled, places, width }: Shape,
   separator: string,
   decimalSeparator: string,
   grouping: Grouping,
 ) {
-  const raw = String(scaled).padStart(places + pad, "0");
+  const raw = String(scaled).padStart(width, "0");
   const whole = group(
     raw.slice(0, raw.length - places) || "0",
     separator,
@@ -74,26 +136,106 @@ function format(
     : whole;
 }
 
-// rides the layout animation so it tracks the digits when the number gains or loses a place
-function Fixed({
-  reduced,
-  shape,
-  shift,
-  children,
-}: {
+// keyed by distance from the right, so gaining a place moves columns rather than remounting them
+type Cell =
+  | { kind: "digit"; key: number; digit: number }
+  | { kind: "mark"; key: string; char: string };
+
+function toCells(chars: string, width: number): Cell[] {
+  const cells: Cell[] = [];
+  let seen = 0;
+  // only digits advance the place, so a multi-character separator would repeat a key
+  let run = 0;
+
+  for (const char of chars) {
+    if (isDigit(char)) {
+      run = 0;
+      cells.push({ kind: "digit", key: width - seen++, digit: Number(char) });
+    } else {
+      cells.push({ kind: "mark", key: `mark-${width - seen}-${run++}`, char });
+    }
+  }
+  return cells;
+}
+
+function useWheel(
+  from: number,
+  digit: number,
+  dir: number,
+  duration: number,
+  reduced: boolean,
+) {
+  const pos = useMotionValue(from);
+  const goal = useRef(from);
+
+  // read rather than depended on: a reversal alone must not restart every column
+  const heading = useRef(dir);
+  useEffect(() => {
+    heading.current = dir;
+  }, [dir]);
+
+  useEffect(() => {
+    if (reduced) {
+      goal.current = digit;
+      pos.set(digit);
+      return;
+    }
+    // re-aim only when the face changed, or a reversal sends the wheel the long way round
+    if (mod(goal.current, 10) !== digit) {
+      // aim from where the wheel is, so a moving value never queues up a backlog of turns
+      const at = pos.get();
+      goal.current =
+        heading.current < 0
+          ? at - mod(at - digit, 10)
+          : at + mod(digit - at, 10);
+    }
+    const roll = animate(pos, goal.current, spring(duration));
+    return () => roll.stop();
+  }, [digit, duration, reduced, pos]);
+
+  return useTransform(pos, (p) => `${(-mod(p, 10) * 100) / WHEEL.length}%`);
+}
+
+type SlotProps = {
   reduced: boolean;
-  shape: number;
+  dep: number;
   shift: Transition;
-  children: ReactNode;
-}) {
+};
+
+const shifts = ({ reduced, dep, shift }: SlotProps) => ({
+  layout: !reduced,
+  layoutDependency: dep,
+  transition: shift,
+});
+
+const fades = (reduced: boolean) => ({
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0, transition: reduced ? INSTANT : LEAVE },
+});
+
+function Fixed({ children, ...slot }: SlotProps & { children: ReactNode }) {
+  return (
+    <motion.span {...shifts(slot)} className="inline-block">
+      {children}
+    </motion.span>
+  );
+}
+
+function Mark({
+  char,
+  ref,
+  ...slot
+}: SlotProps & { char: string; ref?: Ref<HTMLSpanElement> }) {
   return (
     <motion.span
-      layout={!reduced}
-      layoutDependency={shape}
-      transition={shift}
+      ref={ref}
+      data-slot="animated-counter-mark"
+      {...shifts(slot)}
+      {...fades(slot.reduced)}
       className="inline-block"
     >
-      {children}
+      {char}
     </motion.span>
   );
 }
@@ -103,58 +245,24 @@ const Digit = memo(function Digit({
   from,
   dir,
   duration,
-  reduced,
-  shape,
-  shift,
   ref,
-}: {
+  ...slot
+}: SlotProps & {
   digit: number;
   from: number;
   dir: number;
   duration: number;
-  reduced: boolean;
-  shape: number;
-  shift: Transition;
   // popLayout measures the leaving column through this
   ref?: Ref<HTMLSpanElement>;
 }) {
-  const pos = useMotionValue(from);
-  const goal = useRef(from);
-  const y = useTransform(pos, (p) => `${(-mod(p, 10) * 100) / WHEEL.length}%`);
-
-  useEffect(() => {
-    if (reduced) {
-      goal.current = digit;
-      pos.set(digit);
-      return;
-    }
-    // only choose a new landing spot when the face itself changed; re-running for any
-    // other reason re-aims at the same spot, so a reversal cannot send a wheel the
-    // long way round to the digit it is already heading for
-    if (mod(goal.current, 10) !== digit) {
-      // aim from where the wheel actually is, so a value that keeps changing retargets
-      // within one turn instead of queueing up a backlog of them
-      const at = pos.get();
-      goal.current =
-        dir < 0 ? at - mod(at - digit, 10) : at + mod(digit - at, 10);
-    }
-    const roll = animate(pos, goal.current, {
-      type: "spring",
-      visualDuration: duration,
-      bounce: BOUNCE,
-    });
-    return () => roll.stop();
-  }, [digit, dir, duration, reduced, pos]);
+  const y = useWheel(from, digit, dir, duration, slot.reduced);
 
   return (
     <motion.span
       ref={ref}
-      layout={!reduced}
-      layoutDependency={shape}
-      transition={shift}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: reduced ? INSTANT : LEAVE }}
+      data-slot="animated-counter-digit"
+      {...shifts(slot)}
+      {...fades(slot.reduced)}
       className="relative inline-grid overflow-hidden"
       style={{
         height: `${LINE}em`,
@@ -163,22 +271,10 @@ const Digit = memo(function Digit({
         WebkitMaskImage: FADE,
       }}
     >
-      {/* holds the column at the width of the widest face, for fonts with no tabular figures */}
-      {FACES.map((face) => (
-        <span key={face} aria-hidden className="invisible [grid-area:1/1]">
-          {face}
-        </span>
-      ))}
+      {/* widest-face width, for fonts with no tabular figures */}
+      {SIZER}
       <motion.span style={{ y }} className="absolute inset-x-0 top-0">
-        {WHEEL.map((face, index) => (
-          <span
-            key={index}
-            className="flex items-center justify-center"
-            style={{ height: `${LINE}em` }}
-          >
-            {face}
-          </span>
-        ))}
+        {STACK}
       </motion.span>
     </motion.span>
   );
@@ -219,82 +315,33 @@ export function AnimatedCounter({
 }: AnimatedCounterProps) {
   const reduced = useReducedMotion() ?? false;
 
-  const [previous, setPrevious] = useState(value);
+  const shape = measure(value, decimals, padStart, duration);
+  const chars = format(shape, separator, decimalSeparator, grouping);
+  const cells = toCells(chars, shape.width);
+  const negative = shape.amount < 0 && shape.scaled > 0;
+
+  const [previous, setPrevious] = useState(shape.amount);
   const [dir, setDir] = useState(1);
-  if (previous !== value) {
-    setDir(value >= previous ? 1 : -1);
-    setPrevious(value);
+  if (previous !== shape.amount) {
+    setDir(shape.amount >= previous ? 1 : -1);
+    setPrevious(shape.amount);
   }
 
-  const places = Math.max(0, Math.trunc(decimals));
-  const scaled = Math.round(Math.abs(value) * 10 ** places);
-  const pad = Math.max(1, Math.trunc(padStart));
-  const shown = Math.max(String(scaled).length, places + pad);
-
-  const chars = format(
-    scaled,
-    places,
-    shown - places,
-    separator,
-    decimalSeparator,
-    grouping,
-  );
-
-  // the faces on screen at mount; a place that shows up later starts from 0 and rolls in
+  // faces at mount; a place that appears later starts from 0 and rolls in
   const [seed] = useState(() => {
     const faces: Record<number, number> = {};
-    let index = 0;
-    for (const char of chars) {
-      if (/\d/.test(char)) faces[shown - index++] = Number(char);
+    for (const cell of cells) {
+      if (cell.kind === "digit") faces[cell.key] = cell.digit;
     }
     return faces;
   });
 
-  // everything that moves when a place is gained or lost rides the same spring as the
-  // wheels, so the symbols and the digits travel together instead of arriving apart
   const shift = useMemo<Transition>(
-    () =>
-      reduced
-        ? INSTANT
-        : { type: "spring", visualDuration: duration, bounce: BOUNCE },
-    [reduced, duration],
+    () => (reduced ? INSTANT : spring(shape.pace)),
+    [reduced, shape.pace],
   );
 
-  const fixed = { reduced, shape: chars.length, shift };
-
-  let seen = 0;
-  const cells = [...chars].map((char) => {
-    if (!/\d/.test(char)) {
-      return (
-        <motion.span
-          key={`mark-${shown - seen}`}
-          data-slot="animated-counter-mark"
-          layout={!reduced}
-          layoutDependency={chars.length}
-          transition={shift}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: reduced ? INSTANT : LEAVE }}
-          className="inline-block"
-        >
-          {char}
-        </motion.span>
-      );
-    }
-    const place = shown - seen++;
-    return (
-      <Digit
-        key={place}
-        digit={Number(char)}
-        from={seed[place] ?? 0}
-        dir={dir}
-        duration={duration}
-        reduced={reduced}
-        shape={chars.length}
-        shift={shift}
-      />
-    );
-  });
+  const slot: SlotProps = { reduced, dep: chars.length, shift };
 
   return (
     <span
@@ -302,18 +349,34 @@ export function AnimatedCounter({
       className={cn("inline-flex items-center tabular-nums", className)}
       {...props}
     >
-      {prefix != null && <Fixed {...fixed}>{prefix}</Fixed>}
+      {prefix != null && <Fixed {...slot}>{prefix}</Fixed>}
+
       <span className="sr-only">
-        {value < 0 && scaled > 0 ? "-" : ""}
+        {negative ? "-" : ""}
         {chars}
       </span>
+
       <span aria-hidden className="inline-flex select-none items-center">
-        {value < 0 && scaled > 0 && <Fixed {...fixed}>-</Fixed>}
+        {negative && <Fixed {...slot}>-</Fixed>}
         <AnimatePresence mode="popLayout" initial={false}>
-          {cells}
+          {cells.map((cell) =>
+            cell.kind === "digit" ? (
+              <Digit
+                key={cell.key}
+                {...slot}
+                digit={cell.digit}
+                from={seed[cell.key] ?? 0}
+                dir={dir}
+                duration={shape.pace}
+              />
+            ) : (
+              <Mark key={cell.key} {...slot} char={cell.char} />
+            ),
+          )}
         </AnimatePresence>
       </span>
-      {suffix != null && <Fixed {...fixed}>{suffix}</Fixed>}
+
+      {suffix != null && <Fixed {...slot}>{suffix}</Fixed>}
     </span>
   );
 }
