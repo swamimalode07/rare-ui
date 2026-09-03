@@ -268,6 +268,7 @@ export function AnimatedCounter({
       return (
         <motion.span
           key={`mark-${shown - seen}`}
+          data-slot="animated-counter-mark"
           layout={!reduced}
           layoutDependency={chars.length}
           transition={shift}

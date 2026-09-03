@@ -24,13 +24,14 @@ export default function AnimatedCounterPage() {
   const [value, setValue] = useState(12_480);
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-10 p-6">
+    <div className="flex h-full flex-col items-center justify-center gap-7 p-6">
       <AnimatedCounter
         value={value}
         duration={ROLL}
         grouping="indian"
-        prefix={<span className="mr-1">$</span>}
-        className="font-mono text-6xl font-medium tracking-tight text-foreground sm:text-7xl"
+        prefix={<span className="mr-0.5">$</span>}
+        // a mono comma sits in a full character advance, so pull the gaps back in
+        className="font-mono text-6xl font-medium tracking-tight text-foreground [&_[data-slot=animated-counter-mark]]:-mx-[0.1em] sm:text-7xl"
       />
 
       <Squircle
