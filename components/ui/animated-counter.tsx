@@ -19,9 +19,19 @@ const FACES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const WHEEL = [...FACES, 0];
 
 // the air around each face is what the mask fades through, so a resting digit stays solid
-const LINE = 1.35;
-const FADE =
-  "linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%)";
+const LINE = 1.5;
+// eased rather than a straight ramp; a linear fade of the same width reads as a hard edge
+const FADE = `linear-gradient(to bottom,
+  rgba(0,0,0,0) 0%,
+  rgba(0,0,0,0.06) 5.5%,
+  rgba(0,0,0,0.5) 11%,
+  rgba(0,0,0,0.94) 16.5%,
+  #000 22%,
+  #000 78%,
+  rgba(0,0,0,0.94) 83.5%,
+  rgba(0,0,0,0.5) 89%,
+  rgba(0,0,0,0.06) 94.5%,
+  rgba(0,0,0,0) 100%)`;
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const BOUNCE = 0.18;
