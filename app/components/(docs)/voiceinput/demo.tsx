@@ -12,6 +12,9 @@ const STATES: VoiceState[] = ["idle", "listening", "thinking"];
 export default function VoiceInputPage() {
   const [state, setState] = usePreviewControl("state", "listening");
   const reduce = useReducedMotion();
+  const slide = reduce
+    ? { duration: 0 }
+    : { type: "spring" as const, stiffness: 420, damping: 34 };
 
   return (
     <div className="relative flex h-full items-center justify-center">
@@ -34,11 +37,7 @@ export default function VoiceInputPage() {
               {selected && (
                 <motion.span
                   layoutId="voice-state-pill"
-                  transition={
-                    reduce
-                      ? { duration: 0 }
-                      : { type: "spring", stiffness: 420, damping: 34 }
-                  }
+                  transition={slide}
                   className="absolute inset-0 rounded-xl bg-background shadow-sm"
                 />
               )}
