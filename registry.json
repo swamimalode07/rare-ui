@@ -290,6 +290,19 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "voice-input",
+      "type": "registry:ui",
+      "title": "Voice Input",
+      "description": "A dot-matrix voice orb that animates through idle, listening and thinking states.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/voice-input.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
