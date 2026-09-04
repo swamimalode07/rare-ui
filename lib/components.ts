@@ -748,13 +748,7 @@ export function Demo() {
         name: "color",
         type: "string",
         default: '"currentColor"',
-        options: [
-          "#1A73F2",
-          "#AF52DE",
-          "#FF3B30",
-          "#F75001",
-          "#34C759",
-        ],
+        options: ["#1A73F2", "#AF52DE", "#FF3B30", "#F75001", "#34C759"],
         control: "swatch",
         optionColors: {
           "#1A73F2": "#1A73F2",
@@ -1351,7 +1345,7 @@ export function Demo() {
     name: "Grid Reveal",
     href: "/components/gridreveal",
     category: "ai",
-    isNew: true,
+    isNew: false,
     registry: "grid-reveal",
     description:
       "A loading state for AI images that turns into the real picture when it arrives.",
@@ -1451,7 +1445,7 @@ export function Demo() {
     name: "Gooey nav",
     href: "/components/gooeynav",
     category: "navigation",
-    isNew: true,
+    isNew: false,
     registry: "gooey-nav",
     description:
       "A gooey navigation bar that separates the selected item from the group.",
@@ -1559,11 +1553,12 @@ export function Demo() {
     name: "Delete button",
     href: "/components/deletebutton",
     category: "inputs",
-    isNew: false,
+    isNew: true,
     registry: "delete-button",
     description:
       "A delete button that asks for confirmation in place, no dialog needed.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/delete-button.tsx`,
+    preview: "/componentdemos/deletbutton.mp4",
     dependencies: [
       {
         name: "motion",
@@ -1607,6 +1602,7 @@ export function Demo() {
     description:
       "A number that counts to its new value on a wheel of digits, like an odometer.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/animated-counter.tsx`,
+    preview: "/componentdemos/animatednumbers.mp4",
     dependencies: [
       {
         name: "motion",
