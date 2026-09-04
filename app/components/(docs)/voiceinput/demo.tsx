@@ -5,7 +5,8 @@ import { Squircle } from "@squircle-js/react";
 import VoiceInput, { type VoiceState } from "@/components/ui/voice-input";
 import { usePreviewControl } from "@/components/preview/PreviewControls";
 
-const SQUIRCLE = { cornerRadius: 18, cornerSmoothing: 5 } as const;
+// outer radius = the inner pill's 12 plus the panel's 4px padding
+const SQUIRCLE = { cornerRadius: 16, cornerSmoothing: 5 } as const;
 const STATES: VoiceState[] = ["idle", "listening", "thinking"];
 
 export default function VoiceInputPage() {
@@ -18,7 +19,7 @@ export default function VoiceInputPage() {
 
       <Squircle
         {...SQUIRCLE}
-        className="border-apple absolute inset-x-0 bottom-4 mx-auto flex w-fit items-center gap-1 bg-muted p-1.5 shadow-xl backdrop-blur"
+        className="border-apple absolute inset-x-0 bottom-4 mx-auto flex w-fit items-center gap-1 bg-muted p-1 shadow-xl backdrop-blur"
       >
         {STATES.map((option) => {
           const selected = state === option;

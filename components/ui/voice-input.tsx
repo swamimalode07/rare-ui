@@ -17,6 +17,8 @@ export type VoiceInputProps = React.ComponentProps<'div'> & {
 
 const TAU = Math.PI * 2
 
+const STATE_KEYS: VoiceState[] = ['idle', 'listening', 'thinking']
+
 const STATUS_LABEL: Record<VoiceState, string> = {
   idle: 'Idle',
   listening: 'Listening',
@@ -33,6 +35,7 @@ const STIFFNESS = 180
 const DAMPING = 26
 const ATTACK = 0.35
 const RELEASE = 0.08
+const BLEND = 0.16
 const STATIC_LEVEL = 0.6
 
 const DEFAULT_COLOR = '#F75001'
@@ -47,6 +50,29 @@ function clamp(n: unknown, min: number, max: number, fallback: number) {
 function syntheticLevel(state: VoiceState, t: number) {
   if (state !== 'listening') return 0
   return 0.18 + 0.82 * Math.abs(Math.sin(t * 2.1) * Math.sin(t * 0.83 + 0.6))
+}
+
+function stateIntensity(
+  state: VoiceState,
+  d: number,
+  nx: number,
+  ny: number,
+  t: number,
+  amplitude: number,
+) {
+  if (state === 'listening') {
+    const ripple = 0.5 + 0.5 * Math.sin(d * 5 - t * 5)
+    return 0.32 + amplitude * (0.28 + 0.52 * ripple)
+  }
+  if (state === 'thinking') {
+    let a = (Math.atan2(ny, nx) - t * 2.4) % TAU
+    if (a < 0) a += TAU
+    // the center has no meaningful angle, so hold it steady there
+    const arm = Math.min(1, d / 0.4)
+    const comet = Math.pow(1 - a / TAU, 2.2)
+    return 0.3 + 0.6 * (comet * arm + 0.45 * (1 - arm))
+  }
+  return 0.62 + 0.12 * Math.sin(t * 1.05 - d * 2.4)
 }
 
 const VoiceInput = ({
@@ -101,8 +127,12 @@ const VoiceInput = ({
     const maxRadius = spacing * 0.5
     const center = px / 2
 
-    const draw = (t: number, amplitude: number, scale: number) => {
-      const current = stateRef.current
+    const draw = (
+      t: number,
+      amplitude: number,
+      scale: number,
+      weights: Record<VoiceState, number>,
+    ) => {
       ctx.clearRect(0, 0, px, px)
 
       for (let iy = 0; iy < grid; iy++) {
@@ -112,24 +142,17 @@ const VoiceInput = ({
           const d = Math.hypot(nx, ny)
           if (d > 1.4) continue
 
-          const falloff = Math.exp(-d * d * 1.7)
-
-          let intensity: number
-          if (current === 'listening') {
-            const ripple = 0.5 + 0.5 * Math.sin(d * 5 - t * 5)
-            intensity = 0.32 + amplitude * (0.28 + 0.52 * ripple)
-          } else if (current === 'thinking') {
-            let a = (Math.atan2(ny, nx) - t * 2.4) % TAU
-            if (a < 0) a += TAU
-            // the center has no meaningful angle, so hold it steady there
-            const arm = Math.min(1, d / 0.4)
-            const comet = Math.pow(1 - a / TAU, 2.2)
-            intensity = 0.3 + 0.6 * (comet * arm + 0.45 * (1 - arm))
-          } else {
-            intensity = 0.62 + 0.12 * Math.sin(t * 1.05 - d * 2.4)
+          let weighted = 0
+          let total = 0
+          for (const s of STATE_KEYS) {
+            const w = weights[s]
+            if (w < 0.001) continue
+            weighted += w * stateIntensity(s, d, nx, ny, t, amplitude)
+            total += w
           }
-          intensity = Math.max(0, Math.min(1, intensity))
 
+          const intensity = Math.max(0, Math.min(1, total > 0 ? weighted / total : 0))
+          const falloff = Math.exp(-d * d * 1.7)
           const radius = maxRadius * falloff * intensity * scale
           if (radius < 0.12) continue
 
@@ -147,13 +170,22 @@ const VoiceInput = ({
       }
     }
 
+    const settled = (s: VoiceState) =>
+      ({
+        idle: s === 'idle' ? 1 : 0,
+        listening: s === 'listening' ? 1 : 0,
+        thinking: s === 'thinking' ? 1 : 0,
+      }) as Record<VoiceState, number>
+
     const reduce =
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     if (reduce) {
-      staticDrawRef.current = () =>
-        draw(0, resolveLevel(stateRef.current, 0, STATIC_LEVEL), scaleFor(stateRef.current))
+      staticDrawRef.current = () => {
+        const current = stateRef.current
+        draw(0, resolveLevel(current, 0, STATIC_LEVEL), scaleFor(current), settled(current))
+      }
       staticDrawRef.current()
       return () => {
         staticDrawRef.current = null
@@ -166,6 +198,7 @@ const VoiceInput = ({
     let velocity = 0
     let last = performance.now()
     let raf = 0
+    const weights = settled(state)
 
     const frame = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.05)
@@ -177,11 +210,18 @@ const VoiceInput = ({
       const rate = target > amplitude ? ATTACK : RELEASE
       amplitude += (target - amplitude) * (1 - Math.pow(1 - rate, dt * 60))
 
+      // each state carries its own weight, so interrupting a change blends
+      // from whatever is on screen instead of snapping to a new pair
+      const step = 1 - Math.pow(1 - BLEND, dt * 60)
+      for (const s of STATE_KEYS) {
+        weights[s] += ((s === current ? 1 : 0) - weights[s]) * step
+      }
+
       velocity +=
         (-STIFFNESS * (scale - scaleFor(current)) - DAMPING * velocity) * dt
       scale += velocity * dt
 
-      draw(t, amplitude, scale)
+      draw(t, amplitude, scale, weights)
       raf = requestAnimationFrame(frame)
     }
     raf = requestAnimationFrame(frame)
