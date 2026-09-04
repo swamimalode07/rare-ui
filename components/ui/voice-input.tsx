@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useSyncExternalStore } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -76,6 +76,20 @@ function intensityOf(
   return 0.62 + 0.12 * Math.sin(t * 1.05 - d * 2.4)
 }
 
+function subscribeToZoom(onChange: () => void) {
+  window.addEventListener('resize', onChange)
+  return () => window.removeEventListener('resize', onChange)
+}
+
+// zoom changes devicePixelRatio, and a buffer built for the old one gets upscaled
+function useDevicePixelRatio() {
+  return useSyncExternalStore(
+    subscribeToZoom,
+    () => Math.min(window.devicePixelRatio || 1, 4),
+    () => 1,
+  )
+}
+
 const VoiceInput = ({
   state = 'idle',
   level,
@@ -90,6 +104,7 @@ const VoiceInput = ({
   const stateRef = useRef(state)
   const levelRef = useRef(level)
   const redrawRef = useRef<(() => void) | null>(null)
+  const dpr = useDevicePixelRatio()
 
   useEffect(() => {
     stateRef.current = state
@@ -101,9 +116,10 @@ const VoiceInput = ({
     const ctx = canvas?.getContext('2d')
     if (!canvas || !ctx) return
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    canvas.width = canvas.height = Math.round(size * dpr)
-    ctx.scale(dpr, dpr)
+    // scaling by buffer/size, not dpr, keeps the transform exact when it rounds
+    const buffer = Math.round(size * dpr)
+    canvas.width = canvas.height = buffer
+    ctx.scale(buffer / size, buffer / size)
     ctx.fillStyle = color
 
     const grid = Math.max(3, Math.round(dots))
@@ -113,7 +129,7 @@ const VoiceInput = ({
     const center = size / 2
 
     const weights: Record<VoiceState, number> = { idle: 0, listening: 0, thinking: 0 }
-    weights[state] = 1
+    weights[stateRef.current] = 1
 
     // a non-finite level would stick in the smoother forever
     const levelAt = (t: number) => {
@@ -175,7 +191,7 @@ const VoiceInput = ({
 
     let t = 0
     let amplitude = 0
-    let scale = SCALE[state]
+    let scale = SCALE[stateRef.current]
     let velocity = 0
     let last = performance.now()
     let raf = 0
@@ -205,9 +221,8 @@ const VoiceInput = ({
     raf = requestAnimationFrame(frame)
 
     return () => cancelAnimationFrame(raf)
-    // state is read through a ref so the loop retargets instead of restarting
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size, color, dots])
+    // state stays out of the deps on purpose: the loop retargets, it never restarts
+  }, [size, color, dots, dpr])
 
   useEffect(() => {
     redrawRef.current?.()
