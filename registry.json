@@ -290,6 +290,19 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "matrix-orb",
+      "type": "registry:ui",
+      "title": "Matrix Orb",
+      "description": "A dot-matrix orb that animates through idle, listening and thinking states.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/matrix-orb.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

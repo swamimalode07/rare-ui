@@ -501,8 +501,7 @@ export function Demo() {
         name: "size",
         type: "number",
         default: "240",
-        description:
-          "Diameter of the orb in pixels. Also drives the canvas resolution (clamped to 2x device pixel ratio).",
+        description: "Diameter of the orb in pixels.",
       },
       {
         name: "className",
@@ -1692,6 +1691,81 @@ export function Revenue({ total }: { total: number }) {
 
 // fixed width, so a timer never shifts as it rolls over
 // <AnimatedCounter value={seconds} padStart={4} separator="" />`,
+  },
+  {
+    name: "Matrix orb",
+    href: "/components/matrixorb",
+    category: "ai",
+    isNew: true,
+    registry: "matrix-orb",
+    description:
+      "A dot-matrix orb that animates through idle, listening and thinking states.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/matrix-orb.tsx`,
+    interaction:
+      "Use the controls to switch the orb between its idle, listening and thinking states.",
+    props: [
+      {
+        name: "state",
+        type: '"idle" | "listening" | "thinking"',
+        default: '"idle"',
+        options: ["idle", "listening", "thinking"],
+        description: "Which animation the orb plays.",
+      },
+      {
+        name: "level",
+        type: "number",
+        description:
+          "How far the orb blooms, 0 to 1. Falls back to a built-in envelope.",
+      },
+      {
+        name: "size",
+        type: "number",
+        default: "240",
+        description: "Diameter of the orb in pixels.",
+      },
+      {
+        name: "color",
+        type: "string",
+        default: '"#F75001"',
+        description: "Any CSS color for the dots.",
+      },
+      {
+        name: "dots",
+        type: "number",
+        default: "11",
+        description: "How many dots across the grid.",
+      },
+      {
+        name: "labels",
+        type: "Partial<Record<MatrixOrbState, string>>",
+        description: "Caption under the orb, per state.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="matrix-orb").',
+      },
+    ],
+    usage: `"use client"
+
+import { useState } from "react"
+import MatrixOrb, { type MatrixOrbState } from "@/components/ui/matrix-orb"
+
+export function Demo() {
+  const [state, setState] = useState<MatrixOrbState>("idle")
+
+  return (
+    <MatrixOrb
+      state={state}
+      onClick={() => setState(state === "idle" ? "listening" : "idle")}
+      className="cursor-pointer"
+    />
+  )
+}
+
+// drive the bloom yourself with any value from 0 to 1
+// <MatrixOrb state="listening" level={level} />`,
   },
 ];
 
