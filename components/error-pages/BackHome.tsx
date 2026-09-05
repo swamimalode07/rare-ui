@@ -30,7 +30,7 @@ export function BackHome({ className }: { className?: string }) {
         className={cn(
           "inline-flex items-baseline whitespace-nowrap font-runde underline decoration-solid underline-offset-[3px]",
           "text-[clamp(15px,1.67vw,24px)] leading-none tracking-[-0.02em]",
-          "outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-4 focus-visible:ring-offset-[#171717]",
+          "outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-4 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#171717]",
           className,
         )}
       >

@@ -2,12 +2,14 @@ import { BackHome } from "./BackHome";
 import { INK } from "./ErrorShell";
 import { RareFlower, FLOWER_ASPECT } from "./RareFlower";
 
+import { cn } from "@/lib/utils";
+
 // four nested copies of the bloom, shifted up to match 401's centered position
 const LAYERS = [
-  { width: 108.57, top: 23.97, tint: "#FC4C01" },
-  { width: 94.98, top: 42.22, tint: "#FF7D33" },
-  { width: 78.54, top: 52.43, tint: "#FFB489" },
-  { width: 60.28, top: 64.81, tint: "#FFE7D8" },
+  { width: 108.57, top: 23.97, tint: "text-[#FC4C01]" },
+  { width: 94.98, top: 42.22, tint: "text-[#FF6622] dark:text-[#FF7D33]" },
+  { width: 78.54, top: 52.43, tint: "text-[#FF8547] dark:text-[#FFB489]" },
+  { width: 60.28, top: 64.81, tint: "text-[#FFA366] dark:text-[#FFE7D8]" },
 ];
 
 // figma expands each layer box by 95px of blur bleed, roughly a 32px css blur at frame scale
@@ -44,7 +46,7 @@ export function GlowBloom({ code = "404" }: { code?: string }) {
                 className="h-full w-full"
                 style={{ animation: BREATHE, animationDelay: `${i * 0.5}s` }}
               >
-                <RareFlower className="h-full w-full" style={{ color: layer.tint }} />
+                <RareFlower className={cn("h-full w-full", layer.tint)} />
               </div>
             </div>
           );

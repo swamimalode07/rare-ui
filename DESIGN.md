@@ -250,11 +250,12 @@ Three full-viewport error pages live at `/400`, `/401`, and `/402`, built from `
 | `/401` | one giant bloom filling the lower frame | rises in on load |
 | `/402` | the same bloom as four blurred, tinted layers | slow breathing pulse |
 
-`ErrorShell` is `fixed inset-0 overflow-hidden`, so a screen owns the viewport outright and nothing can scroll. Every measurement is a viewport unit or a `clamp()`.
+`ErrorShell` is `fixed inset-0 overflow-hidden`, so a screen owns the viewport outright and nothing can scroll. Every measurement is a viewport unit or a `clamp()`. `ErrorShell` mounts `ThemeToggle` in its top-right corner to allow immediate switching between light and dark modes.
 
-Shared constants sit in `ErrorShell.tsx`: `CANVAS #171717`, `INK #292929` for the numeral, `MUTED_LINK #808080`, `FLAME #FC4C01`. Type is `font-runde` throughout; the Figma calls for SF Compact Rounded on the back link, and Open Runde is the project's own rounded face, so it stands in.
-
-The flower is `RareFlower`, the project logo inlined as an SVG that takes `currentColor`. That keeps `/402` able to tint each blurred layer separately, which is what carries the core to white; an additive blend cannot, because the flame colour has no blue to add.
+The error screens adapt dynamically across both themes:
+- **Dark mode**: `CANVAS` is `#171717`, numeral watermark on `/400` is `#292929`, and the glow layers on `/402` ramp to a white-hot core (`#FFE7D8`).
+- **Light mode**: `CANVAS` is white (`#FFFFFF`), numeral watermark on `/400` is `#E0E0E0` (matching the light surface tone), and the glow layers on `/402` transition to warm flame tints (`#FFA366`) that stay radiant without washing out on white.
+- `FLAME #FC4C01` is the brand mark color for `RareFlower`, vivid on both dark and light grounds. Type is `font-runde` throughout.
 
 Entrance animations are CSS keyframes in `app/globals.css` rather than Motion, so an error screen renders correctly even if its JavaScript never runs. See `ANIMATION.md` for the values.
 
