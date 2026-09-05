@@ -223,3 +223,53 @@ html {
 [vaul-overlay] {
   transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
+
+@keyframes error-rise {
+  from {
+    opacity: 0;
+    transform: translateY(64px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes error-copy {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes error-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes error-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.022);
+  }
+}
+
+/* the error screens must stay readable if their animation never runs */
+@media (prefers-reduced-motion: reduce) {
+  [data-error-anim] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
