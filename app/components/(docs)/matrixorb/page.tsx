@@ -2,7 +2,7 @@ import JsonLd from "@/components/JsonLd";
 import { componentJsonLd, componentPageMetadata } from "@/lib/seo";
 import Demo from "./demo";
 
-const HREF = "/components/voiceinput";
+const HREF = "/components/matrixorb";
 
 export const metadata = componentPageMetadata(HREF);
 

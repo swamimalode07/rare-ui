@@ -2,14 +2,14 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { Squircle } from "@squircle-js/react";
-import VoiceInput, { type VoiceState } from "@/components/ui/voice-input";
+import MatrixOrb, { type MatrixOrbState } from "@/components/ui/matrix-orb";
 import { usePreviewControl } from "@/components/preview/PreviewControls";
 
 // outer radius = the inner pill's 12 plus the panel's 4px padding
 const SQUIRCLE = { cornerRadius: 16, cornerSmoothing: 5 } as const;
-const STATES: VoiceState[] = ["idle", "listening", "thinking"];
+const STATES: MatrixOrbState[] = ["idle", "listening", "thinking"];
 
-export default function VoiceInputPage() {
+export default function MatrixOrbPage() {
   const [state, setState] = usePreviewControl("state", "listening");
   const reduce = useReducedMotion();
   const slide = reduce
@@ -18,7 +18,7 @@ export default function VoiceInputPage() {
 
   return (
     <div className="relative flex h-full items-center justify-center">
-      <VoiceInput state={state as VoiceState} size={200} />
+      <MatrixOrb state={state as MatrixOrbState} size={200} />
 
       <Squircle
         {...SQUIRCLE}
@@ -36,7 +36,7 @@ export default function VoiceInputPage() {
             >
               {selected && (
                 <motion.span
-                  layoutId="voice-state-pill"
+                  layoutId="matrix-orb-state-pill"
                   transition={slide}
                   className="absolute inset-0 rounded-xl bg-background shadow-sm"
                 />

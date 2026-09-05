@@ -4,27 +4,27 @@ import React, { useEffect, useRef, useSyncExternalStore } from 'react'
 
 import { cn } from '@/lib/utils'
 
-export type VoiceState = 'idle' | 'listening' | 'thinking'
+export type MatrixOrbState = 'idle' | 'listening' | 'thinking'
 
-export type VoiceInputProps = React.ComponentProps<'div'> & {
-  state?: VoiceState
+export type MatrixOrbProps = React.ComponentProps<'div'> & {
+  state?: MatrixOrbState
   level?: number
   size?: number
   color?: string
   dots?: number
-  labels?: Partial<Record<VoiceState, string>>
+  labels?: Partial<Record<MatrixOrbState, string>>
 }
 
 const TAU = Math.PI * 2
-const STATES: VoiceState[] = ['idle', 'listening', 'thinking']
+const STATES: MatrixOrbState[] = ['idle', 'listening', 'thinking']
 
-const LABELS: Record<VoiceState, string> = {
+const LABELS: Record<MatrixOrbState, string> = {
   idle: 'Idle',
   listening: 'Listening',
   thinking: 'Thinking',
 }
 
-const SCALE: Record<VoiceState, number> = {
+const SCALE: Record<MatrixOrbState, number> = {
   idle: 0.88,
   listening: 1,
   thinking: 0.92,
@@ -50,7 +50,7 @@ function envelope(t: number) {
 }
 
 function intensityOf(
-  state: VoiceState,
+  state: MatrixOrbState,
   d: number,
   nx: number,
   ny: number,
@@ -90,7 +90,7 @@ function useDevicePixelRatio() {
   )
 }
 
-const VoiceInput = ({
+const MatrixOrb = ({
   state = 'idle',
   level,
   size = 240,
@@ -99,7 +99,7 @@ const VoiceInput = ({
   labels,
   className,
   ...props
-}: VoiceInputProps) => {
+}: MatrixOrbProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stateRef = useRef(state)
   const levelRef = useRef(level)
@@ -128,7 +128,7 @@ const VoiceInput = ({
     const maxRadius = spacing * 0.6
     const center = size / 2
 
-    const weights: Record<VoiceState, number> = { idle: 0, listening: 0, thinking: 0 }
+    const weights: Record<MatrixOrbState, number> = { idle: 0, listening: 0, thinking: 0 }
     weights[stateRef.current] = 1
 
     // a non-finite level would stick in the smoother forever
@@ -147,7 +147,8 @@ const VoiceInput = ({
           const nx = (ix - half) / half
           const ny = (iy - half) / half
           const d = Math.hypot(nx, ny)
-          if (d > 1.4) continue
+          // 1.12, not the square's 1.41 corner, is what makes the outline round
+          if (d > 1.12) continue
 
           let blended = 0
           for (const s of STATES) {
@@ -230,7 +231,7 @@ const VoiceInput = ({
 
   return (
     <div
-      data-slot="voice-input"
+      data-slot="matrix-orb"
       data-state={state}
       className={cn('flex flex-col items-center gap-3', className)}
       {...props}
@@ -248,4 +249,4 @@ const VoiceInput = ({
   )
 }
 
-export default VoiceInput
+export default MatrixOrb

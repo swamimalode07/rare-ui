@@ -1693,14 +1693,14 @@ export function Revenue({ total }: { total: number }) {
 // <AnimatedCounter value={seconds} padStart={4} separator="" />`,
   },
   {
-    name: "Voice input",
-    href: "/components/voiceinput",
+    name: "Matrix orb",
+    href: "/components/matrixorb",
     category: "ai",
     isNew: true,
-    registry: "voice-input",
+    registry: "matrix-orb",
     description:
-      "A dot-matrix voice orb that animates through idle, listening and thinking states.",
-    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/voice-input.tsx`,
+      "A dot-matrix orb that animates through idle, listening and thinking states.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/matrix-orb.tsx`,
     interaction:
       "Use the controls to switch the orb between its idle, listening and thinking states.",
     props: [
@@ -1737,26 +1737,26 @@ export function Revenue({ total }: { total: number }) {
       },
       {
         name: "labels",
-        type: "Partial<Record<VoiceState, string>>",
+        type: "Partial<Record<MatrixOrbState, string>>",
         description: "Caption under the orb, per state.",
       },
       {
         name: "className",
         type: "string",
         description:
-          'Extra classes merged onto the root element (data-slot="voice-input").',
+          'Extra classes merged onto the root element (data-slot="matrix-orb").',
       },
     ],
     usage: `"use client"
 
 import { useState } from "react"
-import VoiceInput, { type VoiceState } from "@/components/ui/voice-input"
+import MatrixOrb, { type MatrixOrbState } from "@/components/ui/matrix-orb"
 
 export function Demo() {
-  const [state, setState] = useState<VoiceState>("idle")
+  const [state, setState] = useState<MatrixOrbState>("idle")
 
   return (
-    <VoiceInput
+    <MatrixOrb
       state={state}
       onClick={() => setState(state === "idle" ? "listening" : "idle")}
       className="cursor-pointer"
@@ -1765,7 +1765,7 @@ export function Demo() {
 }
 
 // drive the bloom yourself with any value from 0 to 1
-// <VoiceInput state="listening" level={level} />`,
+// <MatrixOrb state="listening" level={level} />`,
   },
 ];
 

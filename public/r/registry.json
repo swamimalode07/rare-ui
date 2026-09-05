@@ -292,14 +292,14 @@
       ]
     },
     {
-      "name": "voice-input",
+      "name": "matrix-orb",
       "type": "registry:ui",
-      "title": "Voice Input",
-      "description": "A dot-matrix voice orb that animates through idle, listening and thinking states.",
+      "title": "Matrix Orb",
+      "description": "A dot-matrix orb that animates through idle, listening and thinking states.",
       "registryDependencies": ["utils"],
       "files": [
         {
-          "path": "components/ui/voice-input.tsx",
+          "path": "components/ui/matrix-orb.tsx",
           "type": "registry:ui"
         }
       ]
