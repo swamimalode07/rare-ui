@@ -125,7 +125,7 @@ const VoiceInput = ({
     const grid = Math.max(3, Math.round(dots))
     const half = (grid - 1) / 2
     const spacing = (size * 0.74) / (grid - 1)
-    const maxRadius = spacing * 0.5
+    const maxRadius = spacing * 0.6
     const center = size / 2
 
     const weights: Record<VoiceState, number> = { idle: 0, listening: 0, thinking: 0 }
@@ -157,9 +157,9 @@ const VoiceInput = ({
 
           const intensity = Math.min(1, Math.max(0, blended))
           const radius = maxRadius * Math.exp(-d * d * 1.7) * intensity * scale
-          if (radius < 0.12) continue
+          // anything under half a device pixel renders as haze, not a dot
+          if (radius * dpr < 0.5) continue
 
-          ctx.globalAlpha = 0.25 + 0.75 * intensity
           ctx.beginPath()
           ctx.arc(
             center + (ix - half) * spacing * scale,
