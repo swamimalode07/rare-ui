@@ -250,6 +250,20 @@
       ]
     },
     {
+      "name": "dot-reveal",
+      "type": "registry:ui",
+      "title": "Dot Reveal",
+      "description": "A dot grid that blooms while an AI image generates, then resolves into the picture.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/dot-reveal.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "gooey-nav",
       "type": "registry:ui",
       "title": "Gooey Nav",

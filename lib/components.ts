@@ -1441,6 +1441,118 @@ export function Demo() {
 // Pass progress when your API reports it: <GridReveal src={src} progress={job.progress} />`,
   },
   {
+    name: "Dot reveal",
+    href: "/components/dotreveal",
+    category: "ai",
+    isNew: true,
+    registry: "dot-reveal",
+    description:
+      "A dot grid that blooms while an AI image generates, then resolves into the picture.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/dot-reveal.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction: "Press Generate to make an image.",
+    props: [
+      {
+        name: "src",
+        type: "string | null",
+        description:
+          "Image to reveal. Keep it null while the image is generating, since the dots only run while this is empty and a src that is already loaded makes the whole run flash by.",
+      },
+      {
+        name: "alt",
+        type: "string",
+        description:
+          "Describes the finished image for screen readers. The frame is hidden from assistive tech when omitted.",
+      },
+      {
+        name: "progress",
+        type: "number",
+        description:
+          "Position of the wait from 0 to 1, driving how far the bloom spreads and what the percentage reads. It holds at 0.9 while the image is still generating, then the count runs to 100 and the picture resolves after it.",
+      },
+      {
+        name: "aspect",
+        type: "number",
+        default: "1",
+        description:
+          "Width divided by height of the frame. The frame fills its parent's width, so constrain the parent to size it.",
+      },
+      {
+        name: "caption",
+        type: "string",
+        description:
+          "Optional status text, shown above the frame and lit by a slow shimmer. Change it mid-run and the lines crossfade.",
+      },
+      {
+        name: "spacing",
+        type: "number",
+        default: "22",
+        description:
+          "Target gap between dot centers in pixels. The grid rounds to whole dots, so the real gap lands near this. Smaller values read as finer grain and cost more per frame.",
+      },
+      {
+        name: "showPercent",
+        type: "boolean",
+        default: "true",
+        description:
+          "Shows the percentage pill in the bottom right. Set false when your own UI already reports progress.",
+      },
+      {
+        name: "estimatedDuration",
+        type: "number",
+        default: "6000",
+        description:
+          "Roughly how long the work takes, used to pace the bloom when no progress is passed. Overrunning it is fine, the count keeps creeping instead of stopping.",
+      },
+      {
+        name: "onRevealComplete",
+        type: "() => void",
+        description: "Fires once the image has fully resolved.",
+      },
+      {
+        name: "onError",
+        type: "() => void",
+        description:
+          "Fires when the image fails to load. Without it a broken src leaves the dots waiting, so use it to show your own fallback.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="dot-reveal").',
+      },
+    ],
+    usage: `"use client"
+
+import { useState } from "react"
+import DotReveal from "@/components/ui/dot-reveal"
+
+export function Demo() {
+  const [src, setSrc] = useState<string | null>(null)
+
+  async function generate() {
+    setSrc(null)                   // null is the waiting state, the dots run while it is empty
+    setSrc(await createImage())    // setting it resolves the dots into the picture
+  }
+
+  return (
+    // the frame fills its parent, so give the parent a width
+    <div className="w-64">
+      <DotReveal src={src} alt="Generated image" caption="Creating image" />
+      <button onClick={generate}>Generate</button>
+    </div>
+  )
+}
+
+// Passing a src that is already loaded skips the wait, so the run flashes by.
+// Pass progress when your API reports it: <DotReveal src={src} progress={job.progress} />`,
+  },
+  {
     name: "Gooey nav",
     href: "/components/gooeynav",
     category: "navigation",
