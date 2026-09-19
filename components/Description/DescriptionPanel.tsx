@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { CodeXml, Maximize, Minimize, X } from "lucide-react";
 import { activeComponent } from "@/lib/components";
-import { cn } from "@/lib/utils";
 import CodeDrawer from "./CodeDrawer";
 import DescriptionContent from "./DescriptionContent";
 import InstallBar from "./InstallBar";
@@ -39,51 +38,44 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
 
   return (
     <div className="pointer-events-none absolute right-0 top-0 z-40 h-full">
-      <div className="pointer-events-auto absolute right-4 top-4 z-50 flex items-stretch">
+      <div className="pointer-events-auto absolute right-4 top-4 z-50 flex items-center gap-1.5 rounded-[16px] bg-muted/90 p-1.5 shadow-2xs backdrop-blur-md">
         {item?.registry && <InstallBar key={item.href} item={item} />}
 
-        <div
-          className={cn(
-            "flex items-center gap-2 border-apple bg-muted p-2 shadow-sm",
-            item?.registry ? "rounded-r-2xl" : "rounded-2xl",
-          )}
-        >
-          <Tooltip label={open ? "Close description" : "Open description"}>
+        <Tooltip label={open ? "Close description" : "Open description"}>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close description" : "Open description"}
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-[12px] bg-popover text-foreground shadow-2xs transition-colors hover:bg-popover/80"
+          >
+            {open ? (
+              <Maximize className="h-3.5 w-3.5" />
+            ) : (
+              <Minimize className="h-3.5 w-3.5" />
+            )}
+          </button>
+        </Tooltip>
+
+        {item?.registry && (
+          <Tooltip label={codeOpen ? "Hide code" : "Get code"}>
             <button
               type="button"
-              onClick={() => setOpen((v) => !v)}
-              aria-label={open ? "Close description" : "Open description"}
-              className="cursor-pointer rounded-full bg-popover p-1"
+              onClick={toggleCode}
+              aria-label={codeOpen ? "Hide code" : "Get code"}
+              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-[12px] bg-popover text-foreground shadow-2xs transition-colors hover:bg-popover/80"
             >
-              {open ? (
-                <Maximize className="h-5 w-5" />
+              {codeOpen ? (
+                <X className="h-3.5 w-3.5" />
               ) : (
-                <Minimize className="h-5 w-5" />
+                <CodeXml className="h-3.5 w-3.5" />
               )}
             </button>
           </Tooltip>
+        )}
 
-          {item?.registry && (
-            <Tooltip label={codeOpen ? "Hide code" : "Get code"}>
-              <button
-                type="button"
-                onClick={toggleCode}
-                aria-label={codeOpen ? "Hide code" : "Get code"}
-                className="cursor-pointer rounded-full bg-popover p-1"
-              >
-                {codeOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <CodeXml className="h-5 w-5" />
-                )}
-              </button>
-            </Tooltip>
-          )}
-
-          <Tooltip label="Toggle theme" align="end">
-            <ThemeToggle className="rounded-full p-1 bg-popover" />
-          </Tooltip>
-        </div>
+        <Tooltip label="Toggle theme" align="end">
+          <ThemeToggle className="flex h-7 w-7 items-center justify-center rounded-[12px] bg-popover p-0 text-foreground shadow-2xs transition-colors hover:bg-popover/80 [&_svg]:h-3.5 [&_svg]:w-3.5" />
+        </Tooltip>
       </div>
 
       <motion.div
