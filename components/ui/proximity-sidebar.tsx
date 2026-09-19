@@ -1,11 +1,12 @@
 "use client"
 
-import React, {
+import {
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type ComponentProps,
 } from "react"
 import {
   motion,
@@ -15,6 +16,7 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react"
+import { cn } from "@/lib/utils"
 
 type Side = "left" | "right"
 type SectionKind = "title" | "subtitle" | "section" | "body"
@@ -44,9 +46,8 @@ type DashProps = {
   side: Side
 }
 
-type ProximitySidebarProps = {
+type ProximitySidebarProps = ComponentProps<"nav"> & {
   activeOffset?: number
-  className?: string
   sections: ProximitySection[]
   side?: Side
 }
@@ -185,9 +186,10 @@ const Dash = ({
 
 const ProximitySidebar = ({
   activeOffset = 0.4,
-  className = "",
+  className,
   side = "left",
   sections,
+  ...props
 }: ProximitySidebarProps) => {
   const mouseY = useMotionValue(Infinity)
   const shouldReduceMotion = useReducedMotion()
@@ -357,10 +359,14 @@ const ProximitySidebar = ({
 
   return (
     <nav
+      data-slot="proximity-sidebar"
       aria-label="Page sections"
-      className={`flex h-full min-h-0 items-center ${
-        side === "left" ? "justify-start" : "justify-end"
-      } ${className}`}
+      className={cn(
+        "flex h-full min-h-0 items-center",
+        side === "left" ? "justify-start" : "justify-end",
+        className
+      )}
+      {...props}
     >
       <div
         className={`new-home_minimap__dDggR mx-8 flex flex-col ${
