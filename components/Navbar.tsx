@@ -147,7 +147,7 @@ export default function Navbar() {
             aria-label="GitHub"
             className={cn(
               pill,
-              "w-10 justify-center text-muted-foreground transition-colors duration-200 hover:text-foreground",
+              "w-10 justify-center text-foreground transition-colors duration-200",
             )}
           >
             <GithubIcon className="h-4 w-4" />
@@ -156,7 +156,7 @@ export default function Navbar() {
           <ThemeToggle
             className={cn(
               pill,
-              "w-10 justify-center p-0 text-muted-foreground hover:text-foreground [&_svg]:h-4 [&_svg]:w-4",
+              "w-10 justify-center p-0 text-foreground [&_svg]:h-4 [&_svg]:w-4",
             )}
           />
         </div>

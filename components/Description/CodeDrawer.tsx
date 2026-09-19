@@ -47,18 +47,18 @@ export default function CodeDrawer({ open, onClose, item }: CodeDrawerProps) {
     >
       <div
         onPointerDown={(event) => dragControls.start(event)}
-        className="shrink-0 cursor-grab touch-none px-4 pb-2 pt-3 active:cursor-grabbing"
+        className="shrink-0 cursor-grab touch-none px-6 pb-4 pt-3.5 active:cursor-grabbing"
       >
-        <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-foreground/25" />
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">{item?.name ?? "Code"}</span>
+        <div className="mx-auto mb-3.5 h-1.5 w-12 rounded-full bg-foreground/25" />
+        <div className="flex items-center gap-2 pr-48">
+          <span className="text-sm font-semibold text-foreground">{item?.name ?? "Code"}</span>
         </div>
       </div>
 
       <PanelCode
         code={loading ? SOURCE_LOADING : code ?? ""}
         showLineNumbers
-        className="mx-4 mb-4 min-h-0 flex-1"
+        className="mx-4 mb-4 mt-2 min-h-0 flex-1"
       />
     </motion.div>
   );

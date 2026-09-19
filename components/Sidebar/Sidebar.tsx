@@ -22,7 +22,7 @@ const Sidebar = ({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close sidebar" : "Open sidebar"}
-        className="pointer-events-auto absolute top-4 left-4 z-50 cursor-pointer rounded-lg bg-popover p-2"
+        className="pointer-events-auto absolute left-4 top-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-[12px] bg-muted p-2 text-foreground shadow-2xs transition-colors hover:bg-muted/80"
       >
         {open ? <OpenIcon /> : <ClosedIcon />}
       </button>

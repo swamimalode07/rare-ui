@@ -261,7 +261,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
           <ThemeToggle
             className={cn(
               pill,
-              "flex h-12 w-12 items-center justify-center p-0 text-white/80 hover:bg-neutral-800 hover:text-white [&_svg]:h-6 [&_svg]:w-6",
+              "flex h-12 w-12 items-center justify-center p-0 text-white hover:bg-neutral-800 [&_svg]:h-6 [&_svg]:w-6",
             )}
           />
         </motion.div>
@@ -357,7 +357,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
                 <ThemeToggle
                   className={cn(
                     pill,
-                    "flex h-12 w-12 items-center justify-center p-0 text-white/80 [&_svg]:h-6 [&_svg]:w-6",
+                    "flex h-12 w-12 items-center justify-center p-0 text-white [&_svg]:h-6 [&_svg]:w-6",
                   )}
                 />
               </motion.div>
