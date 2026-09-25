@@ -1855,6 +1855,121 @@ export function Demo() {
 // one row on its own, no list around it
 // <TaskItem label="Star Rare UI" size="sm" onCheckedChange={setDone} />`,
   },
+  {
+    name: "Voice note",
+    href: "/components/voicenote",
+    category: "display",
+    isNew: true,
+    registry: "voice-note",
+    description:
+      "A voice message bar with a scrubbable waveform and a play control.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/voice-note.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Press play to start. The play triangle splits into the pause bars, the waveform fills from the left, and soft lights circle the inside edge of the bar. Pause and they freeze where they are, dimmed. Drag across the waveform to scrub, or focus it and use the arrow keys.",
+    props: [
+      {
+        name: "src",
+        type: "string",
+        description:
+          "URL of the audio file to play. Without it the bar runs on a timer, which is what the demo above does.",
+      },
+      {
+        name: "duration",
+        type: "number",
+        default: "53",
+        description:
+          "Length of the clip in seconds. Ignored once a real file reports its own duration.",
+      },
+      {
+        name: "waveform",
+        type: "number[]",
+        description:
+          "Bar heights from 0 to 1. Leave it out and the bars are generated from the seed.",
+      },
+      {
+        name: "bars",
+        type: "number",
+        default: "40",
+        description:
+          "How many bars to generate. They share the width evenly, so more bars means thinner bars.",
+      },
+      {
+        name: "seed",
+        type: "number",
+        default: "7",
+        description:
+          "Picks which generated waveform you get. The same seed always draws the same bars.",
+      },
+      {
+        name: "playing",
+        type: "boolean",
+        description:
+          "Drives playback yourself. Leave it out and the bar tracks its own state.",
+      },
+      {
+        name: "defaultPlaying",
+        type: "boolean",
+        default: "false",
+        description:
+          "Whether the bar starts playing when you are not driving it.",
+      },
+      {
+        name: "onPlayingChange",
+        type: "(playing: boolean) => void",
+        description: "Called whenever playback starts or stops.",
+      },
+      {
+        name: "onEnded",
+        type: "() => void",
+        description:
+          "Called when the clip reaches the end, just after the bar rewinds to the start.",
+      },
+      {
+        name: "accent",
+        type: "string",
+        default: '"#FC4C01"',
+        description:
+          "Any CSS color for the light behind the bar. The waveform itself stays neutral.",
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        default: '"md"',
+        options: ["sm", "md", "lg"],
+        description:
+          "Bar size. Height, control, bar width and text all scale together.",
+      },
+      {
+        name: "seekable",
+        type: "boolean",
+        default: "true",
+        description:
+          "Whether the waveform can be scrubbed. The arrow keys move 5 seconds at a time, Home and End jump to the ends. Off removes both the pointer and the keyboard seeking.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="voice-note"). Set the width here.',
+      },
+    ],
+    usage: `"use client"
+
+import { VoiceNote } from "@/components/ui/voice-note"
+
+export function Demo() {
+  return <VoiceNote src="/audio/note.mp3" className="w-[340px]" />
+}
+
+// no file yet: pass a length and it runs on a timer
+// <VoiceNote duration={53} accent="#2563EB" />`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
