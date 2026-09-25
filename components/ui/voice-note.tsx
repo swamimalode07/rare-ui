@@ -25,28 +25,26 @@ const ICON: Transition = { type: "spring", duration: 0.34, bounce: 0.2 };
 const TAP: Transition = { type: "spring", duration: 0.25, bounce: 0.3 };
 const INSTANT: Transition = { duration: 0 };
 
-const PLAYING_GLOW = 0.45;
-const PAUSED_GLOW = 0.25;
+const PLAYING_GLOW = 0.7;
 
 // all proportional to the bar height, so every size keeps the same look
 const CONTROL_RATIO = 0.76;
 const ICON_RATIO = 0.72;
-const BLUR_RATIO = 0.3;
+const BLUR_RATIO = 0.32;
 const PEAK_RATIO = 0.68;
 
 const PULSE_SPEED = 0.6;
 
-// each light is centred on the outline so the clip keeps its inner half; lap is seconds for one trip
+// seconds for the orbit to reach full speed, and to coast back down
+const SPIN_UP = 0.45;
+
+// each light is centred on the outline so the clip keeps its inner half; all travel the same way,
+// at their own lap in seconds, so they drift apart and bunch up without ever crossing back
 const BLOBS = [
-  { size: 1.8, alpha: 0.9, lap: 23, offset: 0.02, spin: 1, pulse: 0.1 },
-  { size: 0.7, alpha: 0.55, lap: 13, offset: 0.14, spin: -1, pulse: 0.18 },
-  { size: 1.35, alpha: 0.8, lap: 31, offset: 0.27, spin: 1, pulse: 0.11 },
-  { size: 0.55, alpha: 0.45, lap: 11, offset: 0.38, spin: -1, pulse: 0.16 },
-  { size: 2, alpha: 0.85, lap: 37, offset: 0.5, spin: 1, pulse: 0.08 },
-  { size: 0.9, alpha: 0.6, lap: 17, offset: 0.62, spin: -1, pulse: 0.15 },
-  { size: 1.6, alpha: 0.7, lap: 29, offset: 0.71, spin: 1, pulse: 0.09 },
-  { size: 0.65, alpha: 0.4, lap: 19, offset: 0.83, spin: -1, pulse: 0.17 },
-  { size: 1.15, alpha: 0.65, lap: 41, offset: 0.93, spin: 1, pulse: 0.12 },
+  { size: 2, alpha: 0.5, lap: 11, offset: 0.06, pulse: 0.12 },
+  { size: 1.5, alpha: 0.4, lap: 17, offset: 0.3, pulse: 0.14 },
+  { size: 2.3, alpha: 0.45, lap: 23, offset: 0.55, pulse: 0.1 },
+  { size: 1.2, alpha: 0.35, lap: 13, offset: 0.8, pulse: 0.16 },
 ] as const;
 
 // walks the outline of a pill: top edge, right cap, bottom edge, left cap
@@ -308,8 +306,7 @@ function VoiceNote({
     "aria-valuenow": elapsed,
     "aria-valuetext": `${formatTime(elapsed)} of ${formatTime(total)}`,
   };
-  // paused partway keeps a dimmer light, so it never looks like it was left untouched
-  const glow = isPlaying ? PLAYING_GLOW : progress.get() > 0 ? PAUSED_GLOW : 0;
+  const glow = isPlaying ? PLAYING_GLOW : 0;
 
   return (
     <div
@@ -327,7 +324,7 @@ function VoiceNote({
       }}
       {...props}
     >
-      <div className="absolute inset-0 -z-10 rounded-full bg-[#F4F4F9] dark:bg-[#262626]" />
+      <div className="absolute inset-0 -z-10 rounded-full bg-[#F4F4F9] dark:bg-[#1C1C1C]" />
       <Aurora
         accent={accent}
         height={metrics.height}
@@ -344,7 +341,7 @@ function VoiceNote({
         whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
         transition={shouldReduceMotion ? INSTANT : TAP}
         style={{ width: control, height: control }}
-        className="z-10 flex shrink-0 cursor-pointer touch-manipulation items-center justify-center rounded-full bg-white text-black outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#868593] dark:bg-[#1A1A1A] dark:text-white"
+        className="z-10 flex shrink-0 cursor-pointer touch-manipulation items-center justify-center rounded-full bg-white text-black outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#868593] dark:bg-[#0E0E0E] dark:text-white"
       >
         <TransportIcon
           playing={isPlaying}
@@ -428,6 +425,7 @@ function Aurora({
 }) {
   // lap time, advanced only while the clip runs, so pausing leaves every light where it is
   const clock = useRef(0);
+  const rate = useRef(0);
   const fieldRef = useRef<HTMLDivElement>(null);
   const nodes = useRef<(HTMLSpanElement | null)[]>([]);
   const width = useRef(0);
@@ -441,7 +439,7 @@ function Aurora({
       BLOBS.forEach((blob, i) => {
         const node = nodes.current[i];
         if (!node) return;
-        const travelled = blob.offset + (blob.spin * t) / blob.lap;
+        const travelled = blob.offset + t / blob.lap;
         const [x, y] = pointOnPill(
           travelled * perimeter,
           width.current,
@@ -468,15 +466,26 @@ function Aurora({
   }, [place]);
 
   useEffect(() => {
-    if (!playing || reduced) return;
+    if (reduced) return;
 
     let frame = 0;
     let last = performance.now();
     const loop = (now: number) => {
-      clock.current += (now - last) / 1000;
+      // a long frame gap, from a background tab, must not throw the lights across the bar
+      const delta = Math.min(0.05, (now - last) / 1000);
       last = now;
+
+      const target = playing ? 1 : 0;
+      rate.current +=
+        (target - rate.current) * (1 - Math.exp(-delta / SPIN_UP));
+      clock.current += delta * rate.current;
       place(clock.current);
-      frame = requestAnimationFrame(loop);
+
+      if (playing || rate.current > 0.002) {
+        frame = requestAnimationFrame(loop);
+        return;
+      }
+      rate.current = 0;
     };
 
     frame = requestAnimationFrame(loop);
@@ -486,7 +495,7 @@ function Aurora({
   return (
     <div
       data-slot="voice-note-glow"
-      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-full opacity-70 dark:opacity-100"
+      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-full opacity-70 dark:opacity-100 dark:mix-blend-screen"
     >
       <motion.div
         ref={fieldRef}
@@ -496,6 +505,12 @@ function Aurora({
         animate={{ opacity: glow }}
         transition={reduced ? INSTANT : GLOW}
       >
+        <span
+          className="absolute inset-0"
+          style={{
+            background: `radial-gradient(70% 170% at 8% 115%, ${accent} 0%, transparent 62%), radial-gradient(55% 150% at 40% 130%, ${accent} 0%, transparent 58%)`,
+          }}
+        />
         {BLOBS.map((blob, i) => (
           <span
             key={i}
