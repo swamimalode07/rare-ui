@@ -1,13 +1,17 @@
 "use client";
 
 import {
+  createContext,
   memo,
   useCallback,
+  useContext,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
   type ComponentProps,
+  type ReactNode,
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
@@ -27,6 +31,8 @@ const TAP: Transition = { type: "spring", duration: 0.25, bounce: 0.3 };
 const INSTANT: Transition = { duration: 0 };
 
 const PLAYING_GLOW = 0.62;
+
+const SPEEDS = [1, 1.5, 2];
 
 // all proportional to the bar height, so every size keeps the same look
 const CONTROL_RATIO = 0.76;
@@ -145,6 +151,28 @@ const buildWaveform = (count: number, seed: number) => {
   });
 };
 
+type GroupContext = { claim: (id: string, pause: () => void) => void };
+
+const VoiceNoteGroupContext = createContext<GroupContext | null>(null);
+
+// keeps the map out of state, so claiming a turn never re-renders the other notes
+function VoiceNoteGroup({ children }: { children: ReactNode }) {
+  const notes = useRef(new Map<string, () => void>());
+
+  const claim = useCallback((id: string, pause: () => void) => {
+    notes.current.set(id, pause);
+    notes.current.forEach((stop, other) => other !== id && stop());
+  }, []);
+
+  const value = useMemo(() => ({ claim }), [claim]);
+
+  return (
+    <VoiceNoteGroupContext.Provider value={value}>
+      {children}
+    </VoiceNoteGroupContext.Provider>
+  );
+}
+
 export type VoiceNoteProps = Omit<ComponentProps<"div">, "onEnded"> & {
   src?: string;
   duration?: number;
@@ -158,6 +186,8 @@ export type VoiceNoteProps = Omit<ComponentProps<"div">, "onEnded"> & {
   accent?: string;
   size?: keyof typeof SIZES;
   seekable?: boolean;
+  speeds?: number[];
+  onSpeedChange?: (speed: number) => void;
 };
 
 function VoiceNote({
@@ -173,6 +203,8 @@ function VoiceNote({
   accent = "#FC4C01",
   size = "md",
   seekable = true,
+  speeds = SPEEDS,
+  onSpeedChange,
   className,
   style,
   ...props
@@ -197,6 +229,15 @@ function VoiceNote({
   const [metaDuration, setMetaDuration] = useState<number | null>(null);
   const [playingState, setPlayingState] = useState(defaultPlaying);
   const [elapsed, setElapsed] = useState(0);
+  const [failed, setFailed] = useState(false);
+  const [speed, setSpeed] = useState(speeds[0] ?? 1);
+
+  const id = useId();
+  const group = useContext(VoiceNoteGroupContext);
+
+  // a file has to report its length before the bar can be trusted, or pressed
+  const loading = !!src && metaDuration === null && !failed;
+  const blocked = loading || failed;
 
   const total = metaDuration ?? duration;
   const isControlled = playing !== undefined;
@@ -227,11 +268,11 @@ function VoiceNote({
       const next = clamp(ratio);
       progress.set(next);
       setElapsed(Math.floor(next * total));
-      startedAt.current = performance.now() - next * total * 1000;
+      startedAt.current = performance.now() - (next * total * 1000) / speed;
       const audio = audioRef.current;
       if (audio && Number.isFinite(total)) audio.currentTime = next * total;
     },
-    [progress, total],
+    [progress, total, speed],
   );
 
   const reset = useCallback(() => {
@@ -249,14 +290,16 @@ function VoiceNote({
     if (!isPlaying || total <= 0) return;
 
     const audio = audioRef.current;
+    if (audio) audio.playbackRate = speed;
     audio?.play().catch(() => commitPlaying(false));
-    startedAt.current = performance.now() - progress.get() * total * 1000;
+    startedAt.current =
+      performance.now() - (progress.get() * total * 1000) / speed;
 
     let frame = 0;
     const tick = (now: number) => {
       const seconds = audio
         ? audio.currentTime
-        : (now - startedAt.current) / 1000;
+        : ((now - startedAt.current) / 1000) * speed;
       const ratio = clamp(seconds / total);
       progress.set(ratio);
       // whole seconds only, so the label is the one thing that re-renders
@@ -273,7 +316,7 @@ function VoiceNote({
       cancelAnimationFrame(frame);
       audio?.pause();
     };
-  }, [isPlaying, total, progress, commitPlaying, reset]);
+  }, [isPlaying, total, speed, progress, commitPlaying, reset]);
 
   const scrub = (event: ReactPointerEvent<HTMLDivElement>) => {
     const rect = trackRef.current?.getBoundingClientRect();
@@ -281,14 +324,14 @@ function VoiceNote({
   };
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!seekable) return;
+    if (!seekable || blocked) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     scrubbing.current = true;
     scrub(event);
   };
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (!seekable || total <= 0) return;
+    if (!seekable || blocked || total <= 0) return;
     const at = progress.get() * total;
     const to = {
       ArrowLeft: at - SEEK_STEP,
@@ -315,10 +358,30 @@ function VoiceNote({
     : undefined;
   const glow = isPlaying ? PLAYING_GLOW : 0;
 
+  const handleControl = () => {
+    if (isPlaying) {
+      commitPlaying(false);
+      return;
+    }
+    commitPlaying(true);
+    // taking a turn stops whatever else is playing in the same group
+    group?.claim(id, () => commitPlaying(false));
+  };
+
+  const cycleSpeed = () => {
+    const next = speeds[(speeds.indexOf(speed) + 1) % speeds.length];
+    setSpeed(next);
+    onSpeedChange?.(next);
+    const audio = audioRef.current;
+    if (audio) audio.playbackRate = next;
+  };
+
   return (
     <div
       data-slot="voice-note"
       data-playing={isPlaying || undefined}
+      data-loading={loading || undefined}
+      data-error={failed || undefined}
       className={cn(
         "relative isolate inline-flex select-none items-center",
         className,
@@ -344,12 +407,13 @@ function VoiceNote({
       <motion.button
         data-slot="voice-note-control"
         type="button"
-        onClick={() => commitPlaying(!isPlaying)}
+        onClick={handleControl}
+        disabled={blocked}
         aria-label={isPlaying ? "Pause voice message" : "Play voice message"}
-        whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
+        whileTap={shouldReduceMotion || blocked ? undefined : { scale: 0.9 }}
         transition={shouldReduceMotion ? INSTANT : TAP}
         style={{ width: control, height: control }}
-        className="z-10 flex shrink-0 cursor-pointer touch-manipulation items-center justify-center rounded-full bg-white text-black outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#868593] dark:bg-[#0E0E0E] dark:text-white"
+        className="z-10 flex shrink-0 cursor-pointer touch-manipulation items-center justify-center rounded-full bg-white text-black outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#868593] disabled:cursor-default disabled:opacity-40 dark:bg-[#0E0E0E] dark:text-white"
       >
         <TransportIcon
           playing={isPlaying}
@@ -368,8 +432,9 @@ function VoiceNote({
         onPointerCancel={() => (scrubbing.current = false)}
         onKeyDown={handleKeyDown}
         className={cn(
-          "relative h-full flex-1 touch-none rounded-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#868593]",
-          seekable && "cursor-pointer",
+          "relative h-full flex-1 touch-none rounded-sm outline-none transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#868593]",
+          seekable && !blocked && "cursor-pointer",
+          blocked && "opacity-40",
         )}
       >
         <Bars
@@ -390,15 +455,13 @@ function VoiceNote({
         </motion.div>
       </div>
 
-      <span
-        data-slot="voice-note-time"
-        className={cn(
-          "shrink-0 font-semibold tabular-nums text-[#868593]",
-          metrics.text,
-        )}
+      <TimeLabel
+        speed={speed}
+        text={metrics.text}
+        onCycle={speeds.length > 1 ? cycleSpeed : undefined}
       >
         {formatTime(remaining)}
-      </span>
+      </TimeLabel>
 
       {src && (
         <audio
@@ -408,8 +471,9 @@ function VoiceNote({
           preload="metadata"
           onLoadedMetadata={(event) => {
             const value = event.currentTarget.duration;
-            if (Number.isFinite(value)) setMetaDuration(value);
+            setMetaDuration(Number.isFinite(value) ? value : duration);
           }}
+          onError={() => setFailed(true)}
           // a file can stop just short of its own duration, so the frame loop may never reach the end
           onEnded={reset}
         />
@@ -503,7 +567,7 @@ function Aurora({
   return (
     <div
       data-slot="voice-note-glow"
-      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-full opacity-70 dark:opacity-100 dark:mix-blend-screen"
+      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-full mix-blend-multiply dark:mix-blend-screen"
     >
       <motion.div
         ref={fieldRef}
@@ -589,6 +653,51 @@ function TransportIcon({
   );
 }
 
+function TimeLabel({
+  speed,
+  text,
+  onCycle,
+  children,
+}: {
+  speed: number;
+  text: string;
+  onCycle?: () => void;
+  children: ReactNode;
+}) {
+  const className = cn(
+    "flex shrink-0 items-center gap-1 font-semibold tabular-nums text-[#868593]",
+    text,
+  );
+
+  if (!onCycle) {
+    return (
+      <span data-slot="voice-note-time" className={className}>
+        {children}
+      </span>
+    );
+  }
+
+  return (
+    <button
+      data-slot="voice-note-time"
+      type="button"
+      onClick={onCycle}
+      aria-label={`Playback speed, ${speed} times. Press to change`}
+      className={cn(
+        className,
+        "cursor-pointer rounded-full outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#868593]",
+      )}
+    >
+      {children}
+      {speed !== 1 && (
+        <span className="rounded-full bg-black/10 px-1 py-px text-[0.85em] leading-none text-black/70 dark:bg-white/15 dark:text-white/80">
+          {speed}×
+        </span>
+      )}
+    </button>
+  );
+}
+
 const Bars = memo(function Bars({
   amplitudes,
   metrics,
@@ -617,5 +726,5 @@ const Bars = memo(function Bars({
   );
 });
 
-export { VoiceNote };
+export { VoiceNote, VoiceNoteGroup };
 export default VoiceNote;

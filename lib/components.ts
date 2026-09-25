@@ -1302,6 +1302,19 @@ export function Demo() {
         description: "Which side of the track the button sits on.",
       },
       {
+        name: "speeds",
+        type: "number[]",
+        default: "[1, 1.5, 2]",
+        description:
+          "Speeds the time label cycles through when pressed. Pass a single speed to pin it and turn the label back into plain text.",
+      },
+      {
+        name: "onSpeedChange",
+        type: "(speed: number) => void",
+        description:
+          "Called with the new speed each time the label is pressed.",
+      },
+      {
         name: "seekable",
         type: "boolean",
         default: "false",
@@ -1871,7 +1884,7 @@ export function Demo() {
       },
     ],
     interaction:
-      "Press play to start. The play triangle splits into the pause bars, the waveform fills from the left, and soft lights circle the inside edge of the bar. Pause and they freeze where they are, dimmed. Drag across the waveform to scrub, or focus it and use the arrow keys.",
+      "Press play to start. The play triangle splits into the pause bars, the waveform fills from the left, and soft lights circle the inside edge of the bar. Pause and they wind down to a stop. Drag across the waveform to scrub, or focus it and use the arrow keys. Press the time to change playback speed.",
     props: [
       {
         name: "src",
@@ -1934,8 +1947,15 @@ export function Demo() {
         name: "accent",
         type: "string",
         default: '"#FC4C01"',
+        options: ["#FC4C01", "#1A73F2", "#4ADE80"],
+        control: "swatch",
+        optionColors: {
+          "#FC4C01": "#FC4C01",
+          "#1A73F2": "#1A73F2",
+          "#4ADE80": "#4ADE80",
+        },
         description:
-          "Any CSS color for the light behind the bar. The waveform itself stays neutral.",
+          "Any hex color for the light behind the bar. The waveform itself stays neutral.",
       },
       {
         name: "size",
@@ -1944,6 +1964,19 @@ export function Demo() {
         options: ["sm", "md", "lg"],
         description:
           "Bar size. Height, control, bar width and text all scale together.",
+      },
+      {
+        name: "speeds",
+        type: "number[]",
+        default: "[1, 1.5, 2]",
+        description:
+          "Speeds the time label cycles through when pressed. Pass a single speed to pin it and turn the label back into plain text.",
+      },
+      {
+        name: "onSpeedChange",
+        type: "(speed: number) => void",
+        description:
+          "Called with the new speed each time the label is pressed.",
       },
       {
         name: "seekable",
@@ -1958,13 +1991,24 @@ export function Demo() {
         description:
           'Extra classes merged onto the root element (data-slot="voice-note"). Set the width here.',
       },
+      {
+        name: "children",
+        type: "ReactNode",
+        description:
+          "On VoiceNoteGroup only. Wrap several bars in it and starting one stops the rest, the way a chat thread behaves.",
+      },
     ],
     usage: `"use client"
 
-import { VoiceNote } from "@/components/ui/voice-note"
+import { VoiceNote, VoiceNoteGroup } from "@/components/ui/voice-note"
 
 export function Demo() {
-  return <VoiceNote src="/audio/note.mp3" className="w-[340px]" />
+  return (
+    <VoiceNoteGroup>
+      <VoiceNote src="/audio/first.mp3" className="w-[340px]" />
+      <VoiceNote src="/audio/second.mp3" className="w-[340px]" />
+    </VoiceNoteGroup>
+  )
 }
 
 // no file yet: pass a length and it runs on a timer
