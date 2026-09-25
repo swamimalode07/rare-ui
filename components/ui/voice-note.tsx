@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -25,7 +26,7 @@ const ICON: Transition = { type: "spring", duration: 0.34, bounce: 0.2 };
 const TAP: Transition = { type: "spring", duration: 0.25, bounce: 0.3 };
 const INSTANT: Transition = { duration: 0 };
 
-const PLAYING_GLOW = 0.7;
+const PLAYING_GLOW = 0.62;
 
 // all proportional to the bar height, so every size keeps the same look
 const CONTROL_RATIO = 0.76;
@@ -38,14 +39,19 @@ const PULSE_SPEED = 0.6;
 // seconds for the orbit to reach full speed, and to coast back down
 const SPIN_UP = 0.45;
 
-// each light is centred on the outline so the clip keeps its inner half; all travel the same way,
-// at their own lap in seconds, so they drift apart and bunch up without ever crossing back
+const MIDDLE_MASK =
+  "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.3) 46%, rgba(0,0,0,0.3) 54%, #000 100%)";
+
+// each light is centred on the outline, so the clip keeps only its inner half
 const BLOBS = [
-  { size: 2, alpha: 0.5, lap: 11, offset: 0.06, pulse: 0.12 },
-  { size: 1.5, alpha: 0.4, lap: 17, offset: 0.3, pulse: 0.14 },
-  { size: 2.3, alpha: 0.45, lap: 23, offset: 0.55, pulse: 0.1 },
-  { size: 1.2, alpha: 0.35, lap: 13, offset: 0.8, pulse: 0.16 },
+  { size: 2, alpha: 0.5, lap: 11, offset: 0.04, pulse: 0.12 },
+  { size: 1.5, alpha: 0.4, lap: 17, offset: 0.19, pulse: 0.14 },
+  { size: 2.3, alpha: 0.45, lap: 23, offset: 0.47, pulse: 0.1 },
+  { size: 1.2, alpha: 0.35, lap: 13, offset: 0.71, pulse: 0.16 },
 ] as const;
+
+// the laps only pull the lights apart over time, so the clock starts mid flow rather than lined up
+const START_AT = 6.2;
 
 // walks the outline of a pill: top edge, right cap, bottom edge, left cap
 const pointOnPill = (distance: number, width: number, height: number) => {
@@ -73,8 +79,7 @@ const pointOnPill = (distance: number, width: number, height: number) => {
   return [radius + radius * Math.cos(a), radius + radius * Math.sin(a)];
 };
 
-// both icons are two four-point quads wound the same way, so the morph is a plain lerp: the triangle
-// is split down the middle and its right quad collapses to the tip
+// the triangle is split down the middle, giving it the same two four-point quads as the bars
 const PLAY_SHAPE = [
   7.7, 5.8, 13, 8.9, 13, 15.1, 7.7, 18.2, 13, 8.9, 18.3, 12, 18.3, 12, 13, 15.1,
 ];
@@ -127,7 +132,7 @@ const formatTime = (seconds: number) => {
   return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, "0")}`;
 };
 
-// deterministic, so the server and the client draw the same bars
+// sin and ** are not bit identical across engines, so the result is rounded to survive hydration
 const buildWaveform = (count: number, seed: number) => {
   let state = (seed >>> 0) + 0x9e3779b9;
   return Array.from({ length: count }, (_, i) => {
@@ -135,11 +140,8 @@ const buildWaveform = (count: number, seed: number) => {
     const noise = state / 0x100000000;
     const envelope = Math.sin((Math.PI * (i + 0.5)) / count) ** 0.55;
     const swell = 0.5 + 0.5 * Math.sin(i * 0.9 + seed);
-    return clamp(
-      envelope * (0.3 + 0.5 * noise + 0.2 * swell),
-      MIN_AMPLITUDE,
-      1,
-    );
+    const amplitude = envelope * (0.3 + 0.5 * noise + 0.2 * swell);
+    return Math.round(clamp(amplitude, MIN_AMPLITUDE, 1) * 1000) / 1000;
   });
 };
 
@@ -172,6 +174,7 @@ function VoiceNote({
   size = "md",
   seekable = true,
   className,
+  style,
   ...props
 }: VoiceNoteProps) {
   const metrics = SIZES[size];
@@ -232,6 +235,8 @@ function VoiceNote({
   );
 
   const reset = useCallback(() => {
+    // the frame loop and the audio element can both report the end of the same clip
+    if (progress.get() === 0) return;
     progress.set(0);
     setElapsed(0);
     const audio = audioRef.current;
@@ -297,15 +302,17 @@ function VoiceNote({
   };
 
   const remaining = total - elapsed;
-  const slider = seekable && {
-    role: "slider" as const,
-    tabIndex: 0,
-    "aria-label": "Seek",
-    "aria-valuemin": 0,
-    "aria-valuemax": Math.round(total),
-    "aria-valuenow": elapsed,
-    "aria-valuetext": `${formatTime(elapsed)} of ${formatTime(total)}`,
-  };
+  const slider = seekable
+    ? {
+        role: "slider" as const,
+        tabIndex: 0,
+        "aria-label": "Seek",
+        "aria-valuemin": 0,
+        "aria-valuemax": Math.round(total),
+        "aria-valuenow": elapsed,
+        "aria-valuetext": `${formatTime(elapsed)} of ${formatTime(total)}`,
+      }
+    : undefined;
   const glow = isPlaying ? PLAYING_GLOW : 0;
 
   return (
@@ -321,6 +328,7 @@ function VoiceNote({
         gap: metrics.gap,
         paddingLeft: inset,
         paddingRight: metrics.pad,
+        ...style,
       }}
       {...props}
     >
@@ -353,7 +361,7 @@ function VoiceNote({
       <div
         ref={trackRef}
         data-slot="voice-note-track"
-        {...(slider || {})}
+        {...slider}
         onPointerDown={handlePointerDown}
         onPointerMove={(event) => scrubbing.current && scrub(event)}
         onPointerUp={() => (scrubbing.current = false)}
@@ -367,7 +375,7 @@ function VoiceNote({
         <Bars
           amplitudes={amplitudes}
           metrics={metrics}
-          className="bg-[#868593]/60"
+          className="bg-black/30 dark:bg-white/40"
         />
         <motion.div
           aria-hidden
@@ -424,7 +432,7 @@ function Aurora({
   reduced: boolean;
 }) {
   // lap time, advanced only while the clip runs, so pausing leaves every light where it is
-  const clock = useRef(0);
+  const clock = useRef(START_AT);
   const rate = useRef(0);
   const fieldRef = useRef<HTMLDivElement>(null);
   const nodes = useRef<(HTMLSpanElement | null)[]>([]);
@@ -501,7 +509,13 @@ function Aurora({
         ref={fieldRef}
         aria-hidden
         className="absolute inset-0"
-        style={{ filter: `blur(${height * BLUR_RATIO}px)` }}
+        style={{
+          filter: `blur(${height * BLUR_RATIO}px)`,
+          maskImage: MIDDLE_MASK,
+          WebkitMaskImage: MIDDLE_MASK,
+        }}
+        // without this the field paints at full strength for a frame before the first animation
+        initial={false}
         animate={{ opacity: glow }}
         transition={reduced ? INSTANT : GLOW}
       >
@@ -575,7 +589,7 @@ function TransportIcon({
   );
 }
 
-function Bars({
+const Bars = memo(function Bars({
   amplitudes,
   metrics,
   className,
@@ -595,13 +609,13 @@ function Bars({
           className={cn("flex-1 rounded-full", className)}
           style={{
             minWidth: metrics.bar,
-            height: `${amplitude * PEAK_RATIO * 100}%`,
+            height: `${(amplitude * PEAK_RATIO * 100).toFixed(2)}%`,
           }}
         />
       ))}
     </div>
   );
-}
+});
 
 export { VoiceNote };
 export default VoiceNote;
