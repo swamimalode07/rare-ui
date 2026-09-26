@@ -106,10 +106,7 @@ export default function InstallBar({ item }: { item: ComponentItem }) {
   };
 
   return (
-    <div
-      ref={ref}
-      className="flex items-center rounded-l-2xl border-apple bg-muted p-2 shadow-sm"
-    >
+    <div ref={ref} className="flex items-center">
       <motion.button
         layout={reduceMotion ? false : "size"}
         type="button"
@@ -119,7 +116,7 @@ export default function InstallBar({ item }: { item: ComponentItem }) {
         transition={{
           layout: { duration: 0.24, ease: EASE, delay: open ? 0 : 0.1 },
         }}
-        className="flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-[10px] bg-popover px-2.5 text-xs font-medium"
+        className="flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-[12px] bg-popover px-3 text-xs font-medium text-foreground shadow-2xs transition-colors hover:bg-popover/80"
       >
         {/* an invisible copy of the active label sizes the pill, so layout can animate the width while both labels crossfade in place */}
         <span aria-hidden className="grid place-items-center">
@@ -170,7 +167,7 @@ export default function InstallBar({ item }: { item: ComponentItem }) {
                   onClick={() => setMenuOpen((v) => !v)}
                   aria-expanded={menuOpen}
                   aria-label="Change package manager"
-                  className="flex h-7 cursor-pointer items-center gap-1.5 rounded-[10px] bg-popover px-2.5 text-xs font-medium"
+                  className="flex h-7 cursor-pointer items-center gap-1.5 rounded-[12px] bg-popover px-2.5 text-xs font-medium text-foreground shadow-2xs transition-colors hover:bg-popover/80"
                 >
                   {pm}
                   <ChevronsUpDown className="size-3 opacity-45" />
