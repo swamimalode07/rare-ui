@@ -1612,7 +1612,6 @@ export function Demo() {
     name: "Animated counter",
     href: "/components/animatedcounter",
     category: "display",
-    isNew: true,
     registry: "animated-counter",
     description:
       "A number that counts to its new value on a wheel of digits, like an odometer.",
@@ -1877,6 +1876,7 @@ export function Demo() {
     description:
       "A voice message bar with a scrubbable waveform and a play control.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/voice-note.tsx`,
+    preview: "/componentdemos/voicenote.mp4",
     dependencies: [
       {
         name: "motion",
@@ -2000,19 +2000,20 @@ export function Demo() {
     ],
     usage: `"use client"
 
-import { VoiceNote, VoiceNoteGroup } from "@/components/ui/voice-note"
+import { VoiceNote } from "@/components/ui/voice-note"
 
 export function Demo() {
-  return (
-    <VoiceNoteGroup>
-      <VoiceNote src="/audio/first.mp3" className="w-[340px]" />
-      <VoiceNote src="/audio/second.mp3" className="w-[340px]" />
-    </VoiceNoteGroup>
-  )
+  return <VoiceNote src="/audio/note.mp3" className="w-[340px]" />
 }
 
 // no file yet: pass a length and it runs on a timer
-// <VoiceNote duration={53} accent="#2563EB" />`,
+// <VoiceNote duration={53} accent="#2563EB" />
+
+// wrap a thread in VoiceNoteGroup and starting one stops the rest
+// <VoiceNoteGroup>
+//   <VoiceNote src="/audio/first.mp3" />
+//   <VoiceNote src="/audio/second.mp3" />
+// </VoiceNoteGroup>`,
   },
 ];
 
