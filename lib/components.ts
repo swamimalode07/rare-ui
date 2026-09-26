@@ -2061,6 +2061,10 @@ export function activeComponent(pathname: string): ComponentItem | undefined {
   return components.find((c) => c.href === pathname);
 }
 
+export function registryComponent(name: string): ComponentItem | undefined {
+  return components.find((c) => c.registry === name);
+}
+
 export function swatchProp(item?: ComponentItem): ComponentProp | undefined {
   return item?.props?.find((p) => p.control === "swatch" && p.optionColors);
 }

@@ -58,7 +58,11 @@ function NavLink({ label, href, external, icon: Icon }: FooterLink) {
   }
 
   return (
-    <Link href={href} className={className} aria-label={Icon ? label : undefined}>
+    <Link
+      href={href}
+      className={className}
+      aria-label={Icon ? label : undefined}
+    >
       {content}
     </Link>
   );
