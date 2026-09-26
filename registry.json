@@ -317,6 +317,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "voice-note",
+      "type": "registry:ui",
+      "title": "Voice Note",
+      "description": "A voice message bar with a scrubbable waveform and a play control.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/voice-note.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
