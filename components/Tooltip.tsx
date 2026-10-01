@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const OPEN_DELAY_MS = 400;
-const SKIP_DELAY_MS = 400;
+const OPEN_DELAY_MS = 150;
+const SKIP_DELAY_MS = 300;
 
 const ALIGN = {
   center: { pill: "left-1/2 -translate-x-1/2", arrow: "left-1/2 -ml-2" },
@@ -13,7 +13,7 @@ const ALIGN = {
 } as const;
 
 const PILL =
-  "pointer-events-none absolute top-full z-50 mt-2.5 block whitespace-nowrap rounded-xl bg-popover px-3 py-1.5 text-sm font-medium text-foreground shadow-lg";
+  "pointer-events-none absolute top-full z-50 mt-2 block whitespace-nowrap rounded-xl bg-muted px-3 py-1.5 text-xs font-medium text-foreground";
 
 let lastClosedAt = 0;
 
@@ -39,7 +39,7 @@ function useDelayedHover() {
 
   const hide = () => {
     if (timer.current) clearTimeout(timer.current);
-    if (open) lastClosedAt = Date.now();
+    lastClosedAt = Date.now();
     setOpen(false);
   };
 
@@ -51,9 +51,9 @@ function TooltipArrow({ className }: { className?: string }) {
     <svg
       aria-hidden
       viewBox="0 0 16 9"
-      className={cn("absolute -top-2 h-[9px] w-4", className)}
+      className={cn("absolute -top-2 h-[9px] w-4 text-muted fill-current", className)}
     >
-      <path d="M0 9L5.6 2.2Q8 0 10.4 2.2L16 9Z" className="fill-popover" />
+      <path d="M0 9L5.6 2.2Q8 0 10.4 2.2L16 9Z" />
     </svg>
   );
 }
@@ -80,6 +80,7 @@ export default function Tooltip({
       onMouseLeave={hide}
       onFocus={show}
       onBlur={hide}
+      onPointerDown={hide}
       className={cn("relative flex", className)}
     >
       {children}
