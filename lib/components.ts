@@ -1708,6 +1708,115 @@ export function Revenue({ total }: { total: number }) {
 // <AnimatedCounter value={seconds} padStart={4} separator="" />`,
   },
   {
+    name: "Handoff Picker",
+    href: "/components/handoffpicker",
+    category: "ai",
+    isNew: true,
+    registry: "handoff-picker",
+    description:
+      "An agent picker whose options run as a scrollable column through the pill.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/handoff-picker.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Click the pill to open the column. Scroll it with a wheel, a two-finger trackpad swipe or a drag on touch, and the agents run past the pill with the centred one as the selection. Let go and it springs to the nearest agent; flick it and the throw carries before it settles. Past the first or last agent the column resists and pulls back. Click any agent to bring it to the centre, click the centred one to close, or use the arrow keys and Escape.",
+    props: [
+      {
+        name: "agents",
+        type: "{ id: string; name: string; icon: ReactNode }[]",
+        required: true,
+        description:
+          "The agents to scroll through, in order. The icon renders inside a 30px circle and is rendered greyscale, so unrelated brand marks read as one set. Size each one so the visible artwork lands near 18px, which differs per logo depending on how much padding its viewBox carries.",
+      },
+      {
+        name: "value",
+        type: "string",
+        description:
+          "Controlled selection, matched against agent ids. Pair with onChange. Leave it out to let the picker hold its own selection.",
+      },
+      {
+        name: "defaultValue",
+        type: "string",
+        description:
+          "Agent id to start on for uncontrolled usage. Defaults to the first agent. Ignored when value is provided.",
+      },
+      {
+        name: "onChange",
+        type: "(id: string) => void",
+        description:
+          "Fires with the agent id once the column settles on a new agent, not during the scroll.",
+      },
+      {
+        name: "open",
+        type: "boolean",
+        description:
+          "Controlled open state. Pair with onOpenChange to drive the column from outside.",
+      },
+      {
+        name: "defaultOpen",
+        type: "boolean",
+        default: "false",
+        description: "Render with the column already open.",
+      },
+      {
+        name: "onOpenChange",
+        type: "(open: boolean) => void",
+        description:
+          "Fires when the column opens or closes, including on a click outside.",
+      },
+      {
+        name: "label",
+        type: "string",
+        default: '"Handoff to"',
+        description:
+          "Text on the left of the pill. It also names the list for screen readers.",
+      },
+      {
+        name: "visibleCount",
+        type: "number",
+        default: "2",
+        description:
+          "How many agents show above and below the centred one. Higher values make a taller column that fades out further from the middle.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Dims the pill and stops it from opening.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          "Extra classes merged onto the root. Every inner part also carries a data-slot attribute (handoff-picker, -trigger, -toggle, -list) plus data-open / data-disabled states, so you can restyle from CSS alone.",
+      },
+    ],
+    usage: `"use client"
+
+import HandoffPicker, { type HandoffAgent } from "@/components/ui/handoff-picker"
+import { useState } from "react"
+
+// size each glyph to about 18px of visible artwork inside the 30px circle
+const agents: HandoffAgent[] = [
+  { id: "claude", name: "Claude", icon: <ClaudeMark /> },
+  { id: "openai", name: "OpenAI", icon: <OpenAiMark /> },
+  { id: "grok", name: "Grok", icon: <GrokMark /> },
+]
+
+export function Demo() {
+  const [agent, setAgent] = useState("openai")
+
+  return <HandoffPicker agents={agents} value={agent} onChange={setAgent} />
+}
+
+// Zero-config: it also works fully uncontrolled
+// <HandoffPicker agents={agents} defaultValue="claude" />`,
+  },
+  {
     name: "Matrix orb",
     href: "/components/matrixorb",
     category: "ai",

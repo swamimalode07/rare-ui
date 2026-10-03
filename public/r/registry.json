@@ -292,6 +292,20 @@
       ]
     },
     {
+      "name": "handoff-picker",
+      "type": "registry:ui",
+      "title": "Handoff Picker",
+      "description": "An agent picker whose options run as a scrollable column through the pill.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/handoff-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "matrix-orb",
       "type": "registry:ui",
       "title": "Matrix Orb",
