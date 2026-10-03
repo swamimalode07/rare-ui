@@ -36,6 +36,7 @@ const UTILITY_LINKS = [
 
 const HOVER =
   "transition-colors duration-150 ease-out hover:text-black dark:hover:text-white";
+const OVERLAY_HOVER = "transition-colors duration-150 ease-out hover:text-white"
 
 const MUTED = "text-black/50 dark:text-white/50";
 
@@ -128,32 +129,20 @@ export default function Footer() {
         </div>
 
         <div
-          className={`selection-contrast flex flex-wrap items-center justify-between gap-3 pb-8 text-xs ${MUTED}`}
+          className={`selection-contrast flex flex-wrap items-center justify-between gap-3 text-xs bg-black/45 p-[14px] mb-[32px] text-white/75! ${MUTED}`}
         >
           <span className="flex flex-wrap items-center gap-2.5">
             <span>Rare UI &copy; {new Date().getFullYear()}</span>
-            <span
-              aria-hidden="true"
-              className="text-black/25 dark:text-white/25"
-            >
-              &middot;
-            </span>
-            <a href={`mailto:${SUPPORT_EMAIL}`} className={HOVER}>
+            <span aria-hidden="true">&middot;</span>
+            <a href={`mailto:${SUPPORT_EMAIL}`} className={OVERLAY_HOVER}>
               Support: {SUPPORT_EMAIL}
             </a>
           </span>
           <span className="flex flex-wrap items-center gap-2.5">
             {UTILITY_LINKS.map((link, index) => (
               <Fragment key={link.href}>
-                {index > 0 && (
-                  <span
-                    aria-hidden="true"
-                    className="text-black/25 dark:text-white/25"
-                  >
-                    &middot;
-                  </span>
-                )}
-                <a href={link.href} className={HOVER}>
+                {index > 0 && <span aria-hidden="true"> &middot;</span>}
+                <a href={link.href} className={OVERLAY_HOVER}>
                   {link.label}
                 </a>
               </Fragment>
