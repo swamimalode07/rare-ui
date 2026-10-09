@@ -2158,6 +2158,13 @@ export function Demo() {
         description: "Any CSS color for the answer bubbles.",
       },
       {
+        name: "avatar",
+        type: "ReactNode",
+        default: "Rare UI logo",
+        description:
+          "Your logo or image, shown in a circle beside each answer. Pass null to hide it.",
+      },
+      {
         name: "className",
         type: "string",
         description:
