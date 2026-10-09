@@ -78,8 +78,8 @@ function Question({
       className={cn(
         "max-w-[85%] cursor-pointer self-start rounded-[18px] rounded-bl-[6px] px-4 py-2.5 text-left text-[15px] leading-[1.4] tracking-[-0.01em] text-black transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#868593]/50 dark:text-white",
         open
-          ? "bg-[#E8E8F0] dark:bg-[#333333]"
-          : "bg-[#F4F4F9] hover:bg-[#ECECF3] dark:bg-[#262626] dark:hover:bg-[#2D2D2D]",
+          ? "bg-white shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-[#333333] dark:shadow-none"
+          : "bg-[#F4F4F9] dark:bg-[#262626]",
       )}
     >
       {item.question}
