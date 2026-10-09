@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import Sidebar from "./Sidebar";
 import { DescriptionPanel } from "../Description/DescriptionPanel";
@@ -15,6 +15,15 @@ export default function DesktopShell({
 }) {
   const [navOpen, setNavOpen] = useState(true);
   const [infoOpen, setInfoOpen] = useState(false);
+
+  // ?record hides the floating controls so a demo can be screen recorded clean
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has("record")) return;
+    document.documentElement.dataset.record = "";
+    return () => {
+      delete document.documentElement.dataset.record;
+    };
+  }, []);
 
   return (
     <div className="relative h-full">

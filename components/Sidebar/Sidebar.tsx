@@ -22,6 +22,7 @@ const Sidebar = ({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close sidebar" : "Open sidebar"}
+        data-chrome
         className="pointer-events-auto absolute top-4 left-4 z-50 cursor-pointer rounded-lg bg-popover p-2"
       >
         {open ? <OpenIcon /> : <ClosedIcon />}

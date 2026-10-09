@@ -345,6 +345,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "faq",
+      "type": "registry:ui",
+      "title": "FAQ",
+      "description": "An FAQ styled as a message thread, with each answer sent as a reply bubble.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/faq.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

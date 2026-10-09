@@ -613,7 +613,7 @@ export function Demo() {
       },
     ],
     interaction:
-      "Scroll the content and the paper plane flies along the rail between headings, turning where the rail bends. The rail behind it is solid and each heading it passes fills in; the rest stays dashed. Click any heading to scroll to it.",
+      "Scroll the content and the paper plane flies along the rail between headings, turning where the rail bends. Scroll back up and it turns around. The rail behind it is solid and each heading it passes fills in; the rest stays dashed. Keep scrolling past either end and the plane is thrown off the rail, drifts side to side, and lands at the bottom of the scroll area; scroll the other way and it flies back. Click any heading to scroll to it.",
     props: [
       {
         name: "items",
@@ -1454,7 +1454,6 @@ export function Demo() {
     name: "Grid Reveal",
     href: "/components/gridreveal",
     category: "ai",
-    isNew: false,
     registry: "grid-reveal",
     description:
       "A loading state for AI images that turns into the real picture when it arrives.",
@@ -1554,7 +1553,6 @@ export function Demo() {
     name: "Gooey nav",
     href: "/components/gooeynav",
     category: "navigation",
-    isNew: false,
     registry: "gooey-nav",
     description:
       "A gooey navigation bar that separates the selected item from the group.",
@@ -1804,7 +1802,6 @@ export function Revenue({ total }: { total: number }) {
     name: "Matrix orb",
     href: "/components/matrixorb",
     category: "ai",
-    isNew: true,
     registry: "matrix-orb",
     description:
       "A dot-matrix orb that animates through idle, listening and thinking states.",
@@ -1880,7 +1877,6 @@ export function Demo() {
     name: "Task list",
     href: "/components/tasklist",
     category: "inputs",
-    isNew: true,
     registry: "task-list",
     description:
       "A checklist that strikes out completed tasks and moves them to the bottom of the list.",
@@ -2107,6 +2103,93 @@ export function Demo() {
 //   <VoiceNote src="/audio/first.mp3" />
 //   <VoiceNote src="/audio/second.mp3" />
 // </VoiceNoteGroup>`,
+  },
+  {
+    name: "FAQ",
+    href: "/components/faq",
+    category: "display",
+    isNew: true,
+    registry: "faq",
+    description:
+      "An FAQ styled as a message thread, with each answer sent as a reply bubble.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/faq.tsx`,
+    preview: "/componentdemos/faqcomponent.mp4",
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Click a question to open its answer, and click it again to close it. Arrow keys move between questions.",
+    props: [
+      {
+        name: "items",
+        type: "FaqItem[]",
+        required: true,
+        description:
+          "The questions, each one an id, a question, and an answer.",
+      },
+      {
+        name: "value",
+        type: "string | null",
+        description:
+          "Id of the open question. Pass this to control which one is open.",
+      },
+      {
+        name: "defaultValue",
+        type: "string | null",
+        default: "null",
+        description: "Id of the question open on first render.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: string | null) => void",
+        description:
+          "Called with the open id, or null, every time a question opens or closes.",
+      },
+      {
+        name: "accent",
+        type: "string",
+        default: '"#FC4C01"',
+        description: "Any CSS color for the answer bubbles.",
+      },
+      {
+        name: "avatar",
+        type: "ReactNode",
+        default: "Rare UI logo",
+        description:
+          "Your logo or image, shown in a circle beside each answer. Pass null to hide it.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="faq").',
+      },
+    ],
+    usage: `"use client"
+
+import { Faq } from "@/components/ui/faq"
+
+export function Demo() {
+  return (
+    <Faq
+      items={[
+        {
+          id: "free",
+          question: "Is it free?",
+          answer: "Yes, for personal and commercial projects.",
+        },
+        {
+          id: "install",
+          question: "How do I install a component?",
+          answer: "Add it with the shadcn CLI.",
+        },
+      ]}
+    />
+  )
+}`,
   },
 ];
 
