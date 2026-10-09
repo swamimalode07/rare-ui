@@ -613,7 +613,7 @@ export function Demo() {
       },
     ],
     interaction:
-      "Scroll the content and the paper plane flies along the rail between headings, turning where the rail bends. The rail behind it is solid and each heading it passes fills in; the rest stays dashed. Click any heading to scroll to it.",
+      "Scroll the content and the paper plane flies along the rail between headings, turning where the rail bends. Scroll back up and it turns around. The rail behind it is solid and each heading it passes fills in; the rest stays dashed. Keep scrolling past either end and the plane is thrown off the rail, drifts side to side, and lands at the bottom of the scroll area; scroll the other way and it flies back. Click any heading to scroll to it.",
     props: [
       {
         name: "items",
@@ -2107,6 +2107,85 @@ export function Demo() {
 //   <VoiceNote src="/audio/first.mp3" />
 //   <VoiceNote src="/audio/second.mp3" />
 // </VoiceNoteGroup>`,
+  },
+  {
+    name: "FAQ",
+    href: "/components/faq",
+    category: "display",
+    isNew: true,
+    registry: "faq",
+    description:
+      "An FAQ styled as a message thread, with each answer sent as a reply bubble.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/faq.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Click a question to open its answer, and click it again to close it. Arrow keys move between questions.",
+    props: [
+      {
+        name: "items",
+        type: "FaqItem[]",
+        required: true,
+        description:
+          "The questions, each one an id, a question, and an answer.",
+      },
+      {
+        name: "value",
+        type: "string | null",
+        description:
+          "Id of the open question. Pass this to control which one is open.",
+      },
+      {
+        name: "defaultValue",
+        type: "string | null",
+        default: "null",
+        description: "Id of the question open on first render.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: string | null) => void",
+        description:
+          "Called with the open id, or null, every time a question opens or closes.",
+      },
+      {
+        name: "accent",
+        type: "string",
+        default: '"#FC4C01"',
+        description: "Any CSS color for the answer bubbles.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="faq").',
+      },
+    ],
+    usage: `"use client"
+
+import { Faq } from "@/components/ui/faq"
+
+export function Demo() {
+  return (
+    <Faq
+      items={[
+        {
+          id: "free",
+          question: "Is it free?",
+          answer: "Yes, for personal and commercial projects.",
+        },
+        {
+          id: "install",
+          question: "How do I install a component?",
+          answer: "Add it with the shadcn CLI.",
+        },
+      ]}
+    />
+  )
+}`,
   },
 ];
 

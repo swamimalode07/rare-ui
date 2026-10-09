@@ -39,7 +39,10 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
 
   return (
     <div className="pointer-events-none absolute right-0 top-0 z-40 h-full">
-      <div className="pointer-events-auto absolute right-4 top-4 z-50 flex items-stretch">
+      <div
+        data-chrome
+        className="pointer-events-auto absolute right-4 top-4 z-50 flex items-stretch"
+      >
         {item?.registry && <InstallBar key={item.href} item={item} />}
 
         <div
