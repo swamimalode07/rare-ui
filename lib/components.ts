@@ -1454,7 +1454,6 @@ export function Demo() {
     name: "Grid Reveal",
     href: "/components/gridreveal",
     category: "ai",
-    isNew: false,
     registry: "grid-reveal",
     description:
       "A loading state for AI images that turns into the real picture when it arrives.",
@@ -1554,7 +1553,6 @@ export function Demo() {
     name: "Gooey nav",
     href: "/components/gooeynav",
     category: "navigation",
-    isNew: false,
     registry: "gooey-nav",
     description:
       "A gooey navigation bar that separates the selected item from the group.",
@@ -1804,7 +1802,6 @@ export function Revenue({ total }: { total: number }) {
     name: "Matrix orb",
     href: "/components/matrixorb",
     category: "ai",
-    isNew: true,
     registry: "matrix-orb",
     description:
       "A dot-matrix orb that animates through idle, listening and thinking states.",
@@ -1880,7 +1877,6 @@ export function Demo() {
     name: "Task list",
     href: "/components/tasklist",
     category: "inputs",
-    isNew: true,
     registry: "task-list",
     description:
       "A checklist that strikes out completed tasks and moves them to the bottom of the list.",
@@ -2117,6 +2113,7 @@ export function Demo() {
     description:
       "An FAQ styled as a message thread, with each answer sent as a reply bubble.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/faq.tsx`,
+    preview: "/componentdemos/faqcomponent.mp4",
     dependencies: [
       {
         name: "motion",
