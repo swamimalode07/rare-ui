@@ -221,7 +221,9 @@ export function TaskItem({
   // turn around in the same render the tick flips, so the row never paints stale
   if (was !== done) {
     setWas(done);
-    setStage(done ? STAGE.tick : STAGE.unstrike);
+    setStage(
+      done ? STAGE.tick : stage === STAGE.tick ? STAGE.untick : STAGE.unstrike,
+    );
   }
 
   const onDrawn = () => {
