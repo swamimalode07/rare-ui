@@ -1210,6 +1210,7 @@ export function Demo() {
     description:
       "A toast notification with animated status icons, built on Sonner.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/toast.tsx`,
+    preview: "/componentdemos/toast.mp4",
     dependencies: [
       { name: "sonner" },
       {
@@ -2397,7 +2398,6 @@ export function Demo() {
     name: "FAQ",
     href: "/components/faq",
     category: "display",
-    isNew: true,
     registry: "faq",
     description:
       "An FAQ styled as a message thread, with each answer sent as a reply bubble.",
@@ -2766,8 +2766,8 @@ export const gallerySections: ComponentSection[] = [
       .reverse()
       .sort(
         (a, b) =>
-          Number(b.href === "/components/themeselector") -
-          Number(a.href === "/components/themeselector"),
+          Number(b.href === "/components/toast") -
+          Number(a.href === "/components/toast"),
       ),
   },
   ...CATEGORY_ORDER.map((id) => ({

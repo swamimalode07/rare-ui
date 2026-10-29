@@ -108,7 +108,7 @@ export default function InstallBar({ item }: { item: ComponentItem }) {
   return (
     <div
       ref={ref}
-      className="flex items-center rounded-l-2xl border-apple bg-muted p-2 shadow-sm"
+      className="flex items-center rounded-l-2xl border border-r-0 border-black/[0.06] bg-muted p-2 shadow-sm dark:border-transparent dark:border-apple"
     >
       <motion.button
         layout={reduceMotion ? false : "size"}

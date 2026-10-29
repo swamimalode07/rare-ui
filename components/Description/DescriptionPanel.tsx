@@ -47,8 +47,8 @@ export function DescriptionPanel({ open, setOpen }: DescriptionPanelProps) {
 
         <div
           className={cn(
-            "flex items-center gap-2 border-apple bg-muted p-2 shadow-sm",
-            item?.registry ? "rounded-r-2xl" : "rounded-2xl",
+            "flex items-center gap-2 border border-black/[0.06] bg-muted p-2 shadow-sm dark:border-transparent dark:border-apple",
+            item?.registry ? "rounded-r-2xl border-l-0" : "rounded-2xl",
           )}
         >
           <Tooltip label={open ? "Close description" : "Open description"}>
