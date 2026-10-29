@@ -26,6 +26,7 @@
     "react-apple-emojis": "^3.0.0",
     "react-dom": "19.2.4",
     "react-use-measure": "^2.1.7",
+    "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
     "vaul": "^1.1.2"
   },

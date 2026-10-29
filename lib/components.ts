@@ -1202,6 +1202,109 @@ export function Demo() {
 // <ThemeSelector value={theme} onChange={setTheme} />`,
   },
   {
+    name: "Toast",
+    href: "/components/toast",
+    category: "feedback",
+    isNew: true,
+    registry: "toast",
+    description:
+      "A toast notification with animated status icons, built on Sonner.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/toast.tsx`,
+    dependencies: [
+      { name: "sonner" },
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+      { name: "figma-squircle" },
+    ],
+    interaction:
+      "Toasts stack in a corner and fan out when you hover them. Each status pops in with its own icon, and a promise toast morphs from a spinner into a check or a cross in place. Swipe one away, press its action, or hover it to show the close button. Honors prefers-reduced-motion.",
+    props: [
+      {
+        name: "toast(title, options)",
+        type: "(title: ReactNode, options?: ToastOptions) => string | number",
+        description:
+          "Shows a plain toast and returns its id. toast.success, toast.error, toast.warning, toast.info and toast.loading take the same arguments and add a status icon.",
+      },
+      {
+        name: "toast.promise",
+        type: "(task: Promise<T> | (() => Promise<T>), messages, options?) => Promise<T>",
+        description:
+          "Shows messages.loading until the task settles, then swaps to messages.success or messages.error in the same toast. Either can be a function of the result.",
+      },
+      {
+        name: "description",
+        type: "ReactNode",
+        description: "Muted second line under the title.",
+      },
+      {
+        name: "action",
+        type: "{ label: string; onClick: () => void }",
+        description:
+          "A pill button on the right. Clicking it runs onClick and closes the toast.",
+      },
+      {
+        name: "duration",
+        type: "number",
+        default: "4000",
+        description:
+          "Milliseconds before the toast closes. Loading toasts stay until updated or dismissed.",
+      },
+      {
+        name: "id",
+        type: "string | number",
+        description:
+          "Reuse an id to update a toast that is already showing instead of adding a new one.",
+      },
+      {
+        name: "dismissible",
+        type: "boolean",
+        default: "true",
+        description: "Shows the close button and allows swiping it away.",
+      },
+      {
+        name: "position",
+        type: '"top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right"',
+        default: '"bottom-right"',
+        description:
+          "On Toaster, where the stack sits. Toaster takes the rest of Sonner's Toaster props too, like expand, visibleToasts, offset, duration and hotkey. Dark mode follows your .dark class.",
+      },
+      {
+        name: "gap",
+        type: "number",
+        default: "10",
+        description: "On Toaster, the space in pixels between expanded toasts.",
+      },
+    ],
+    usage: `"use client"
+
+import { Toaster, toast } from "@/components/ui/toast"
+
+const save = () => fetch("/api/save", { method: "POST" })
+
+// mount Toaster once, in your root layout
+export function Demo() {
+  return (
+    <>
+      <button
+        onClick={() =>
+          toast.promise(save(), {
+            loading: "Saving",
+            success: "Saved",
+            error: "Couldn't save",
+          })
+        }
+      >
+        Save
+      </button>
+      <Toaster />
+    </>
+  )
+}`,
+    credits: ["Built on Sonner by Emil Kowalski"],
+  },
+  {
     name: "GitHub activity",
     href: "/components/githubactivity",
     category: "display",
