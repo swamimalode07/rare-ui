@@ -190,6 +190,20 @@
       ]
     },
     {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "A toast notification with animated status icons, built on Sonner.",
+      "dependencies": ["sonner", "motion", "figma-squircle"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/toast.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "theme-selector",
       "type": "registry:ui",
       "title": "Theme Selector",
