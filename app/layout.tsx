@@ -3,6 +3,7 @@ import { Inter, Geist_Mono, Cal_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { ThemeProvider } from "@/components/theme-provider";
 import { StarPrompt } from "@/components/StarPrompt";
+import { CommandMenuLoader } from "@/components/CommandMenuLoader";
 import { Databuddy } from '@databuddy/sdk/react';
 import {
   SITE_DESCRIPTION,
@@ -135,6 +136,7 @@ export default function RootLayout({
         >
           <div className="flex flex-1 flex-col">{children}</div>
           <StarPrompt />
+          <CommandMenuLoader />
           <Databuddy
             clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID!}
             trackHashChanges={true}

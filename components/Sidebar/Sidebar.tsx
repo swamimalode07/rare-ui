@@ -7,6 +7,7 @@ import SidebarScroll from "./SidebarScroll";
 import { ClosedIcon, OpenIcon } from "./icons";
 import { Squircle } from "@squircle-js/react";
 import CarbonAds from "../CarbonAds";
+import { CommandMenuTrigger } from "../CommandMenuTrigger";
 
 const PANEL_SHIFT = 400;
 
@@ -37,6 +38,7 @@ const Sidebar = ({
           className="pointer-events-auto flex h-full w-90 flex-col bg-background p-4 pl-6"
         >
           <SidebarHeader className="mt-18" />
+          <CommandMenuTrigger className="mt-4" />
           <SidebarScroll className="mt-4 min-h-0 flex-1">
             <SidebarNav />
           </SidebarScroll>
