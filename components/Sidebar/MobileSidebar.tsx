@@ -6,6 +6,7 @@ import SidebarNav from "./SidebarNav";
 import SidebarHeader from "./SidebarHeader";
 import SidebarScroll from "./SidebarScroll";
 import { ClosedIcon, OpenIcon } from "./icons";
+import { CommandMenuTrigger } from "../CommandMenuTrigger";
 
 export default function MobileSidebar() {
   const [open, setOpen] = useState(false);
@@ -52,6 +53,10 @@ export default function MobileSidebar() {
               <SidebarHeader
                 className="mt-18"
                 onNavigate={() => setOpen(false)}
+              />
+              <CommandMenuTrigger
+                className="mt-4"
+                onClick={() => setOpen(false)}
               />
               <SidebarScroll className="mt-4 min-h-0 flex-1">
                 <SidebarNav onNavigate={() => setOpen(false)} />
