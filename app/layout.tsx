@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono, Cal_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { ThemeProvider } from "@/components/theme-provider";
+import { StarPrompt } from "@/components/StarPrompt";
 import { Databuddy } from '@databuddy/sdk/react';
 import {
   SITE_DESCRIPTION,
@@ -133,6 +134,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex flex-1 flex-col">{children}</div>
+          <StarPrompt />
           <Databuddy
             clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID!}
             trackHashChanges={true}
