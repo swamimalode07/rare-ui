@@ -12,3 +12,5 @@ export const SITE_DESCRIPTION =
 export const SITE_REPO = "https://github.com/swamimalode07/rare-ui";
 
 export const LAUNCH_DATE = "2026-06-10";
+
+export const HALLOWEEN_LOGO_ENABLED = true;

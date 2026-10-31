@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import HalloweenLogo from "@/components/HalloweenLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useStarCount } from "@/lib/use-star-count";
 import { cn } from "@/lib/utils";
@@ -56,6 +57,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
   const liveStars = useStarCount(stars);
   const [scrolled, setScrolled] = useState(false);
   const [starHovered, setStarHovered] = useState(false);
+  const [logoHovered, setLogoHovered] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const reduceMotion = useReducedMotion();
 
@@ -118,9 +120,13 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
         >
           <Link
             href="/"
+            onMouseEnter={() => setLogoHovered(true)}
+            onMouseLeave={() => setLogoHovered(false)}
+            onFocus={() => setLogoHovered(true)}
+            onBlur={() => setLogoHovered(false)}
             className={cn(pill, "flex h-12 items-center gap-2 px-4")}
           >
-            <img src="/logos/Rareui.svg" alt="" className="h-5 w-5" />
+            <HalloweenLogo hovered={logoHovered} />
             <span className="font-runde text-md font-semibold text-white">
               Rare UI
             </span>
