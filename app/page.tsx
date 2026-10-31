@@ -8,6 +8,7 @@ import BackedBy from "@/components/BackedBy";
 import ComponentsShowcase from "@/components/ComponentsShowcase";
 import TestimonialsSection from "@/components/testimonials/TestimonialsSection";
 import Footer from "@/components/Footer";
+import SpiderWebs from "@/components/SpiderWebs";
 import {
   OpenSlotCard,
   PlatformSponsorCard,
@@ -46,6 +47,7 @@ export default async function Home() {
             className="pointer-events-none absolute left-1/2 top-[68%] w-[860px] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-[0.05] [filter:brightness(0)] dark:opacity-[0.07] dark:[filter:brightness(0)_invert(1)]"
           />
           <div className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(120%_75%_at_50%_-5%,rgba(255,255,255,0.07),transparent_60%)] dark:block" />
+          <SpiderWebs />
 
           <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-20 pt-28 text-center sm:gap-4 sm:px-6">
             <HeroIntro
