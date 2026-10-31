@@ -1,7 +1,8 @@
 "use client";
 
-import { useId, useSyncExternalStore } from "react";
+import { useId } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useHalloween } from "@/lib/halloween";
 import { HALLOWEEN_LOGO_ENABLED } from "@/lib/site";
 
 const PETALS = [
@@ -35,16 +36,6 @@ const SWARM = [
 
 const FACE_FLICKER = [1, 0.9, 1, 0.95, 0.86, 1, 0.97, 1];
 
-const subscribe = () => () => {};
-
-function isSpookySeason() {
-  if (!HALLOWEEN_LOGO_ENABLED) return false;
-  const now = new Date();
-  const month = now.getMonth();
-  const day = now.getDate();
-  return (month === 9 && day >= 20) || (month === 10 && day <= 2);
-}
-
 const BatIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 170 77" fill="currentColor" className={className}>
     <path d="M5.8 19.2C20 17 33 11 40.8 3.2C45 13 56 26 73 34.7L77.3 20.3L82 25.2C84.5 24.3 87 24.3 89.5 26L94.7 21L97.2 33.2C110 29 125 15 130.5 1.5C142 9 156 12 166.2 11.3C150 17 143 25 141.8 33C130 30 118 40 115.5 53C98 55 87 62 82.8 75C78 64 65 48 50.2 53.7C50 43 40 33 24.7 36.2C24 25 13 20 5.8 19.2Z" />
@@ -53,7 +44,7 @@ const BatIcon = ({ className }: { className?: string }) => (
 
 export default function HalloweenLogo({ hovered }: { hovered: boolean }) {
   const reduceMotion = useReducedMotion();
-  const spooky = useSyncExternalStore(subscribe, isSpookySeason, () => false);
+  const spooky = useHalloween(HALLOWEEN_LOGO_ENABLED);
   const id = useId();
 
   if (!spooky) {
