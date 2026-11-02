@@ -96,15 +96,6 @@ export const SPONSORS: Sponsor[] = [
     logoClassName: "-translate-y-2 sm:-translate-y-2.5",
     avatarSrc: "/logos/privatealpslogo.png",
   },
-  {
-    name: "Context.dev",
-    tier: "diamond",
-    href: "https://context.dev/?utm_source=rareui&utm_medium=referral&utm_campaign=sponsor",
-    lightSrc: "/logos/contextdark.svg",
-    darkSrc: "/logos/contextwhite.svg",
-    logoHeight: "h-7 sm:h-9",
-    avatarSrc: "/logos/contextavatar.svg",
-  },
 ];
 
 export const PLATFORM_TIER_NAME = "Platform Sponsors";

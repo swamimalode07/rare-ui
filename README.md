@@ -51,16 +51,6 @@ Rare UI is a shadcn registry built with Next.js, Tailwind CSS, and TypeScript. E
   <br />
   <sub>Diamond Sponsor</sub>
 </td>
-<td align="center" width="340">
-  <a href="https://context.dev/?utm_source=rareui&utm_medium=referral&utm_campaign=readme">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="public/logos/contextwhite.svg" />
-      <img src="public/logos/contextdark.svg" alt="Context.dev" width="190" />
-    </picture>
-  </a>
-  <br />
-  <sub>Diamond Sponsor</sub>
-</td>
 </tr>
 </table>
 
