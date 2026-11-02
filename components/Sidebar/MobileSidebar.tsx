@@ -50,14 +50,10 @@ export default function MobileSidebar() {
               transition={{ type: "spring", stiffness: 320, damping: 34 }}
               className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col rounded-r-3xl bg-card p-4 pl-6"
             >
-              <SidebarHeader
-                className="mt-18"
-                onNavigate={() => setOpen(false)}
-              />
-              <CommandMenuTrigger
-                className="mt-4"
-                onClick={() => setOpen(false)}
-              />
+              <div className="mt-18 flex items-center justify-between gap-3">
+                <SidebarHeader onNavigate={() => setOpen(false)} />
+                <CommandMenuTrigger onClick={() => setOpen(false)} />
+              </div>
               <SidebarScroll className="mt-4 min-h-0 flex-1">
                 <SidebarNav onNavigate={() => setOpen(false)} />
               </SidebarScroll>

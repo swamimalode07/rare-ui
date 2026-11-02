@@ -37,8 +37,10 @@ const Sidebar = ({
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="pointer-events-auto flex h-full w-90 flex-col bg-background p-4 pl-6"
         >
-          <SidebarHeader className="mt-18" />
-          <CommandMenuTrigger className="mt-4" />
+          <div className="mt-18 flex items-center justify-between gap-3">
+            <SidebarHeader />
+            <CommandMenuTrigger />
+          </div>
           <SidebarScroll className="mt-4 min-h-0 flex-1">
             <SidebarNav />
           </SidebarScroll>
