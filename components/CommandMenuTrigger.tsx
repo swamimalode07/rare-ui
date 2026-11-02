@@ -33,9 +33,11 @@ export function CommandMenuTrigger({
   onClick?: () => void;
 }) {
   return (
-    <Squircle asChild cornerRadius={11} cornerSmoothing={1}>
+    <Squircle asChild cornerRadius={9} cornerSmoothing={1}>
       <button
         type="button"
+        aria-label="Search components"
+        aria-keyshortcuts="Meta+K Control+K"
         onPointerEnter={preloadCommandMenu}
         onFocus={preloadCommandMenu}
         onClick={() => {
@@ -43,20 +45,15 @@ export function CommandMenuTrigger({
           openCommandMenu();
         }}
         className={cn(
-          "flex h-9 w-full cursor-pointer items-center gap-2 bg-[#F4F4F9] pl-3 pr-1.5 font-runde text-[13px] font-semibold text-[#868593] outline-none transition-[color,transform] duration-200 hover:text-black focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#FC4C01]/60 active:scale-[0.98] motion-reduce:transition-none dark:bg-popover dark:hover:text-white",
+          "flex h-7 min-w-7 shrink-0 cursor-pointer items-center justify-center bg-[#F4F4F9] px-2 font-runde text-[12px] font-semibold text-[#868593] outline-none transition-[color,transform] duration-200 hover:text-black focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#FC4C01]/60 active:scale-95 motion-reduce:transition-none dark:bg-popover dark:hover:text-white",
           className,
         )}
       >
-        <SearchIcon className="size-3.5" />
-        Search components
-        <span className="ml-auto hidden items-center gap-0.5 [@media(hover:hover)]:flex">
-          <kbd className="grid h-5 min-w-5 place-items-center rounded-[6px] bg-white px-1 text-[10px] font-semibold dark:bg-[#1C1C1E]">
-            ⌘
-          </kbd>
-          <kbd className="grid h-5 min-w-5 place-items-center rounded-[6px] bg-white px-1 text-[10px] font-semibold dark:bg-[#1C1C1E]">
-            K
-          </kbd>
-        </span>
+        {/* touch screens have no keyboard shortcut to show, so they get the icon */}
+        <SearchIcon className="size-3.5 [@media(hover:hover)]:hidden" />
+        <kbd className="hidden font-runde tracking-wide [@media(hover:hover)]:inline">
+          ⌘K
+        </kbd>
       </button>
     </Squircle>
   );
