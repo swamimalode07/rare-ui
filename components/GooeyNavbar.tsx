@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import HalloweenLogo from "@/components/HalloweenLogo";
+import NavLogo from "@/components/NavLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useStarCount } from "@/lib/use-star-count";
 import { cn } from "@/lib/utils";
@@ -126,7 +126,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
             onBlur={() => setLogoHovered(false)}
             className={cn(pill, "flex h-12 items-center gap-2 px-4")}
           >
-            <HalloweenLogo hovered={logoHovered} />
+            <NavLogo hovered={logoHovered} />
             <span className="font-runde text-md font-semibold text-white">
               Rare UI
             </span>

@@ -15,3 +15,5 @@ export const LAUNCH_DATE = "2026-06-10";
 
 export const HALLOWEEN_LOGO_ENABLED = true;
 export const HALLOWEEN_WEBS_ENABLED = true;
+export const DIWALI_LOGO_ENABLED = true;
+export const DIWALI_LIGHTS_ENABLED = true;

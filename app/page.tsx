@@ -9,6 +9,7 @@ import ComponentsShowcase from "@/components/ComponentsShowcase";
 import TestimonialsSection from "@/components/testimonials/TestimonialsSection";
 import Footer from "@/components/Footer";
 import SpiderWebs from "@/components/SpiderWebs";
+import DiwaliLights from "@/components/DiwaliLights";
 import {
   OpenSlotCard,
   PlatformSponsorCard,
@@ -48,6 +49,7 @@ export default async function Home() {
           />
           <div className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(120%_75%_at_50%_-5%,rgba(255,255,255,0.07),transparent_60%)] dark:block" />
           <SpiderWebs />
+          <DiwaliLights />
 
           <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-20 pt-28 text-center sm:gap-4 sm:px-6">
             <HeroIntro
