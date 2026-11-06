@@ -2,8 +2,6 @@
 
 import { useId } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useHalloween } from "@/lib/halloween";
-import { HALLOWEEN_LOGO_ENABLED } from "@/lib/site";
 
 const PETALS = [
   "M155.726 142.646C146.149 139.871 142.461 128.258 148.681 120.466L187.804 71.4521C197.894 58.8118 216.188 56.4448 229.162 66.1009L255.614 85.7874C261.744 90.3494 264.325 98.2844 262.053 105.58L251.408 139.759C246.55 155.357 230.105 164.2 214.415 159.653L155.726 142.646Z",
@@ -44,12 +42,7 @@ const BatIcon = ({ className }: { className?: string }) => (
 
 export default function HalloweenLogo({ hovered }: { hovered: boolean }) {
   const reduceMotion = useReducedMotion();
-  const spooky = useHalloween(HALLOWEEN_LOGO_ENABLED);
   const id = useId();
-
-  if (!spooky) {
-    return <img src="/logos/Rareui.svg" alt="" className="h-5 w-5" />;
-  }
 
   const lit = reduceMotion || hovered;
   const flickerTransition = lit
