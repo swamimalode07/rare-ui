@@ -428,6 +428,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "prompt-box",
+      "type": "registry:ui",
+      "title": "AI Prompt Box",
+      "description": "A chat input where how long you hold send sets how hard the AI thinks.",
+      "dependencies": ["motion"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/prompt-box.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
