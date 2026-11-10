@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
-import Link from "next/link";
 import { motion, useAnimate } from "motion/react";
 import { arc } from "motion";
 import { cn } from "@/lib/utils";
-
-const MotionLink = motion.create(Link);
 
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -161,7 +158,7 @@ export function BounceSidebar({
             }}
           >
             {href ? (
-              <MotionLink
+              <motion.a
                 href={href}
                 data-slot="bounce-sidebar-item"
                 data-active={isActive}
@@ -169,7 +166,7 @@ export function BounceSidebar({
                 className={itemClassName}
               >
                 {label}
-              </MotionLink>
+              </motion.a>
             ) : (
               <motion.button
                 type="button"
