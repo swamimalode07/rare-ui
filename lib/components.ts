@@ -2867,6 +2867,7 @@ export function Chat() {
     description:
       "An AI reply that develops into focus word by word, with markdown, a quiet caret, and a reply bar.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/streaming-response.tsx`,
+    preview: "/componentdemos/streamingresponse.mp4",
     dependencies: [
       {
         name: "motion",
