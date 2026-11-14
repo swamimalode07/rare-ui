@@ -87,8 +87,9 @@ export default function StreamingResponseDemo() {
 
   return (
     <div ref={previewRef} className="relative h-full">
-      <div className="h-full overflow-y-auto px-6 pt-[12vh] pb-32 [scrollbar-width:none]">
-        <div className="mx-auto flex w-[560px] max-w-full flex-col gap-6 font-runde">
+      <div className="flex h-full flex-col overflow-y-auto px-6 pt-16 pb-28 [scrollbar-width:none]">
+        {/* min height holds the finished answer, so the centered column never creeps up while it streams */}
+        <div className="m-auto flex min-h-[380px] w-[560px] max-w-full flex-col gap-6 font-runde">
           <p className="ml-auto w-fit max-w-[80%] rounded-[20px] bg-[#F4F4F9] px-4 py-2.5 text-[14px] font-medium text-black dark:bg-[#262626] dark:text-white">
             {QUESTION}
           </p>
