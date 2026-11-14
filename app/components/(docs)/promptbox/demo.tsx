@@ -38,7 +38,7 @@ const ANSWERS: Record<string, string[]> = {
   ],
 };
 
-// the message lands once the words have flown into the button
+// the message lands as the words rise out of the box
 const LAND_MS = 420;
 // on the first send the box glides to the bottom before the message lands
 const FIRST_LAND_MS = 560;

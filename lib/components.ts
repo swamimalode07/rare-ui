@@ -2744,7 +2744,7 @@ export function Status({ step }: { step: string }) {
       },
     ],
     interaction:
-      "Type a prompt and tap send or press Enter to send it. Hold either one instead to charge it: the button fills with color and the bars light up as it climbs from Quick to Think to Think deeply. Letting go sends at that level. Press Escape to cancel a charge. When you send, the words get pulled into the button.",
+      "Type a prompt and tap send or press Enter to send it. Hold either one instead to charge it: the button fills with color and the bars light up as it climbs from Quick to Think to Think deeply. Letting go sends at that level. Press Escape or drag off the button to cancel a charge. When you send, the words rise out of the box.",
     props: [
       {
         name: "onSubmit",
@@ -2814,6 +2814,18 @@ export function Status({ step }: { step: string }) {
         type: "boolean",
         default: "false",
         description: "Dims the box and blocks typing and sending.",
+      },
+      {
+        name: "inputRef",
+        type: "Ref<HTMLTextAreaElement>",
+        description:
+          "A ref to the textarea, for focusing it after a send or on page load.",
+      },
+      {
+        name: "inputProps",
+        type: "TextareaHTMLAttributes",
+        description:
+          "Extra props for the textarea, like name, id, autoFocus, or maxLength. Its key and blur handlers run before the box's own; call preventDefault in onKeyDown to stop Enter from sending.",
       },
       {
         name: "className",
