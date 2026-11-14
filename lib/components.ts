@@ -2958,6 +2958,76 @@ export function Reply({ text, done, onRetry }: { text: string; done: boolean; on
   )
 }`,
   },
+  {
+    name: "Model Picker",
+    href: "/components/modelpicker",
+    category: "ai",
+    isNew: true,
+    registry: "model-picker",
+    description:
+      "A model switcher for AI chat inputs that unfolds out of its own pill into a searchable list.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/model-picker.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+      { name: "lucide-react" },
+    ],
+    interaction:
+      "Click the pill and the list unfolds around it, with the current model staying exactly where the pill was. Hover or use the arrow keys and a soft highlight slides along, while the footer shows what that model is good at. Type to filter. Pick one and the list folds away around it, carrying that row down into the pill. Escape or a click outside folds it back onto the current model.",
+    props: [
+      {
+        name: "models",
+        type: "PickerModel[]",
+        required: true,
+        description:
+          "The models to list, in order. Each has an id and name, plus an optional provider to group by, icon, description, and speed and intelligence from 1 to 5.",
+      },
+      {
+        name: "value",
+        type: "string",
+        description: "The selected model id, for controlled use.",
+      },
+      {
+        name: "defaultValue",
+        type: "string",
+        description: "The model selected on first render. Defaults to the first model.",
+      },
+      {
+        name: "onChange",
+        type: "(id: string) => void",
+        description: "Called with the new id when a different model is picked.",
+      },
+      {
+        name: "searchable",
+        type: "boolean",
+        default: "true",
+        description: "Shows a search field at the top of the list.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="model-picker").',
+      },
+    ],
+    usage: `"use client"
+
+import { useState } from "react"
+import { ModelPicker, type PickerModel } from "@/components/ui/model-picker"
+
+const models: PickerModel[] = [
+  { id: "opus", name: "Claude Opus 5.5", provider: "Anthropic", description: "Most capable", speed: 2, intelligence: 5 },
+  { id: "sonnet", name: "Claude Sonnet 5.5", provider: "Anthropic", description: "Smart and quick", speed: 4, intelligence: 4 },
+  { id: "haiku", name: "Claude Haiku 5.5", provider: "Anthropic", description: "Fastest", speed: 5, intelligence: 3 },
+]
+
+export function Toolbar() {
+  const [model, setModel] = useState("opus")
+  return <ModelPicker models={models} value={model} onChange={setModel} />
+}`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
