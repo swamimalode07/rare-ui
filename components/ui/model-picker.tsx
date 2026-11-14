@@ -152,18 +152,19 @@ function ModelPicker({
         setPhase('open')
     }
 
-    const close = (to: string | undefined, refocus: boolean) => {
+    // a mouse pick hands focus back without the keyboard ring, a keyboard one keeps it
+    const close = (to: string | undefined, refocus: 'keyboard' | 'pointer' | false) => {
         if (phase !== 'open') {
             return
         }
         setFoldTo(to)
         setPhase(reduced ? 'closed' : 'closing')
         if (refocus) {
-            triggerRef.current?.focus({ preventScroll: true })
+            triggerRef.current?.focus({ preventScroll: true, focusVisible: refocus === 'keyboard' } as FocusOptions)
         }
     }
 
-    const choose = (model: PickerModel) => {
+    const choose = (model: PickerModel, via: 'keyboard' | 'pointer') => {
         if (value === undefined) {
             setInner(model.id)
         }
@@ -171,7 +172,7 @@ function ModelPicker({
             onChange?.(model.id)
         }
         setPicked(model.id)
-        close(model.id, true)
+        close(model.id, via)
     }
 
     // the panel is laid out in place from the first frame; a pill-shaped window opens around the chosen row and later folds back onto it
@@ -190,6 +191,8 @@ function ModelPicker({
         const pillHeight = trigger.offsetHeight
         const height = content.offsetHeight
         const rootRect = root.getBoundingClientRect()
+        // screen rects include any zoom or scale above the picker, while offsets and styles are in local pixels
+        const scale = rootRect.width / root.offsetWidth || 1
 
         // the content offset that sits a row's icon and center exactly on the pill's
         const alignTo = (row: Element | null | undefined): Point | null => {
@@ -200,8 +203,8 @@ function ModelPicker({
             const box = content.getBoundingClientRect()
             const rowRect = row.getBoundingClientRect()
             return {
-                x: pillIcon.getBoundingClientRect().left - rootRect.left - (icon.getBoundingClientRect().left - box.left),
-                y: pillHeight / 2 - (rowRect.top + rowRect.height / 2 - box.top),
+                x: (pillIcon.getBoundingClientRect().left - rootRect.left - (icon.getBoundingClientRect().left - box.left)) / scale,
+                y: pillHeight / 2 - (rowRect.top + rowRect.height / 2 - box.top) / scale,
             }
         }
         const pillWindow = (at: Point) => {
@@ -223,8 +226,14 @@ function ModelPicker({
             }
             const aligned = alignTo(row) ?? { x: 0, y: 0 }
             const place = {
-                x: Math.max(EDGE - rootRect.left, Math.min(aligned.x, window.innerWidth - EDGE - rootRect.left - PANEL_WIDTH)),
-                y: Math.max(EDGE - rootRect.top, Math.min(aligned.y, window.innerHeight - EDGE - rootRect.top - height)),
+                x: Math.max(
+                    (EDGE - rootRect.left) / scale,
+                    Math.min(aligned.x, (window.innerWidth - EDGE - rootRect.left) / scale - PANEL_WIDTH),
+                ),
+                y: Math.max(
+                    (EDGE - rootRect.top) / scale,
+                    Math.min(aligned.y, (window.innerHeight - EDGE - rootRect.top) / scale - height),
+                ),
             }
             placeRef.current = place
             heightRef.current = height
@@ -353,11 +362,11 @@ function ModelPicker({
         } else if (event.key === 'Enter') {
             event.preventDefault()
             if (current) {
-                choose(current)
+                choose(current, 'keyboard')
             }
         } else if (event.key === 'Escape') {
             event.preventDefault()
-            close(selectedId, true)
+            close(selectedId, 'keyboard')
         } else if (event.key === 'Tab') {
             close(selectedId, false)
         }
@@ -398,7 +407,7 @@ function ModelPicker({
                 aria-expanded={open}
                 aria-controls={open ? listId : undefined}
                 aria-label={`Model: ${selected.name}`}
-                onClick={() => (open ? close(selectedId, true) : show())}
+                onClick={() => (open ? close(selectedId, 'pointer') : show())}
                 onKeyDown={onTriggerKey}
                 className={cn(
                     'flex h-8 cursor-pointer items-center gap-2 rounded-full pr-2 pl-2.5 text-[13px] font-medium text-black/90 outline-none transition-colors hover:bg-black/[0.05] focus-visible:ring-2 focus-visible:ring-black/15 dark:text-white/90 dark:hover:bg-white/[0.07] dark:focus-visible:ring-white/25',
@@ -497,7 +506,7 @@ function ModelPicker({
                                                 data-index={i}
                                                 onPointerMove={() => setActive(i)}
                                                 onMouseDown={(event) => event.preventDefault()}
-                                                onClick={() => choose(model)}
+                                                onClick={() => choose(model, 'pointer')}
                                                 className={cn(
                                                     'relative flex h-9 cursor-pointer items-center gap-2.5 rounded-[10px] px-2.5 text-[13px] font-medium transition-colors',
                                                     i === active || model.id === foldTo

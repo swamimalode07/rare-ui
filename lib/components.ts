@@ -2967,6 +2967,7 @@ export function Reply({ text, done, onRetry }: { text: string; done: boolean; on
     description:
       "A model switcher for AI chat inputs that unfolds out of its own pill into a searchable list.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/model-picker.tsx`,
+    preview: "/componentdemos/modelpicker.mp4",
     dependencies: [
       {
         name: "motion",
