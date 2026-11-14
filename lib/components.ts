@@ -2737,6 +2737,7 @@ export function Status({ step }: { step: string }) {
     description:
       "A chat input where how long you hold send sets how hard the AI thinks.",
     source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/prompt-box.tsx`,
+    preview: "/componentdemos/promptbox.mp4",
     dependencies: [
       {
         name: "motion",

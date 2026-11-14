@@ -469,7 +469,8 @@ function PromptBox({
                     {charging ? effort.label : ''}
                 </span>
                 <span aria-hidden className="relative grid text-[13px] font-medium whitespace-nowrap">
-                    <AnimatePresence initial={false} mode="popLayout">
+                    {/* the span collapses once its only child pops out, so a left anchor would fling the exit over the button */}
+                    <AnimatePresence initial={false} mode="popLayout" anchorX="right">
                         {charging ? (
                             <motion.span
                                 key="effort"
