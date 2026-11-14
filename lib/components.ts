@@ -2858,6 +2858,105 @@ export function Chat() {
   )
 }`,
   },
+  {
+    name: "Streaming Response",
+    href: "/components/streamingresponse",
+    category: "ai",
+    isNew: true,
+    registry: "streaming-response",
+    description:
+      "An AI reply that develops into focus word by word, with markdown, a quiet caret, and a reply bar.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/streaming-response.tsx`,
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+      { name: "lucide-react" },
+    ],
+    interaction:
+      "Press Replay to watch the answer arrive. Words arrive in small uneven bursts like a real model, pausing briefly at commas and full stops, and each burst sharpens out of a soft blur behind a small dot that glides along the line. Bold, code, lists, and links are formatted the moment they appear, never as raw symbols. Press Stop to cut it off. Once it finishes, copy it, retry it, or rate it.",
+    props: [
+      {
+        name: "text",
+        type: "string",
+        required: true,
+        description:
+          "Everything received so far. Pass the growing string as it streams; markdown is supported.",
+      },
+      {
+        name: "status",
+        type: '"streaming" | "done" | "stopped"',
+        default: '"done"',
+        options: ["streaming", "done", "stopped"],
+        description:
+          "Streaming reveals text as it arrives. Done finishes revealing what is left. Stopped freezes on what was shown.",
+      },
+      {
+        name: "speed",
+        type: "number",
+        default: "8",
+        description:
+          "Average words per second once caught up. It speeds up while behind, so bursts never pile up.",
+      },
+      {
+        name: "ink",
+        type: "string",
+        description:
+          "An optional color new words land in before they settle to the text color, also used for the dot. Unset, everything stays monochrome.",
+      },
+      {
+        name: "actions",
+        type: "boolean",
+        default: "true",
+        description: "Shows copy and rating buttons once the reply settles.",
+      },
+      {
+        name: "onRetry",
+        type: "() => void",
+        description: "Adds a retry button that calls this.",
+      },
+      {
+        name: "onFeedback",
+        type: '(feedback: "up" | "down" | null) => void',
+        description:
+          "Called when a thumb is pressed, with null when it is pressed again to clear it.",
+      },
+      {
+        name: "defaultFeedback",
+        type: '"up" | "down" | null',
+        default: "null",
+        description: "The rating to show on first render, like one saved earlier.",
+      },
+      {
+        name: "onCopy",
+        type: "(text: string) => void",
+        description:
+          "Called with the copied text. After a stop, only the part that was shown is copied.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="streaming-response", with data-status). Font and color come from the parent.',
+      },
+    ],
+    usage: `"use client"
+
+import { StreamingResponse } from "@/components/ui/streaming-response"
+
+export function Reply({ text, done, onRetry }: { text: string; done: boolean; onRetry: () => void }) {
+  return (
+    <StreamingResponse
+      // text grows as tokens arrive, like useChat's message content
+      text={text}
+      status={done ? "done" : "streaming"}
+      onRetry={onRetry}
+      onFeedback={(rating) => console.log(rating)}
+    />
+  )
+}`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";

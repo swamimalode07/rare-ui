@@ -442,6 +442,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "streaming-response",
+      "type": "registry:ui",
+      "title": "Streaming Response",
+      "description": "An AI reply that develops into focus word by word, with markdown, a quiet caret, and a reply bar.",
+      "dependencies": ["motion", "lucide-react"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/streaming-response.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
