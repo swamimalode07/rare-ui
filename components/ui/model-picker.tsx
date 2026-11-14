@@ -37,6 +37,8 @@ const ROLL_STAGGER = 0.014
 const OPEN: Transition = { type: 'spring', duration: 0.42, bounce: 0.14 }
 const CLOSE: Transition = { type: 'spring', duration: 0.36, bounce: 0.06 }
 const SLIDE: Transition = { type: 'spring', duration: 0.3, bounce: 0.12 }
+// fast and bounceless so the highlight stays under the pointer instead of trailing it
+const TRACK: Transition = { type: 'spring', duration: 0.18, bounce: 0 }
 const ROLL: Transition = { type: 'spring', duration: 0.42, bounce: 0.1 }
 const INSTANT: Transition = { duration: 0 }
 
@@ -131,6 +133,8 @@ function ModelPicker({
     const contentRef = useRef<HTMLDivElement>(null)
     const listRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
+    const highlightRef = useRef<HTMLDivElement>(null)
+    const highlightPlacedRef = useRef(false)
     const placeRef = useRef<Point>({ x: 0, y: 0 })
     const heightRef = useRef(0)
     const runningRef = useRef<AnimationPlaybackControls[]>([])
@@ -336,6 +340,23 @@ function ModelPicker({
         }
     })
 
+    // positioned from layout offsets, not screen rects, so zoom or scale above the picker cannot throw it off
+    useLayoutEffect(() => {
+        const highlight = highlightRef.current
+        const row = listRef.current?.querySelector<HTMLElement>(`[data-index="${active}"]`)
+        if (!highlight) {
+            highlightPlacedRef.current = false
+            return
+        }
+        if (!row || phase === 'closing') {
+            animate(highlight, { opacity: 0 }, reduced ? INSTANT : { duration: 0.15 })
+            return
+        }
+        const target = { y: row.offsetTop, height: row.offsetHeight, opacity: 1 }
+        animate(highlight, target, highlightPlacedRef.current && !reduced ? TRACK : INSTANT)
+        highlightPlacedRef.current = true
+    }, [active, filtered, phase, reduced])
+
     useEffect(() => {
         const list = listRef.current
         const row = list?.querySelector<HTMLElement>(`[data-index="${active}"]`)
@@ -487,6 +508,11 @@ function ModelPicker({
                             className="relative overflow-y-auto p-1.5 outline-none [scrollbar-width:none]"
                             style={{ maxHeight: LIST_MAX_HEIGHT }}
                         >
+                            <div
+                                ref={highlightRef}
+                                aria-hidden
+                                className="pointer-events-none absolute top-0 right-1.5 left-1.5 rounded-[10px] bg-black/[0.05] opacity-0 dark:bg-white/[0.07]"
+                            />
                             {groups.map((group, g) => (
                                 <div key={`${group.provider ?? ''}-${g}`} role="group" aria-label={group.provider}>
                                     {group.provider && (
@@ -514,14 +540,6 @@ function ModelPicker({
                                                         : 'text-black/65 dark:text-white/65',
                                                 )}
                                             >
-                                                {i === active && (
-                                                    <motion.span
-                                                        layoutId={`${id}-highlight`}
-                                                        animate={{ opacity: phase === 'closing' ? 0 : 1 }}
-                                                        transition={reduced ? INSTANT : { ...SLIDE, opacity: { duration: 0.15 } }}
-                                                        className="absolute inset-0 rounded-[10px] bg-black/[0.05] dark:bg-white/[0.07]"
-                                                    />
-                                                )}
                                                 <span
                                                     data-slot="model-picker-icon"
                                                     className="relative grid size-4 shrink-0 place-items-center"
