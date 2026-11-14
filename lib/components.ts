@@ -2728,6 +2728,136 @@ export function Status({ step }: { step: string }) {
   )
 }`,
   },
+  {
+    name: "AI Prompt Box",
+    href: "/components/promptbox",
+    category: "ai",
+    isNew: true,
+    registry: "prompt-box",
+    description:
+      "A chat input where how long you hold send sets how hard the AI thinks.",
+    source: `${REGISTRY_HOMEPAGE}/blob/main/components/ui/prompt-box.tsx`,
+    preview: "/componentdemos/promptbox.mp4",
+    dependencies: [
+      {
+        name: "motion",
+        icon: createElement(MotionIcon, { className: "h-4 w-4" }),
+      },
+    ],
+    interaction:
+      "Type a prompt and tap send or press Enter to send it. Hold either one instead to charge it: the button fills with color and the bars light up as it climbs from Quick to Think to Think deeply. Letting go sends at that level. Press Escape or drag off the button to cancel a charge. When you send, the words rise out of the box.",
+    props: [
+      {
+        name: "onSubmit",
+        type: "(prompt: string, effort: PromptEffort) => void",
+        description:
+          "Called on send with the trimmed prompt and the effort it was charged to. A tap sends at the first effort.",
+      },
+      {
+        name: "efforts",
+        type: "PromptEffort[]",
+        default: "Quick, Think, Think deeply",
+        description:
+          "The levels a hold climbs through, each an id, a label, and an optional hex color. Each level takes 650ms; pass one level to turn charging off.",
+      },
+      {
+        name: "status",
+        type: '"idle" | "streaming"',
+        default: '"idle"',
+        options: ["idle", "streaming"],
+        description:
+          "Streaming turns the send button into a stop button, ringed in the color of the effort it was sent at. You can still type, but sending waits until it is idle.",
+      },
+      {
+        name: "onStop",
+        type: "() => void",
+        description: "Called when the stop button is pressed while streaming.",
+      },
+      {
+        name: "placeholder",
+        type: "string | string[]",
+        default: '"Ask anything"',
+        description:
+          "Pass an array to rotate through them every 3.2 seconds while the box is empty.",
+      },
+      {
+        name: "hint",
+        type: "ReactNode",
+        default: '"Hold to think harder"',
+        description:
+          "Shown next to the send button once there is text. Pass null to hide it.",
+      },
+      {
+        name: "actions",
+        type: "ReactNode",
+        description:
+          "Buttons for the left side of the bottom row, like attach or web search.",
+      },
+      {
+        name: "value",
+        type: "string",
+        description:
+          "Pass this to control the text. Pair it with onValueChange.",
+      },
+      {
+        name: "defaultValue",
+        type: "string",
+        default: '""',
+        description: "The text on first render.",
+      },
+      {
+        name: "onValueChange",
+        type: "(value: string) => void",
+        description: "Called with the new text on every edit, and with an empty string after a send.",
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Dims the box and blocks typing and sending.",
+      },
+      {
+        name: "inputRef",
+        type: "Ref<HTMLTextAreaElement>",
+        description:
+          "A ref to the textarea, for focusing it after a send or on page load.",
+      },
+      {
+        name: "inputProps",
+        type: "TextareaHTMLAttributes",
+        description:
+          "Extra props for the textarea, like name, id, autoFocus, or maxLength. Its key and blur handlers run before the box's own; call preventDefault in onKeyDown to stop Enter from sending.",
+      },
+      {
+        name: "className",
+        type: "string",
+        description:
+          'Extra classes merged onto the root element (data-slot="prompt-box", with data-status). The width defaults to 560px, and the text grows to 192px before it scrolls.',
+      },
+    ],
+    usage: `"use client"
+
+import { useState } from "react"
+import { PromptBox, type PromptBoxStatus } from "@/components/ui/prompt-box"
+
+export function Chat() {
+  const [status, setStatus] = useState<PromptBoxStatus>("idle")
+
+  return (
+    <PromptBox
+      status={status}
+      placeholder={["Ask anything", "Plan a weekend in Kyoto"]}
+      onSubmit={async (prompt, effort) => {
+        setStatus("streaming")
+        // effort.id is "quick", "think", or "deep"
+        await sendToModel(prompt, effort.id)
+        setStatus("idle")
+      }}
+      onStop={() => setStatus("idle")}
+    />
+  )
+}`,
+  },
 ];
 
 export type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
