@@ -61,19 +61,29 @@ const SIZES = {
 export type TaskSize = keyof typeof SIZES;
 
 // ticking runs tick to strike to nudge, unticking runs the same road backwards
-const STAGE = {
-  idle: "idle",
-  tick: "tick",
-  strike: "strike",
-  nudge: "nudge",
-  settled: "settled",
-  unstrike: "unstrike",
-  untick: "untick",
-} as const;
-type Stage = (typeof STAGE)[keyof typeof STAGE];
+type Stage = "idle" | "tick" | "strike" | "nudge" | "settled" | "unstrike" | "untick";
 
-const FILLED: Stage[] = ["tick", "strike", "nudge", "settled", "unstrike"];
-const STRUCK: Stage[] = ["strike", "nudge", "settled"];
+type StageEvent = "CHECK" | "UNCHECK" | "DRAWN" | "STRUCK" | "FLICKED";
+
+const NEXT: Record<Stage, Partial<Record<StageEvent, Stage>>> = {
+  idle: { CHECK: "tick" },
+  tick: { DRAWN: "strike", UNCHECK: "untick" },
+  strike: { STRUCK: "nudge", UNCHECK: "unstrike" },
+  nudge: { FLICKED: "settled", UNCHECK: "unstrike" },
+  settled: { UNCHECK: "unstrike" },
+  unstrike: { STRUCK: "untick", CHECK: "strike" },
+  untick: { DRAWN: "idle", CHECK: "tick" },
+};
+
+const VIEW: Record<Stage, { filled: boolean; struck: boolean }> = {
+  idle: { filled: false, struck: false },
+  tick: { filled: true, struck: false },
+  strike: { filled: true, struck: true },
+  nudge: { filled: true, struck: true },
+  settled: { filled: true, struck: true },
+  unstrike: { filled: true, struck: false },
+  untick: { filled: false, struck: false },
+};
 
 const ACCENT_VAR = "--task-accent";
 const CARD =
@@ -215,33 +225,29 @@ export function TaskItem({
   const [own, setOwn] = useState(defaultChecked);
   const done = checked ?? own;
 
-  const [stage, setStage] = useState<Stage>(done ? STAGE.settled : STAGE.idle);
+  const [stage, setStage] = useState<Stage>(done ? 'settled' : 'idle');
   const [was, setWas] = useState(done);
+
+  const send = (event: StageEvent) => {
+    const next = NEXT[stage][event];
+    if (!next) return;
+    setStage(next);
+    if (next === "settled") onSettled?.();
+    if (next === "idle") onReverted?.();
+  };
 
   // turn around in the same render the tick flips, so the row never paints stale
   if (was !== done) {
     setWas(done);
-    setStage(done ? STAGE.tick : STAGE.unstrike);
+    const next = NEXT[stage][done ? "CHECK" : "UNCHECK"];
+    if (next) setStage(next);
   }
 
-  const onDrawn = () => {
-    if (stage === STAGE.tick) setStage(STAGE.strike);
-    if (stage === STAGE.untick) {
-      setStage(STAGE.idle);
-      onReverted?.();
-    }
-  };
+  const onDrawn = () => send("DRAWN");
+  const onStruck = () => send("STRUCK");
+  const onFlicked = () => send("FLICKED");
 
-  const onStruck = () => {
-    if (stage === STAGE.strike) setStage(STAGE.nudge);
-    if (stage === STAGE.unstrike) setStage(STAGE.untick);
-  };
-
-  const onFlicked = () => {
-    if (stage !== STAGE.nudge) return;
-    setStage(STAGE.settled);
-    onSettled?.();
-  };
+  const { filled, struck } = VIEW[stage];
 
   return (
     <motion.button
@@ -256,8 +262,8 @@ export function TaskItem({
         if (checked === undefined) setOwn(!done);
         onCheckedChange?.(!done);
       }}
-      animate={{ x: stage === STAGE.nudge ? FLICK : 0 }}
-      transition={stage === STAGE.nudge ? timing(NUDGE) : INSTANT}
+      animate={{ x: stage === 'nudge' ? FLICK : 0 }}
+      transition={stage === 'nudge' ? timing(NUDGE) : INSTANT}
       onAnimationComplete={onFlicked}
       className={cn(
         "flex w-fit max-w-full cursor-pointer items-start text-left transition-[filter,box-shadow] duration-300",
@@ -269,13 +275,13 @@ export function TaskItem({
       {...props}
     >
       <TaskCheck
-        filled={FILLED.includes(stage)}
+        filled={filled}
         size={size}
         onDrawn={onDrawn}
       />
       <TaskLabel
         label={label}
-        struck={STRUCK.includes(stage)}
+        struck={struck}
         size={size}
         onStruck={onStruck}
       />
