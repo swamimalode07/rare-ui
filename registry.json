@@ -456,6 +456,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "model-picker",
+      "type": "registry:ui",
+      "title": "Model Picker",
+      "description": "A model switcher for AI chat inputs that unfolds out of its own pill into a searchable list.",
+      "dependencies": ["motion", "lucide-react"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/model-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }
