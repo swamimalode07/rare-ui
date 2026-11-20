@@ -64,16 +64,19 @@ export default function HeroCta() {
       >
         <StretchSquircleBg
           hovered={hovered === "pill"}
-          bgClassName="bg-neutral-900"
+          className="drop-shadow-sm dark:drop-shadow-none"
+          bgClassName="bg-white dark:bg-neutral-900"
         />
         <CopyButton
           value={INSTALL_COMMAND}
           label="Copy command"
-          className="relative h-12 w-full max-w-full flex-row-reverse gap-2 pl-4 pr-4 text-white/50 hover:text-white sm:w-auto sm:pl-5"
+          className="relative h-12 w-full max-w-full flex-row-reverse gap-2 px-4 text-neutral-400 hover:text-neutral-900 sm:w-auto sm:pl-5 dark:text-white/50 dark:hover:text-white"
         >
-          <code className="min-w-0 flex-1 truncate font-mono text-xs font-semibold text-white sm:flex-none sm:text-sm">
+          <code className="min-w-0 flex-1 truncate font-mono text-xs font-semibold text-neutral-900 sm:flex-none sm:text-sm dark:text-white">
             npx shadcn@latest add {REGISTRY_REPO}
-            <span className="font-normal text-white/50">/fluid-orb</span>
+            <span className="font-normal text-neutral-400 dark:text-white/50">
+              /fluid-orb
+            </span>
           </code>
         </CopyButton>
       </motion.div>

@@ -50,7 +50,8 @@ const SparkleIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const pill = "rounded-full border-apple bg-neutral-900";
+const pill =
+  "rounded-full border border-black/[0.06] bg-white shadow-sm dark:border-transparent dark:border-apple dark:bg-neutral-900";
 
 export default function GooeyNavbar({ stars }: { stars?: number | null }) {
   const pathname = usePathname();
@@ -127,7 +128,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
             className={cn(pill, "flex h-12 items-center gap-2 px-4")}
           >
             <NavLogo hovered={logoHovered} />
-            <span className="font-runde text-md font-semibold text-white">
+            <span className="font-runde text-md font-semibold text-neutral-900 dark:text-white">
               Rare UI
             </span>
           </Link>
@@ -143,14 +144,16 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
         >
           {LINKS.map((link, i) => (
             <Fragment key={link.href}>
-              {i > 0 && <span className="h-4 w-px bg-white/15" />}
+              {i > 0 && (
+                <span className="h-4 w-px bg-black/10 dark:bg-white/15" />
+              )}
               <Link
                 href={link.href}
                 className={cn(
                   "px-3.5 text-sm",
                   pathname === link.href
-                    ? "text-white"
-                    : "text-white/60 transition-colors duration-150 ease-out hover:text-white",
+                    ? "text-neutral-900 dark:text-white"
+                    : "text-neutral-500 transition-colors duration-150 ease-out hover:text-neutral-900 dark:text-white/60 dark:hover:text-white",
                 )}
               >
                 {link.label}
@@ -175,7 +178,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
             onBlur={() => setStarHovered(false)}
             className={cn(
               pill,
-              "flex h-12 items-center transition-colors duration-200 ease-out hover:bg-neutral-800",
+              "flex h-12 items-center transition-colors duration-200 ease-out hover:bg-neutral-100 dark:hover:bg-neutral-800",
             )}
           >
             <span className="relative flex h-12 w-12 items-center justify-center">
@@ -190,7 +193,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
                 transition={reduceMotion ? { duration: 0 } : morphTransition}
                 className="flex items-center justify-center"
               >
-                <GithubIcon className="h-6 w-6 text-white" />
+                <GithubIcon className="h-6 w-6 text-neutral-900 dark:text-white" />
               </motion.span>
               <motion.span
                 initial={false}
@@ -258,7 +261,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
             </span>
 
             {liveStars != null && (
-              <span className="pr-4 font-runde text-sm font-medium tabular-nums text-white/80">
+              <span className="pr-4 font-runde text-sm font-medium tabular-nums text-neutral-600 dark:text-white/80">
                 {liveStars}
               </span>
             )}
@@ -267,7 +270,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
           <ThemeToggle
             className={cn(
               pill,
-              "flex h-12 w-12 items-center justify-center p-0 text-white/80 hover:bg-neutral-800 hover:text-white [&_svg]:h-6 [&_svg]:w-6",
+              "flex h-12 w-12 items-center justify-center p-0 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-white/80 dark:hover:bg-neutral-800 dark:hover:text-white [&_svg]:h-6 [&_svg]:w-6",
             )}
           />
         </motion.div>
@@ -295,7 +298,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
                   opacity: menuOpen && i === 1 ? 0 : 1,
                 }}
                 transition={reduceMotion ? { duration: 0 } : morphSpring}
-                className="h-0.5 w-full bg-white"
+                className="h-0.5 w-full bg-neutral-900 dark:bg-white"
               />
             ))}
           </span>
@@ -309,7 +312,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.25, ease: "easeOut" }}
-            className="pointer-events-auto fixed inset-0 z-0 bg-neutral-950/85 backdrop-blur-2xl md:hidden"
+            className="pointer-events-auto fixed inset-0 z-0 bg-[#F5F5F7]/85 backdrop-blur-2xl md:hidden dark:bg-neutral-950/85"
           >
             <div className="flex h-full flex-col items-center justify-center gap-7 px-6">
               {LINKS.map((link, i) => (
@@ -329,7 +332,9 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
                     onClick={() => setMenuOpen(false)}
                     className={cn(
                       "font-runde text-3xl font-semibold transition-colors duration-150 ease-out",
-                      pathname === link.href ? "text-white" : "text-white/50",
+                      pathname === link.href
+                        ? "text-neutral-900 dark:text-white"
+                        : "text-neutral-400 dark:text-white/50",
                     )}
                   >
                     {link.label}
@@ -355,7 +360,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
                   aria-label="GitHub"
                   className={cn(
                     pill,
-                    "flex h-12 w-12 items-center justify-center text-white",
+                    "flex h-12 w-12 items-center justify-center text-neutral-900 dark:text-white",
                   )}
                 >
                   <GithubIcon className="h-6 w-6" />
@@ -363,7 +368,7 @@ export default function GooeyNavbar({ stars }: { stars?: number | null }) {
                 <ThemeToggle
                   className={cn(
                     pill,
-                    "flex h-12 w-12 items-center justify-center p-0 text-white/80 [&_svg]:h-6 [&_svg]:w-6",
+                    "flex h-12 w-12 items-center justify-center p-0 text-neutral-600 dark:text-white/80 [&_svg]:h-6 [&_svg]:w-6",
                   )}
                 />
               </motion.div>
