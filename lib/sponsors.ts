@@ -20,7 +20,11 @@ export type SponsorBrand = {
   logoClassName?: string;
 };
 
-export type Sponsor = SponsorBrand & { tier: SponsorTierId; avatarSrc: string };
+export type Sponsor = SponsorBrand & {
+  tier: SponsorTierId;
+  heroLightSrc: string;
+  heroDarkSrc: string;
+};
 
 export type PlatformSponsor = SponsorBrand & { role: string };
 
@@ -77,15 +81,6 @@ export const TIERS: SponsorTier[] = [
 
 export const SPONSORS: Sponsor[] = [
   {
-    name: "Runable",
-    tier: "diamond",
-    href: "https://runable.com/?utm_source=rareui&utm_medium=referral&utm_campaign=sponsor",
-    lightSrc: "/logos/runabledark.png",
-    darkSrc: "/logos/runablewhite.png",
-    logoHeight: "h-11 sm:h-16",
-    avatarSrc: "/logos/runableavatar.png",
-  },
-  {
     name: "PrivateAlps",
     tier: "diamond",
     href: "https://privatealps.net/?utm_source=rareui&utm_medium=referral&utm_campaign=sponsor",
@@ -94,7 +89,8 @@ export const SPONSORS: Sponsor[] = [
     logoHeight: "h-14 sm:h-20",
     // the peak is sparse and the wordmark carries the mass, so bbox centering reads low
     logoClassName: "-translate-y-2 sm:-translate-y-2.5",
-    avatarSrc: "/logos/privatealpslogo.png",
+    heroLightSrc: "/logos/privatealpstextdark.png",
+    heroDarkSrc: "/logos/privatealpstextwhite.png",
   },
 ];
 
