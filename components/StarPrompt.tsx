@@ -12,7 +12,7 @@ import { TIERS_HREF } from "@/lib/sponsors";
 const X_URL = "https://x.com/rareuiHQ";
 const SEEN_KEY = "rareui:star-prompt-seen";
 const SHOWN_KEY = "rareui:star-prompt-shown";
-const DELAY = 8_000;
+const DELAY = 5_000;
 const MAX_SHOWS = 2;
 const GAP = 5 * 24 * 60 * 60 * 1000;
 
