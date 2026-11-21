@@ -12,6 +12,11 @@ const IMMUTABLE_CACHE = [
 ];
 
 const nextConfig: NextConfig = {
+  // these routes read files at runtime, which the tracer cannot see
+  outputFileTracingIncludes: {
+    "/r/pro/*": ["./registry/pro/**/*"],
+    "/api/source": ["./components/pro/**/*"],
+  },
   async headers() {
     return [
       {

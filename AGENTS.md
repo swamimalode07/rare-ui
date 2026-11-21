@@ -10,6 +10,14 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Read `CONVENTIONS.md` before writing or editing any component, documentation, description, or comment. Follow it exactly.
 
+# Replies
+
+Answer only what was asked. Short and direct, no filler, no long paragraphs, no extra suggestions unless needed.
+
+# Secrets
+
+Never read, print, or open `.env` or `.env.*` files (except `.env.example`). They hold real keys. Ask the user if a value is needed.
+
 # Comments
 
 Default to no comment. Write one only where the code cannot say it itself: a decision whose obvious refactor reintroduces a bug, or a non-obvious constraint.

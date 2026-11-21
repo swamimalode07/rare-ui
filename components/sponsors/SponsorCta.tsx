@@ -1,7 +1,7 @@
 import { Squircle } from "@squircle-js/react";
 import { cn } from "@/lib/utils";
 
-const VARIANTS = {
+export const CTA_VARIANTS = {
   solid:
     "bg-[#FC4C01] text-white transition-colors duration-150 ease-out hover:bg-[#e64500]",
   subtle:
@@ -16,7 +16,7 @@ export default function SponsorCta({
 }: {
   href: string;
   children: React.ReactNode;
-  variant?: keyof typeof VARIANTS;
+  variant?: keyof typeof CTA_VARIANTS;
   className?: string;
 }) {
   const external = href.startsWith("http");
@@ -29,7 +29,7 @@ export default function SponsorCta({
         rel={external ? "noreferrer" : undefined}
         className={cn(
           "flex h-12 items-center justify-center px-6 font-runde text-sm font-semibold",
-          VARIANTS[variant],
+          CTA_VARIANTS[variant],
           className,
         )}
       >
