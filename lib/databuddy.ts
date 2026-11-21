@@ -90,6 +90,8 @@ async function runQuery(batch: unknown[]): Promise<QueryResult[] | null> {
       headers: { "content-type": "application/json", "x-api-key": apiKey },
       body: JSON.stringify(batch),
       next: { revalidate: 3600 },
+      // the root layout awaits this, so a slow api must not hold up every page
+      signal: AbortSignal.timeout(3000),
     });
     if (!res.ok) return null;
 

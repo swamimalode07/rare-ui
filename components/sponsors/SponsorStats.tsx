@@ -1,21 +1,11 @@
 import { components } from "@/lib/components";
 import type { Pageviews } from "@/lib/databuddy";
-import { MONTHLY_PAGEVIEWS, TOTAL_PAGEVIEWS } from "@/lib/sponsors";
-
-// a decimal reads as precision on small counts and as noise past 100 of a unit
-function formatCount(value: number) {
-  if (value < 1000) return `${value}`;
-  const [divisor, unit] =
-    value >= 1_000_000 ? ([1_000_000, "M"] as const) : ([1000, "K"] as const);
-  const scaled = value / divisor;
-  const shown =
-    scaled >= 100 ? Math.floor(scaled) : Math.floor(scaled * 10) / 10;
-  return `${shown}${unit}+`;
-}
-
-function formatViews(views: number | null, fallback: string) {
-  return views == null ? fallback : formatCount(views);
-}
+import {
+  formatCount,
+  formatViews,
+  MONTHLY_PAGEVIEWS,
+  TOTAL_PAGEVIEWS,
+} from "@/lib/sponsors";
 
 export default function SponsorStats({
   stars,
