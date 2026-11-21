@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
   // these routes read files at runtime, which the tracer cannot see
   outputFileTracingIncludes: {
     "/r/pro/*": ["./registry/pro/**/*"],
-    "/api/source": ["./components/pro/**/*"],
+    "/api/source": ["./components/pro/**/*", "./lib/utils.ts"],
   },
   async headers() {
     return [

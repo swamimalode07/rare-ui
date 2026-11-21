@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import LegalPage from "@/components/legal/LegalPage";
-import { fetchStarCount } from "@/lib/github";
 import { LEGAL_UPDATED, TERMS_SECTIONS } from "@/lib/legal";
 import { SITE_NAME } from "@/lib/site";
 
-const DESCRIPTION = `The terms for using ${SITE_NAME}: the component registry and the license it ships under, and the sponsorship that funds it, including pricing, billing, cancellation and refunds.`;
+const DESCRIPTION = `The terms for using ${SITE_NAME}: the component registry and the license it ships under, and RareUI Pro, including pricing, billing and refunds.`;
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -24,12 +23,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function TermsOfServicePage() {
-  const stars = await fetchStarCount();
-
+export default function TermsOfServicePage() {
   return (
     <>
-      <GooeyNavbar stars={stars} />
+      <GooeyNavbar />
 
       <LegalPage
         title="Terms of Service"

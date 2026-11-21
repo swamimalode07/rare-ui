@@ -38,3 +38,8 @@ Sandbox and production are separate accounts. Nothing carries over.
 - [ ] Add Pro components to `registry-pro.json`, source in `components/pro/`, then `npm run registry:build`.
 - [ ] `SITE_URL` in `lib/site.ts` matches the Pro domain (used in the CLI snippet on `/account`).
 - [ ] Email verification and password reset (Resend).
+
+## Legal
+
+- [ ] Have the Pro license in Terms and `LICENSE` reviewed (currently a short draft).
+- [ ] Review Terms and Privacy in `lib/legal.ts` for Pro, and confirm `MERCHANT_PRIVACY_URL` points to Polar's current privacy policy.

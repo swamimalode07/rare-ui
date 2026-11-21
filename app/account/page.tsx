@@ -8,7 +8,6 @@ import {
   SignOutButton,
 } from "@/components/account/AccountActions";
 import { getSession } from "@/lib/auth";
-import { fetchStarCount } from "@/lib/github";
 import { activeLicense, hasPurchased, tokenPrefix } from "@/lib/license";
 import { SITE_NAME } from "@/lib/site";
 
@@ -23,11 +22,7 @@ export default async function AccountPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [session, stars, params] = await Promise.all([
-    getSession(),
-    fetchStarCount(),
-    searchParams,
-  ]);
+  const [session, params] = await Promise.all([getSession(), searchParams]);
   if (!session) redirect("/sign-in");
 
   const [license, prefix, purchased] = await Promise.all([
@@ -40,7 +35,7 @@ export default async function AccountPage({
 
   return (
     <>
-      <GooeyNavbar stars={stars} />
+      <GooeyNavbar />
 
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-5 pb-24 pt-32 sm:px-6 md:pt-40">
         <header className="flex flex-col gap-2">

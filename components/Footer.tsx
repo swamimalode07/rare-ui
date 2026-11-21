@@ -2,11 +2,9 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { SUPPORT_EMAIL } from "@/lib/legal";
 import { SITE_URL } from "@/lib/site";
-import { TIERS_HREF } from "@/lib/sponsors";
 import FluidWave from "./FluidWave";
-import { GithubLogo, XLogo, type LogoProps } from "./logos";
+import { XLogo, type LogoProps } from "./logos";
 
-const GITHUB_URL = "https://github.com/swamimalode07/rare-ui";
 const X_URL = "https://x.com/swamimalode";
 const DMCA_ID = "ee2a2636-6919-4dcc-a846-c70b066419b8";
 const DMCA_STATUS_URL = `https://www.dmca.com/Protection/Status.aspx?ID=${DMCA_ID}&refurl=${SITE_URL}`;
@@ -21,10 +19,6 @@ type FooterLink = {
 const LINKS: FooterLink[] = [
   { label: "Home", href: "/" },
   { label: "Components", href: "/components" },
-  { label: "MCP", href: "/mcp" },
-  { label: "Sponsors", href: "/sponsors" },
-  { label: "Pricing", href: TIERS_HREF },
-  { label: "GitHub", href: GITHUB_URL, external: true, icon: GithubLogo },
   { label: "X / Twitter", href: X_URL, external: true, icon: XLogo },
 ];
 

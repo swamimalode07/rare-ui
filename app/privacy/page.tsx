@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import LegalPage from "@/components/legal/LegalPage";
-import { fetchStarCount } from "@/lib/github";
 import { LEGAL_UPDATED, PRIVACY_SECTIONS } from "@/lib/legal";
 import { SITE_NAME } from "@/lib/site";
 
@@ -24,12 +23,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function PrivacyPolicyPage() {
-  const stars = await fetchStarCount();
-
+export default function PrivacyPolicyPage() {
   return (
     <>
-      <GooeyNavbar stars={stars} />
+      <GooeyNavbar />
 
       <LegalPage
         title="Privacy Policy"

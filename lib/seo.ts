@@ -4,7 +4,6 @@ import {
   SITE_ALT_NAMES,
   SITE_DESCRIPTION,
   SITE_NAME,
-  SITE_REPO,
   SITE_URL,
 } from "@/lib/site";
 
@@ -20,7 +19,6 @@ export const SITE_KEYWORDS = [
   "framer motion components",
   "motion react",
   "tailwind css components",
-  "free ui components",
   "copy paste components",
   "ui component library",
   "microinteractions",
@@ -76,11 +74,9 @@ export function componentJsonLd(href: string) {
         name: item.name,
         description: item.description,
         url,
-        codeRepository: item.source ?? SITE_REPO,
         programmingLanguage: "TypeScript",
         runtimePlatform: "React",
         isPartOf: { "@id": `${SITE_URL}/#website` },
-        license: `${SITE_REPO}/blob/main/LICENSE`,
         author: { "@id": `${SITE_URL}/#organization` },
       },
     ],
@@ -98,7 +94,6 @@ export function siteJsonLd() {
         alternateName: SITE_ALT_NAMES,
         url: SITE_URL,
         logo: `${SITE_URL}/logos/Rareui.svg`,
-        sameAs: [SITE_REPO],
       },
       {
         "@type": "WebSite",

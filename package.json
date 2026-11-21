@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm run registry:build && next build",
-    "registry:build": "shadcn build && shadcn build registry-pro.json -o registry/pro",
+    "registry:build": "shadcn build registry-pro.json -o registry/pro",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",

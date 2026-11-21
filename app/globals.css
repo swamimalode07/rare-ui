@@ -284,22 +284,6 @@ html {
   transition: opacity 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* only carbon's own custom properties; never override their internal class rules */
-[data-slot="carbon-ads"] {
-  /* carbon suffixes the id when a page serves more than one ad: #carbonads, #carbonads_1 */
-  [id^="carbonads"] {
-    max-width: 100%;
-  }
-
-  #carbon-responsive {
-    --carbon-padding: 0.6em;
-    --carbon-bg-primary: var(--muted);
-    --carbon-bg-secondary: var(--border);
-    --carbon-text-color: var(--foreground);
-    font-size: 12px;
-  }
-}
-
 html[data-record] [data-chrome] {
   display: none;
 }

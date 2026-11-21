@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import CarbonAds from "@/components/CarbonAds";
 import Footer from "@/components/Footer";
 import ComponentCard from "@/components/gallery/ComponentCard";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import { components, gallerySections } from "@/lib/components";
-import { fetchStarCount } from "@/lib/github";
 import { SITE_KEYWORDS, componentsJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -17,32 +15,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ComponentsIndexPage() {
-  const stars = await fetchStarCount();
-
+export default function ComponentsIndexPage() {
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(componentsJsonLd()) }}
       />
-      <GooeyNavbar stars={stars} />
+      <GooeyNavbar />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-16 pt-32 sm:px-6 md:pt-40">
         <header className="flex flex-col items-center gap-3 text-center">
           <h1 className="max-w-2xl text-balance font-runde text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
-            {components.length}+ rare and unique components
+            {components.length > 0
+              ? `${components.length}+ rare and unique components`
+              : "Pro components are on the way"}
           </h1>
           <p className="max-w-lg text-balance text-sm font-medium text-muted-foreground sm:text-base">
             Every component is a single file you own, not a dependency you
-            install. Add any of them with the shadcn CLI, or from{" "}
-            <a
-              href="/mcp"
-              className="text-foreground underline decoration-foreground/25 underline-offset-4"
-            >
-              MCP
-            </a>
-            .{" "}
+            install. Add any of them with the shadcn CLI.{" "}
             <span className="hidden [@media(hover:hover)]:inline">
               <span className="text-[#FC4C01]">[</span>
               Hover to play video
@@ -73,8 +64,6 @@ export default async function ComponentsIndexPage() {
             </div>
           </section>
         ))}
-
-        <CarbonAds className="mx-auto mt-14 w-full max-w-100" />
       </main>
 
       <Footer />

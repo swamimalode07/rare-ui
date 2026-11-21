@@ -1,6 +1,6 @@
 "use client";
 
-import CodeBlock from "@/components/ui/code-block";
+import CodeBlock from "@/components/CodeBlock";
 import { useIsMobile } from "@/lib/use-media-query";
 import { cn } from "@/lib/utils";
 

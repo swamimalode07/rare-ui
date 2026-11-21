@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono, Cal_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { ThemeProvider } from "@/components/theme-provider";
-import { StarPrompt } from "@/components/StarPrompt";
-import { fetchPageviews } from "@/lib/databuddy";
-import { formatViews, MONTHLY_PAGEVIEWS } from "@/lib/sponsors";
 import { CommandMenuLoader } from "@/components/CommandMenuLoader";
 import { Databuddy } from '@databuddy/sdk/react';
 import {
@@ -112,13 +109,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pageviews = await fetchPageviews();
-
   return (
     <html
       lang="en"
@@ -139,9 +134,6 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex flex-1 flex-col">{children}</div>
-          <StarPrompt
-            monthlyViews={formatViews(pageviews.lastMonth, MONTHLY_PAGEVIEWS)}
-          />
           <CommandMenuLoader />
           <Databuddy
             clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID!}

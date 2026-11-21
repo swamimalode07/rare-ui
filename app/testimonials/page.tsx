@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import CarbonAds from "@/components/CarbonAds";
 import Footer from "@/components/Footer";
 import GooeyNavbar from "@/components/GooeyNavbar";
 import HeroIntro from "@/components/HeroIntro";
 import TestimonialWall from "@/components/testimonials/TestimonialWall";
-import { fetchStarCount } from "@/lib/github";
 import { SITE_KEYWORDS } from "@/lib/seo";
 import { SITE_NAME } from "@/lib/site";
 
 const TITLE = `Testimonials | ${SITE_NAME}`;
 
 const DESCRIPTION =
-  "What designers and engineers say about Rare UI (RareUI), a free, open-source registry of rare animated React components.";
+  "What designers and engineers say about Rare UI (RareUI), a registry of rare animated React components.";
 
 const OG_IMAGE = {
   url: "/ogimage.webp",
@@ -50,9 +48,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function TestimonialsPage() {
-  const stars = await fetchStarCount();
-
+export default function TestimonialsPage() {
   return (
     <>
       <section className="relative w-full p-1.5 md:p-2.5">
@@ -60,7 +56,7 @@ export default async function TestimonialsPage() {
           className="relative flex min-h-[min(78svh,50rem)] w-full items-center justify-center overflow-hidden rounded-[45px] border border-black/[0.04] bg-[#F5F5F7] dark:border-transparent dark:border-apple dark:bg-[#121212]"
           style={{ cornerShape: "squircle" } as React.CSSProperties}
         >
-          <GooeyNavbar stars={stars} />
+          <GooeyNavbar />
 
           <img
             src="/logos/Rareui.svg"
@@ -105,10 +101,6 @@ export default async function TestimonialsPage() {
           className="mx-auto w-full max-w-6xl scroll-mt-24 px-5 py-20 sm:px-6 md:py-28"
         >
           <TestimonialWall />
-        </section>
-
-        <section className="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-6 md:pb-28">
-          <CarbonAds className="mx-auto w-full max-w-100" />
         </section>
       </main>
 

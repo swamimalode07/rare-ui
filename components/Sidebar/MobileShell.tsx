@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import MobileSidebar from "./MobileSidebar";
 import DescriptionContent from "../Description/DescriptionContent";
 import SourceSection from "../Description/SourceSection";
-import CarbonAds from "../CarbonAds";
 
 const CARD = "rounded-[32px] bg-card";
 
@@ -24,10 +23,6 @@ export default function MobileShell({
         <div className={cn(CARD, "relative h-[88svh] shrink-0 p-4")}>
           <MobileSidebar />
           {children}
-        </div>
-
-        <div className={cn(CARD, "p-4")}>
-          <CarbonAds />
         </div>
 
         <div className={cn(CARD, "p-6")}>

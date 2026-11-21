@@ -1,37 +1,19 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import GooeyNavbar from "@/components/GooeyNavbar";
-import { fetchStarCount } from "@/lib/github";
 import HeroCta from "@/components/HeroCta";
 import HeroIntro from "@/components/HeroIntro";
-import BackedBy from "@/components/BackedBy";
 import ComponentsShowcase from "@/components/ComponentsShowcase";
 import TestimonialsSection from "@/components/testimonials/TestimonialsSection";
 import Footer from "@/components/Footer";
 import SpiderWebs from "@/components/SpiderWebs";
 import DiwaliLights from "@/components/DiwaliLights";
-import {
-  OpenSlotCard,
-  PlatformSponsorCard,
-  TierGroup,
-} from "@/components/sponsors/SponsorCards";
-import {
-  PLATFORM_CARD_HEIGHT,
-  PLATFORM_SPONSORS,
-  PLATFORM_TIER_NAME,
-} from "@/lib/sponsors";
-
-// const LOWEST_TIER_PRICE = Math.min(...TIERS.map((tier) => tier.price));
-
 export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
 };
 
-export default async function Home() {
-  const stars = await fetchStarCount();
-
+export default function Home() {
   return (
     <>
       <section className="relative w-full p-1.5 md:p-2.5">
@@ -39,7 +21,7 @@ export default async function Home() {
           className="relative flex min-h-[min(100svh_-_0.75rem,60rem)] w-full items-center justify-center overflow-hidden rounded-[45px] border border-black/[0.04] bg-[#F5F5F7] dark:border-transparent dark:border-apple dark:bg-[#121212] md:min-h-[min(100svh_-_1.25rem,60rem)]"
           style={{ cornerShape: "squircle" } as React.CSSProperties}
         >
-          <GooeyNavbar stars={stars} />
+          <GooeyNavbar />
 
           <img
             src="/logos/Rareui.svg"
@@ -54,18 +36,7 @@ export default async function Home() {
           <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-3 px-4 pb-20 pt-28 text-center sm:gap-4 sm:px-6">
             <HeroIntro
               headline="Tasteful Components, Made to Stand Out."
-              sub={
-                <>
-                  Rare UI is a free, open-source collection of rare animated
-                  React components. Browse them in action below and install any
-                  component with the shadcn CLI or{" "}
-                  <Link href="/mcp" className="text-inherit">
-                    MCP
-                  </Link>
-                  .
-                </>
-              }
-              badge={<BackedBy />}
+              sub="Rare UI Pro is a collection of rare animated React components. Browse them in action below and install any component with the shadcn CLI."
             >
               <HeroCta />
             </HeroIntro>
@@ -74,51 +45,7 @@ export default async function Home() {
       </section>
       <ComponentsShowcase />
       <TestimonialsSection />
-      <BackersSection />
       <Footer />
     </>
-  );
-}
-
-function BackersSection() {
-  return (
-    <section
-      id="sponsors"
-      className="mx-auto flex w-full max-w-7xl scroll-mt-24 flex-col items-center gap-12 px-6 py-24 text-center md:py-32"
-    >
-      <h2 className="max-w-2xl text-balance font-runde text-3xl font-bold tracking-tight sm:text-4xl">
-        Rare UI is backed and supported by the finest
-      </h2>
-
-      <div className="flex w-full max-w-6xl flex-col items-center gap-8">
-        <TierGroup tier="diamond" name="Diamond" showOpenSlot={false} />
-
-        <div className="flex w-full flex-col gap-4">
-          <h2 className="text-center font-runde text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {PLATFORM_TIER_NAME}
-          </h2>
-          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
-            {PLATFORM_SPONSORS.map((sponsor) => (
-              <PlatformSponsorCard key={sponsor.name} sponsor={sponsor} />
-            ))}
-            <OpenSlotCard height={PLATFORM_CARD_HEIGHT} />
-          </div>
-        </div>
-
-        <Link
-          href="/sponsors"
-          className="font-runde text-sm font-semibold text-muted-foreground underline underline-offset-4 transition-colors duration-150 ease-out hover:text-foreground"
-        >
-          Become a sponsor &rarr;
-        </Link>
-      </div>
-
-      {/* <Link
-        href="/sponsors"
-        className="font-runde text-sm font-semibold text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
-      >
-        Sponsorship from ${LOWEST_TIER_PRICE}/month. See all tiers &rarr;
-      </Link> */}
-    </section>
   );
 }
