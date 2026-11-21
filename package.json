@@ -12,6 +12,7 @@
   "dependencies": {
     "@databuddy/sdk": "^2.4.20",
     "@radix-ui/react-slot": "^1.2.5",
+    "@rareuihq/avatars": "^0.1.0",
     "@squircle-js/react": "^1.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

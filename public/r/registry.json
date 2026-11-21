@@ -470,6 +470,20 @@
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "seed-avatar",
+      "type": "registry:ui",
+      "title": "Seed Avatar",
+      "description": "An avatar generated from any seed, like a user id or email, so every user gets their own face.",
+      "dependencies": ["@rareuihq/avatars"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "components/ui/seed-avatar.tsx",
+          "type": "registry:ui"
+        }
+      ]
     }
   ]
 }

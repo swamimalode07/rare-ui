@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "seed-avatar",
+  "title": "Seed Avatar",
+  "description": "An avatar generated from any seed, like a user id or email, so every user gets their own face.",
+  "dependencies": [
+    "@rareuihq/avatars"
+  ],
+  "registryDependencies": [
+    "utils"
+  ],
+  "files": [
+    {
+      "path": "components/ui/seed-avatar.tsx",
+      "content": "import type { ComponentProps } from \"react\";\nimport {\n  createAvatar,\n  toDataUri,\n  type AvatarShape,\n  type AvatarStyle,\n} from \"@rareuihq/avatars\";\nimport { cn } from \"@/lib/utils\";\n\nconst SHAPES: Record<AvatarShape, string> = {\n  circle: \"rounded-full\",\n  squircle: \"rounded-[28%]\",\n  square: \"rounded-none\",\n};\n\nexport type SeedAvatarProps = Omit<ComponentProps<\"img\">, \"src\"> & {\n  seed: string;\n  variant?: AvatarStyle;\n  shape?: AvatarShape;\n  size?: number;\n};\n\nfunction SeedAvatar({\n  seed,\n  variant = \"faces\",\n  shape = \"circle\",\n  size = 40,\n  alt = \"\",\n  className,\n  ...props\n}: SeedAvatarProps) {\n  return (\n    // a data uri gains nothing from next/image\n    // eslint-disable-next-line @next/next/no-img-element\n    <img\n      data-slot=\"seed-avatar\"\n      src={toDataUri(createAvatar(variant, seed, { size }))}\n      width={size}\n      height={size}\n      alt={alt}\n      draggable={false}\n      className={cn(\"shrink-0 select-none\", SHAPES[shape], className)}\n      {...props}\n    />\n  );\n}\n\nexport default SeedAvatar;\n",
+      "type": "registry:ui"
+    }
+  ],
+  "type": "registry:ui"
+}
