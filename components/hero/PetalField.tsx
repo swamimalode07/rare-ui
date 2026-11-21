@@ -11,6 +11,8 @@ const RESOLUTION_SCALE = 0.7;
 const SPIN = 0.04;
 const INTRO_SECONDS = 1.4;
 const POINTER_EASE = 0.05;
+const BLOOM_EASE = 0.08;
+const BLOOM_REACH = 3;
 
 const VERT = `
 attribute vec2 a_pos;
@@ -30,6 +32,7 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform float u_rot;
 uniform float u_intro;
+uniform float u_bloom;
 uniform float u_dark;
 uniform vec2 u_pointer;
 uniform vec2 u_center;
@@ -40,6 +43,7 @@ uniform sampler2D u_relief;
 const float TAU = 6.2831853;
 const float PETALS = 5.0;
 const float STRANDS = 110.0;
+const vec3 ORANGE = vec3(0.988, 0.298, 0.004);
 
 float hash1(float n) {
   return fract(sin(n) * 43758.5453);
@@ -71,7 +75,8 @@ vec2 rotate(vec2 p, float a) {
 // x: strand coordinate, y: position across the petal in [-1, 1], z: petal index
 vec3 petal(vec2 p) {
   float r = length(p) + 1e-4;
-  float a = atan(p.y, p.x) - u_rot * 0.4 - 0.85 * r * r;
+  // offset a quarter turn so each silk petal grows out of a logo petal
+  float a = atan(p.y, p.x) - u_rot - 1.5708 - 0.85 * r * r;
   float sector = TAU / PETALS;
   float k = floor(a / sector + 0.5);
   float v = (a - k * sector) / (0.5 * sector);
@@ -84,18 +89,6 @@ vec3 petal(vec2 p) {
 vec4 relief(vec2 q) {
   vec4 t = texture2D(u_relief, q * 0.5 + 0.5);
   return vec4(t.rg * 2.0 - 1.0, 0.0, (t.b - 0.5) * ${(DIST_RANGE * 2).toFixed(3)});
-}
-
-// a studio sweep: black floor, a hot horizon, a softbox overhead and one dark pillar for contrast
-vec3 chrome(vec3 r) {
-  vec2 d = r.xy + u_pointer * vec2(-0.3, 0.25);
-  float y = d.y * 0.9 + d.x * 0.2 + 0.04;
-  vec3 c = vec3(0.09, 0.085, 0.085);
-  c = mix(c, vec3(0.9, 0.91, 0.94), smoothstep(-0.14, 0.0, y));
-  c = mix(c, vec3(0.16, 0.17, 0.2), smoothstep(0.04, 0.42, y));
-  c += vec3(1.0) * smoothstep(0.14, 0.0, abs(y - 0.62)) * 0.9;
-  c *= 1.0 - 0.55 * smoothstep(0.16, 0.0, abs(d.x - 0.28 + d.y * 0.3));
-  return c;
 }
 
 void main() {
@@ -133,13 +126,14 @@ void main() {
   float body = sqrt(max(1.0 - pet.y * pet.y, 0.0));
   float crease = smoothstep(1.0, 0.8, abs(pet.y));
 
-  vec3 silver = vec3(0.72, 0.76, 0.84);
-  vec3 lilac = vec3(0.6, 0.56, 0.7);
-  vec3 gold = vec3(0.8, 0.7, 0.52);
-  float pick = hash1(pet.z * 7.13 + 1.0);
-  vec3 tint = mix(silver, pick > 0.5 ? gold : lilac, 0.25 + 0.55 * clump);
+  // strands leave the flower in brand orange and cool to champagne and smoke as they travel out
+  vec3 smoke = vec3(0.6, 0.56, 0.53);
+  vec3 champagne = vec3(0.94, 0.85, 0.74);
+  vec3 ember = vec3(1.0, 0.4, 0.1);
+  vec3 tint = mix(smoke, champagne, clump * 0.75);
   float lane = hash1(floor(sc * 0.5) + seed);
-  tint = mix(tint, vec3(0.95, 0.45, 0.2), step(0.975, lane) * 0.7);
+  float heat = smoothstep(0.8, 0.18, r) * (0.45 + 0.55 * clump) + step(0.975, lane) * 0.5;
+  tint = mix(tint, ember, clamp(heat, 0.0, 0.9));
 
   float lum = hair * (0.04 + 0.4 * diffuse * body) * (0.25 + 0.75 * clump);
   lum += spec * body * (0.25 + 0.9 * hair) * (0.4 + 0.6 * clump) + glow * 0.08 * hair;
@@ -160,6 +154,9 @@ void main() {
   float size = u_size * u_intro;
   vec2 q = rotate((frag - u_center) / max(size, 1.0), -u_rot);
 
+  // petals part as the pointer nears, and arrive parted before settling closed
+  q -= normalize(q + 1e-5) * (u_bloom * 0.09 + max(1.0 - u_intro, 0.0) * 0.35);
+
   float shadowD = relief(q - vec2(0.03, 0.08)).w;
   col *= 1.0 - (1.0 - smoothstep(-0.03, 0.22, shadowD)) * 0.6 * u_intro;
 
@@ -169,12 +166,22 @@ void main() {
 
   if (coverage > 0.0) {
     vec2 nxy = rotate(rel.xy, u_rot);
-    vec3 n = normalize(vec3(nxy, sqrt(max(1.0 - dot(nxy, nxy), 0.0))));
-    vec3 refl = reflect(vec3(0.0, 0.0, -1.0), n);
-    float s = pow(max(dot(n, normalize(vec3(-0.4, 0.6, 1.0))), 0.0), 90.0);
-    float rim = pow(1.0 - n.z, 3.0);
-    vec3 metal = chrome(refl) * vec3(0.96, 0.95, 0.93) + s * 0.8 + rim * vec3(0.55, 0.56, 0.6);
-    col = mix(col, metal, coverage);
+    vec3 n = normalize(vec3(nxy * 0.6, sqrt(max(1.0 - dot(nxy, nxy), 0.0))));
+
+    // the logo is woven from the same silk: fibres run out from the heart of the flower
+    float fa = atan(q.y, q.x);
+    float fr = length(q);
+    float weave = noise(vec2(fa * 38.0, fr * 2.5 - u_time * 0.04)) * 0.65
+      + noise(vec2(fa * 85.0, fr * 4.0)) * 0.35;
+    weave = smoothstep(0.15, 0.9, weave);
+    vec2 fibre = rotate(normalize(q + 1e-5), u_rot);
+    float fh = dot(vec3(fibre, 0.0), half_);
+    float satin = pow(sqrt(max(1.0 - fh * fh, 0.0)), 36.0);
+    float lit = max(dot(n, light), 0.0);
+    vec3 silkPetal = ORANGE * (0.22 + 0.78 * lit) * (0.84 + 0.16 * weave);
+    silkPetal += vec3(1.0, 0.78, 0.58) * satin * (0.55 + 0.45 * weave) * (0.35 + 0.65 * n.z);
+    silkPetal *= mix(0.5, 1.0, smoothstep(0.0, 0.5, n.z));
+    col = mix(col, silkPetal, coverage);
   }
 
   col += (hash2(frag + fract(u_time)) - 0.5) / 255.0;
@@ -238,6 +245,7 @@ export default function PetalField({
     const uTime = u("u_time");
     const uRot = u("u_rot");
     const uIntro = u("u_intro");
+    const uBloom = u("u_bloom");
     const uDark = u("u_dark");
     const uPointer = u("u_pointer");
     const uCenter = u("u_center");
@@ -250,13 +258,17 @@ export default function PetalField({
     const elapsed = () => (performance.now() - startedAt) / 1000;
 
     let scale = 1;
-    const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, cssX: -1e4, cssY: -1e4, bloom: 0 };
+    const flowerCss = { x: 0, y: 0, r: 1 };
 
     const measure = () => {
       const box = canvas.getBoundingClientRect();
       const flower = flowerRef.current?.getBoundingClientRect();
       const veil = veilRef.current?.getBoundingClientRect();
       if (flower) {
+        flowerCss.x = flower.left + flower.width / 2 - box.left;
+        flowerCss.y = flower.top + flower.height / 2 - box.top;
+        flowerCss.r = flower.width / 2;
         gl.uniform2f(
           uCenter,
           (flower.left + flower.width / 2 - box.left) * scale,
@@ -279,6 +291,10 @@ export default function PetalField({
       const t = reduceMotion ? 0 : elapsed();
       pointer.x += (pointer.tx - pointer.x) * POINTER_EASE;
       pointer.y += (pointer.ty - pointer.y) * POINTER_EASE;
+      const distance = Math.hypot(pointer.cssX - flowerCss.x, pointer.cssY - flowerCss.y);
+      const near = 1 - Math.min(Math.max((distance - flowerCss.r) / (flowerCss.r * BLOOM_REACH), 0), 1);
+      pointer.bloom += (near * near - pointer.bloom) * BLOOM_EASE;
+      gl.uniform1f(uBloom, pointer.bloom);
       gl.uniform1f(uTime, t);
       gl.uniform1f(uRot, t * SPIN);
       gl.uniform1f(uIntro, reduceMotion ? 1 : easeOutBack(Math.min(t / INTRO_SECONDS, 1)));
@@ -318,6 +334,8 @@ export default function PetalField({
 
     const onPointer = (event: PointerEvent) => {
       const box = canvas.getBoundingClientRect();
+      pointer.cssX = event.clientX - box.left;
+      pointer.cssY = event.clientY - box.top;
       pointer.tx = ((event.clientX - box.left) / box.width) * 2 - 1;
       pointer.ty = -(((event.clientY - box.top) / box.height) * 2 - 1);
     };
