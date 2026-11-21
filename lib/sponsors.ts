@@ -37,6 +37,21 @@ export const MONTHLY_PAGEVIEWS = "300K+";
 
 export const TOTAL_PAGEVIEWS = "348K+";
 
+// a decimal reads as precision on small counts and as noise past 100 of a unit
+export function formatCount(value: number) {
+  if (value < 1000) return `${value}`;
+  const [divisor, unit] =
+    value >= 1_000_000 ? ([1_000_000, "M"] as const) : ([1000, "K"] as const);
+  const scaled = value / divisor;
+  const shown =
+    scaled >= 100 ? Math.floor(scaled) : Math.floor(scaled * 10) / 10;
+  return `${shown}${unit}+`;
+}
+
+export function formatViews(views: number | null, fallback: string) {
+  return views == null ? fallback : formatCount(views);
+}
+
 // dodo does not echo the product back on the return url, so the tier is carried on redirect_url
 function checkoutUrl(productId: string, tier: SponsorTierId) {
   const redirect = `${SITE_URL}/sponsors/thank-you?tier=${tier}`;
