@@ -188,8 +188,9 @@ function ModelPicker({
         const pillHeight = trigger.offsetHeight
         const height = content.offsetHeight
         const rootRect = root.getBoundingClientRect()
-        // screen rects include any zoom or scale above the picker, while offsets and styles are in local pixels
-        const scale = rootRect.width / root.offsetWidth || 1
+        const triggerIconRect = pillIcon.getBoundingClientRect()
+        const scaleX = triggerIconRect.width / pillIcon.offsetWidth || 1
+        const scaleY = triggerIconRect.height / pillIcon.offsetHeight || 1
 
         // the content offset that sits a row's icon and center exactly on the pill's
         const alignTo = (row: Element | null | undefined, from: Point): Point | null => {
@@ -197,11 +198,14 @@ function ModelPicker({
             if (!row || !icon) {
                 return null
             }
-            const triggerIconRect = pillIcon.getBoundingClientRect()
             const iconRect = icon.getBoundingClientRect()
             return {
-                x: from.x + (triggerIconRect.left + triggerIconRect.width / 2 - iconRect.left - iconRect.width / 2) / scale,
-                y: from.y + (triggerIconRect.top + triggerIconRect.height / 2 - iconRect.top - iconRect.height / 2) / scale,
+                x:
+                    from.x +
+                    (triggerIconRect.left + triggerIconRect.width / 2 - iconRect.left - iconRect.width / 2) / scaleX,
+                y:
+                    from.y +
+                    (triggerIconRect.top + triggerIconRect.height / 2 - iconRect.top - iconRect.height / 2) / scaleY,
             }
         }
         const pillWindow = (at: Point) => {
@@ -224,12 +228,12 @@ function ModelPicker({
             const aligned = alignTo(row, { x: 0, y: 0 }) ?? { x: 0, y: 0 }
             const place = {
                 x: Math.max(
-                    (EDGE - rootRect.left) / scale,
-                    Math.min(aligned.x, (window.innerWidth - EDGE - rootRect.left) / scale - PANEL_WIDTH),
+                    (EDGE - rootRect.left) / scaleX,
+                    Math.min(aligned.x, (window.innerWidth - EDGE - rootRect.left) / scaleX - PANEL_WIDTH),
                 ),
                 y: Math.max(
-                    (EDGE - rootRect.top) / scale,
-                    Math.min(aligned.y, (window.innerHeight - EDGE - rootRect.top) / scale - height),
+                    (EDGE - rootRect.top) / scaleY,
+                    Math.min(aligned.y, (window.innerHeight - EDGE - rootRect.top) / scaleY - height),
                 ),
             }
             placeRef.current = place
@@ -427,11 +431,11 @@ function ModelPicker({
                 onClick={() => (open ? close(selectedId, 'pointer') : show())}
                 onKeyDown={onTriggerKey}
                 className={cn(
-                    'relative flex h-8 cursor-pointer items-center gap-2 rounded-full pr-[30px] pl-2.5 text-[13px] font-medium text-black/90 outline-none transition-colors hover:bg-black/[0.05] focus-visible:ring-2 focus-visible:ring-black/15 dark:text-white/90 dark:hover:bg-white/[0.07] dark:focus-visible:ring-white/25',
+                    'relative flex h-8 cursor-pointer items-center gap-2 rounded-full pr-8 pl-2.5 text-[13px] font-medium text-black/90 outline-none transition-colors hover:bg-black/[0.05] focus-visible:ring-2 focus-visible:ring-black/15 dark:text-white/90 dark:hover:bg-white/[0.07] dark:focus-visible:ring-white/25',
                     phase !== 'closed' && 'opacity-0',
                 )}
             >
-                <span ref={triggerIconRef} className="grid size-4 place-items-center">
+                <span ref={triggerIconRef} className="grid size-4 shrink-0 place-items-center">
                     <AnimatePresence mode="popLayout" initial={false}>
                         <motion.span
                             key={selected.id}
@@ -447,7 +451,7 @@ function ModelPicker({
                     </AnimatePresence>
                 </span>
                 <RollingText text={selected.name} roll={roll} />
-                <span className="absolute right-2 grid size-3.5 place-items-center">
+                <span className="absolute right-2.5 grid size-3.5 place-items-center">
                     <ChevronsUpDown className="size-3.5 opacity-45" />
                 </span>
             </button>
