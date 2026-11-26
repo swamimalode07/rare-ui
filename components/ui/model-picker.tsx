@@ -32,7 +32,6 @@ const PANEL_RADIUS = 16
 const LIST_MAX_HEIGHT = 320
 const EDGE = 8
 const METER_STEPS = 5
-const ROLL_STAGGER = 0.014
 
 const OPEN: Transition = { type: 'spring', duration: 0.42, bounce: 0.14 }
 const CLOSE: Transition = { type: 'spring', duration: 0.36, bounce: 0.06 }
@@ -49,30 +48,24 @@ const swapVariants: Variants = {
 }
 
 function RollingText({ text, roll }: { text: string; roll: boolean }) {
-    // letters keep their identity by occurrence, so the ones two names share slide into place instead of rolling
-    const seen: Record<string, number> = {}
-    const letters = [...text].map((char) => {
-        seen[char] = (seen[char] ?? 0) + 1
-        return { char, key: `${char}${seen[char]}` }
-    })
-
     return (
-        <span aria-hidden className="relative inline-flex whitespace-pre">
-            <AnimatePresence mode="popLayout" initial={false}>
-                {letters.map(({ char, key }, i) => (
-                    <motion.span
-                        key={key}
-                        layout={roll ? 'position' : false}
-                        initial={{ opacity: 0, y: '0.7em', filter: 'blur(3px)' }}
-                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, y: '-0.7em', filter: 'blur(3px)', transition: roll ? { duration: 0.12 } : INSTANT }}
-                        transition={roll ? { ...ROLL, delay: i * ROLL_STAGGER } : INSTANT}
-                    >
-                        {char}
-                    </motion.span>
-                ))}
-            </AnimatePresence>
-        </span>
+        <AnimatePresence mode="popLayout" initial={false}>
+            <motion.span
+                key={text}
+                aria-hidden
+                initial={roll ? { opacity: 0, y: '0.7em', filter: 'blur(3px)' } : false}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={
+                    roll
+                        ? { opacity: 0, y: '-0.7em', filter: 'blur(3px)', transition: { duration: 0.12 } }
+                        : { opacity: 0, transition: INSTANT }
+                }
+                transition={roll ? ROLL : INSTANT}
+                className="relative min-w-0 flex-1 truncate"
+            >
+                {text}
+            </motion.span>
+        </AnimatePresence>
     )
 }
 
@@ -195,20 +188,24 @@ function ModelPicker({
         const pillHeight = trigger.offsetHeight
         const height = content.offsetHeight
         const rootRect = root.getBoundingClientRect()
-        // screen rects include any zoom or scale above the picker, while offsets and styles are in local pixels
-        const scale = rootRect.width / root.offsetWidth || 1
+        const triggerIconRect = pillIcon.getBoundingClientRect()
+        const scaleX = triggerIconRect.width / pillIcon.offsetWidth || 1
+        const scaleY = triggerIconRect.height / pillIcon.offsetHeight || 1
 
         // the content offset that sits a row's icon and center exactly on the pill's
-        const alignTo = (row: Element | null | undefined): Point | null => {
+        const alignTo = (row: Element | null | undefined, from: Point): Point | null => {
             const icon = row?.querySelector('[data-slot="model-picker-icon"]')
             if (!row || !icon) {
                 return null
             }
-            const box = content.getBoundingClientRect()
-            const rowRect = row.getBoundingClientRect()
+            const iconRect = icon.getBoundingClientRect()
             return {
-                x: (pillIcon.getBoundingClientRect().left - rootRect.left - (icon.getBoundingClientRect().left - box.left)) / scale,
-                y: pillHeight / 2 - (rowRect.top + rowRect.height / 2 - box.top) / scale,
+                x:
+                    from.x +
+                    (triggerIconRect.left + triggerIconRect.width / 2 - iconRect.left - iconRect.width / 2) / scaleX,
+                y:
+                    from.y +
+                    (triggerIconRect.top + triggerIconRect.height / 2 - iconRect.top - iconRect.height / 2) / scaleY,
             }
         }
         const pillWindow = (at: Point) => {
@@ -228,15 +225,15 @@ function ModelPicker({
             if (row && list.scrollHeight > list.clientHeight) {
                 list.scrollTop = row.offsetTop - list.clientHeight / 2 + row.offsetHeight / 2
             }
-            const aligned = alignTo(row) ?? { x: 0, y: 0 }
+            const aligned = alignTo(row, { x: 0, y: 0 }) ?? { x: 0, y: 0 }
             const place = {
                 x: Math.max(
-                    (EDGE - rootRect.left) / scale,
-                    Math.min(aligned.x, (window.innerWidth - EDGE - rootRect.left) / scale - PANEL_WIDTH),
+                    (EDGE - rootRect.left) / scaleX,
+                    Math.min(aligned.x, (window.innerWidth - EDGE - rootRect.left) / scaleX - PANEL_WIDTH),
                 ),
                 y: Math.max(
-                    (EDGE - rootRect.top) / scale,
-                    Math.min(aligned.y, (window.innerHeight - EDGE - rootRect.top) / scale - height),
+                    (EDGE - rootRect.top) / scaleY,
+                    Math.min(aligned.y, (window.innerHeight - EDGE - rootRect.top) / scaleY - height),
                 ),
             }
             placeRef.current = place
@@ -282,8 +279,11 @@ function ModelPicker({
         const listRect = list.getBoundingClientRect()
         // a row scrolled out of the list is hidden by its overflow, so folding onto it would end on an empty window
         const visible = rowRect && rowRect.top >= listRect.top - 1 && rowRect.bottom <= listRect.bottom + 1
-        const aligned = visible ? alignTo(row) : null
-        const to = aligned ?? from
+        const aligned = visible ? alignTo(row, from) : null
+        const to =
+            aligned && (Math.abs(aligned.x - from.x) > 0.5 || Math.abs(aligned.y - from.y) > 0.5)
+                ? aligned
+                : from
         runningRef.current = [
             animate(content, { x: [from.x, to.x], y: [from.y, to.y], clipPath: pillWindow(to) }, CLOSE),
             animate(content, { opacity: aligned ? 1 : 0 }, { duration: 0.12 }),
@@ -431,11 +431,11 @@ function ModelPicker({
                 onClick={() => (open ? close(selectedId, 'pointer') : show())}
                 onKeyDown={onTriggerKey}
                 className={cn(
-                    'flex h-8 cursor-pointer items-center gap-2 rounded-full pr-2 pl-2.5 text-[13px] font-medium text-black/90 outline-none transition-colors hover:bg-black/[0.05] focus-visible:ring-2 focus-visible:ring-black/15 dark:text-white/90 dark:hover:bg-white/[0.07] dark:focus-visible:ring-white/25',
+                    'relative flex h-8 cursor-pointer items-center gap-2 rounded-full pr-8 pl-2.5 text-[13px] font-medium text-black/90 outline-none transition-colors hover:bg-black/[0.05] focus-visible:ring-2 focus-visible:ring-black/15 dark:text-white/90 dark:hover:bg-white/[0.07] dark:focus-visible:ring-white/25',
                     phase !== 'closed' && 'opacity-0',
                 )}
             >
-                <span ref={triggerIconRef} className="grid size-4 place-items-center">
+                <span ref={triggerIconRef} className="grid size-4 shrink-0 place-items-center">
                     <AnimatePresence mode="popLayout" initial={false}>
                         <motion.span
                             key={selected.id}
@@ -451,13 +451,9 @@ function ModelPicker({
                     </AnimatePresence>
                 </span>
                 <RollingText text={selected.name} roll={roll} />
-                <motion.span
-                    className="grid place-items-center"
-                    animate={{ opacity: phase === 'closed' ? 0.45 : 0 }}
-                    transition={reduced || phase !== 'closed' ? INSTANT : { duration: 0.25 }}
-                >
-                    <ChevronsUpDown className="size-3.5" />
-                </motion.span>
+                <span className="absolute right-2.5 grid size-3.5 place-items-center">
+                    <ChevronsUpDown className="size-3.5 opacity-45" />
+                </span>
             </button>
 
             {phase !== 'closed' && (
@@ -505,7 +501,7 @@ function ModelPicker({
                             tabIndex={searchable ? undefined : -1}
                             aria-label="Models"
                             aria-activedescendant={!searchable && current ? `${id}-option-${active}` : undefined}
-                            className="relative overflow-y-auto p-1.5 outline-none [scrollbar-width:none]"
+                            className="relative overflow-y-auto px-0 py-1.5 outline-none [scrollbar-width:none]"
                             style={{ maxHeight: LIST_MAX_HEIGHT }}
                         >
                             <div
@@ -534,7 +530,7 @@ function ModelPicker({
                                                 onMouseDown={(event) => event.preventDefault()}
                                                 onClick={() => choose(model, 'pointer')}
                                                 className={cn(
-                                                    'relative flex h-9 cursor-pointer items-center gap-2.5 rounded-[10px] px-2.5 text-[13px] font-medium transition-colors',
+                                                    'relative flex h-8 cursor-pointer items-center gap-2 rounded-[10px] px-2.5 text-[13px] font-medium transition-colors',
                                                     i === active || model.id === foldTo
                                                         ? 'text-black/90 dark:text-white/90'
                                                         : 'text-black/65 dark:text-white/65',
@@ -544,7 +540,7 @@ function ModelPicker({
                                                     data-slot="model-picker-icon"
                                                     className="relative grid size-4 shrink-0 place-items-center"
                                                 >
-                                                    {model.icon}
+                                                    <span className="grid size-4 place-items-center">{model.icon}</span>
                                                 </span>
                                                 <span className="relative min-w-0 flex-1 truncate">{model.name}</span>
                                                 {isSelected && (
