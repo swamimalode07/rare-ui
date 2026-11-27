@@ -5,6 +5,7 @@ import { SITE_URL } from "@/lib/site";
 import { TIERS_HREF } from "@/lib/sponsors";
 import FluidWave from "./FluidWave";
 import { GithubLogo, XLogo, type LogoProps } from "./logos";
+import { FRIENDS } from "./sponsors/Friends";
 
 const GITHUB_URL = "https://github.com/swamimalode07/rare-ui";
 const X_URL = "https://x.com/swamimalode";
@@ -142,6 +143,26 @@ export default function Footer() {
             <a href={`mailto:${SUPPORT_EMAIL}`} className={HOVER}>
               Support: {SUPPORT_EMAIL}
             </a>
+            <span
+              aria-hidden="true"
+              className="text-black/25 dark:text-white/25"
+            >
+              &middot;
+            </span>
+            <span>Friends:</span>
+            {FRIENDS.map((friend, index) => (
+              <Fragment key={friend.href}>
+                {index > 0 && <span aria-hidden="true">,</span>}
+                <a
+                  href={friend.href}
+                  target="_blank"
+                  rel="noopener"
+                  className={HOVER}
+                >
+                  <friend.logo className="h-3 w-auto" />
+                </a>
+              </Fragment>
+            ))}
           </span>
           <span className="flex flex-wrap items-center gap-2.5">
             {UTILITY_LINKS.map((link, index) => (

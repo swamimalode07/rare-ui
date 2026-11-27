@@ -6,6 +6,7 @@ import HeroIntro from "@/components/HeroIntro";
 import SponsorCta from "@/components/sponsors/SponsorCta";
 import SponsorStats from "@/components/sponsors/SponsorStats";
 import TierPricing from "@/components/sponsors/TierPricing";
+import { FriendsGroup } from "@/components/sponsors/Friends";
 import {
   PlatformTierGroup,
   TierGroup,
@@ -119,8 +120,9 @@ export default async function SponsorsPage() {
 
         <TierPricing />
 
-        <section className="mx-auto flex w-full max-w-6xl flex-col items-center px-5 pb-20 sm:px-6 md:pb-28">
+        <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-12 px-5 pb-20 sm:px-6 md:pb-28">
           <PlatformTierGroup />
+          <FriendsGroup />
         </section>
 
         <section className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-5 pb-24 text-center sm:px-6 md:pb-32">

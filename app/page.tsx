@@ -8,6 +8,7 @@ import BackedBy from "@/components/BackedBy";
 import ComponentsShowcase from "@/components/ComponentsShowcase";
 import TestimonialsSection from "@/components/testimonials/TestimonialsSection";
 import Footer from "@/components/Footer";
+import { FriendsGroup } from "@/components/sponsors/Friends";
 import SpiderWebs from "@/components/SpiderWebs";
 import DiwaliLights from "@/components/DiwaliLights";
 import {
@@ -104,6 +105,8 @@ function BackersSection() {
             <OpenSlotCard height={PLATFORM_CARD_HEIGHT} />
           </div>
         </div>
+
+        <FriendsGroup />
 
         <Link
           href="/sponsors"

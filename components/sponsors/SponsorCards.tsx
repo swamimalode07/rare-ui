@@ -16,7 +16,7 @@ import {
   sponsorsByTier,
 } from "@/lib/sponsors";
 
-const CARD =
+export const CARD =
   "flex w-full items-center justify-center rounded-3xl bg-card/60 px-6 transition-colors duration-150 ease-out hover:bg-card dark:bg-muted/60 dark:hover:bg-muted";
 
 const LAYER =
